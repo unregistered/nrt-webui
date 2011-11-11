@@ -17,7 +17,6 @@
 
 - (void)setSelected:(BOOL)isSelected
 {
-	CPLog("SetSelected");
     [self setBackgroundColor:isSelected ? [CPColor grayColor] : nil];
 }
 

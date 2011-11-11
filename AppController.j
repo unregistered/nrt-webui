@@ -10,6 +10,8 @@
 @import "Node.j"
 @import "NodeLibraryDelegate.j"
 @import "NodeTemplateView.j"
+@import "CanvasViewController.j"
+@import "CanvasView.j"
 
 @implementation AppController : CPObject
 {
@@ -19,38 +21,9 @@
 	IBOutlet CPView leftView;
 }
 
+// This is called when the application is done loading.
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
 {
-    // This is called when the application is done loading.
-	CPLog("Did finish launching");
-	// bounds = [scrollView bounds];
-    // bounds.size.height -= 20.0;
-	// bounds.size.width -= 40.0;
-	// CPLog(bounds);
-
-    //[collectionView setAutoresizingMask:CPViewWidthSizable];
-    //[collectionView setMinItemSize:CGSizeMake(100, 100)];
-    //[collectionView setMaxItemSize:CGSizeMake(100, 100)];
-    //[collectionView setDelegate:self];
-    
-    //var itemPrototype = [[CPCollectionViewItem alloc] init];
-    //[itemPrototype setView:[[NodeTemplateView alloc] initWithFrame:CGRectMakeZero()]];
-    //
-    //[collectionView setItemPrototype:itemPrototype];
-    
-    // var scrollView = [[CPScrollView alloc] initWithFrame:bounds];
-    //[scrollView setDocumentView:collectionView];
-    //[scrollView setAutoresizingMask:CPViewWidthSizable | CPViewHeightSizable];
-    //[scrollView setAutohidesScrollers:YES];
-    //[[scrollView contentView] setBackgroundColor:[CPColor whiteColor]];
-
-    
-	templates = [
-		[[Node alloc] initWithName:@"Input Node" inputs:[0] outputs:[1]],
-		[[Node alloc] initWithName:@"Output Node" inputs:[1,2,3] outputs:[4]]
-	];
-	[collectionView setContent:templates];
-	// [[[NodeLibrary alloc] init] orderFront:nil];
 }
 
 - (void)awakeFromCib

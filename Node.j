@@ -28,4 +28,32 @@
 	return self;
 }
 
+// Needed for drag & drop
+- (void)encodeWithCoder:(CPCoder)coder
+{
+	// debugger;
+
+	// [super encodeWithCoder:coder];
+	
+	//[coder encodeObject:name forKey:@"name"];
+	//[coder encodeObject:jobTitle forKey:@"jobTitle"];
+	//[coder encodeObject:company forKey:@"company"];
+}
+
+-(id)initWithCoder:(CPCoder)coder
+{
+	// debugger;
+
+    //if (self = [super initWithCoder:coder]) {
+    if (self = [super init])
+    {
+		//name = [coder decodeObjectForKey:@"name"];
+		//jobTitle = [coder decodeObjectForKey:@"jobTitle"];
+		//company = [coder decodeObjectForKey:@"company"];
+	}
+    
+    return self;
+}
+
+
 @end

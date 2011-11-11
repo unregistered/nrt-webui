@@ -12,6 +12,7 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<string>NSViewController</string>
 			<string>NSToolbar</string>
 			<string>NSScroller</string>
 			<string>NSSplitView</string>
@@ -1343,7 +1344,7 @@
 									<reference key="NSWindow"/>
 									<reference key="NSNextKeyView"/>
 									<string key="NSReuseIdentifierKey">_NS:601</string>
-									<string key="NSClassName">NSView</string>
+									<string key="NSClassName">CanvasView</string>
 								</object>
 							</object>
 							<string key="NSFrameSize">{630, 459}</string>
@@ -1497,9 +1498,7 @@
 			<object class="NSCustomObject" id="926106187">
 				<string key="NSClassName">NodeLibraryDelegate</string>
 			</object>
-			<object class="NSCustomObject" id="956624020">
-				<string key="NSClassName">NSObject</string>
-			</object>
+			<object class="NSViewController" id="520484439"/>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
@@ -2058,11 +2057,27 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">view</string>
+						<reference key="source" ref="520484439"/>
+						<reference key="destination" ref="575585228"/>
+					</object>
+					<int key="connectionID">621</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="762901563"/>
 						<reference key="destination" ref="926106187"/>
 					</object>
-					<int key="connectionID">600</int>
+					<int key="connectionID">622</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">collectionView</string>
+						<reference key="source" ref="926106187"/>
+						<reference key="destination" ref="762901563"/>
+					</object>
+					<int key="connectionID">623</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2142,6 +2157,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 						<reference key="parent" ref="846108324"/>
+						<string key="objectName">Canvas View</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">485</int>
@@ -3078,11 +3094,6 @@
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">601</int>
-						<reference key="object" ref="956624020"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">602</int>
 						<reference key="object" ref="581246716"/>
 						<object class="NSMutableArray" key="children">
@@ -3137,6 +3148,12 @@
 						<int key="objectID">609</int>
 						<reference key="object" ref="535123801"/>
 						<reference key="parent" ref="601445369"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">619</int>
+						<reference key="object" ref="520484439"/>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">Canvas View Controller</string>
 					</object>
 				</object>
 			</object>
@@ -3281,7 +3298,6 @@
 					<string>589.IBPluginDependency</string>
 					<string>590.IBPluginDependency</string>
 					<string>599.IBPluginDependency</string>
-					<string>601.IBPluginDependency</string>
 					<string>602.IBPluginDependency</string>
 					<string>603.IBPluginDependency</string>
 					<string>604.IBPluginDependency</string>
@@ -3290,6 +3306,8 @@
 					<string>607.IBPluginDependency</string>
 					<string>608.IBPluginDependency</string>
 					<string>609.IBPluginDependency</string>
+					<string>619.CustomClassName</string>
+					<string>619.IBPluginDependency</string>
 					<string>72.IBPluginDependency</string>
 					<string>73.IBPluginDependency</string>
 					<string>74.IBPluginDependency</string>
@@ -3454,6 +3472,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>CanvasViewController</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3481,7 +3500,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">609</int>
+			<int key="maxID">623</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3538,6 +3557,22 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/AppController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">CanvasView</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/CanvasView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">CanvasViewController</string>
+					<string key="superclassName">NSViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/CanvasViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -3610,6 +3645,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">NodeLibraryDelegate</string>
 					<string key="superclassName">NSObject</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">collectionView</string>
+						<string key="NS.object.0">NSCollectionView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">collectionView</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">collectionView</string>
+							<string key="candidateClassName">NSCollectionView</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/NodeLibraryDelegate.h</string>
