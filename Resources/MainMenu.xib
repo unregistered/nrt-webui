@@ -1490,7 +1490,7 @@
 						</object>
 					</object>
 				</object>
-				<string key="NSFrameSize">{178, 80}</string>
+				<string key="NSFrameSize">{144, 80}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="478162598"/>
@@ -1498,7 +1498,7 @@
 			<object class="NSCustomObject" id="926106187">
 				<string key="NSClassName">NodeLibraryDelegate</string>
 			</object>
-			<object class="NSViewController" id="520484439"/>
+			<object class="NSViewController" id="836889083"/>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
@@ -2058,7 +2058,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">view</string>
-						<reference key="source" ref="520484439"/>
+						<reference key="source" ref="836889083"/>
 						<reference key="destination" ref="575585228"/>
 					</object>
 					<int key="connectionID">621</int>
@@ -3151,7 +3151,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">619</int>
-						<reference key="object" ref="520484439"/>
+						<reference key="object" ref="836889083"/>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Canvas View Controller</string>
 					</object>

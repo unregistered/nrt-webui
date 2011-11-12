@@ -24,11 +24,13 @@
 	var destination = [aSender draggingLocation];
 	
 	CPLog(payload);
-	var n = [[CPBox alloc] initWithFrame:CGRectMake(destination.x-300,destination.y-100,100,100)];
+	var n = [[NodeViewController alloc] initWithNode:payload atLocation:destination];
+	// var n = [[CPBox alloc] initWithFrame:CGRectMake(destination.x-300,destination.y-100,100,100)];
+	
+	
 	CPLog(n);
-	[self addSubview:n];
-	// [self addSubview:payload];
-
+	[self addSubview:[n view]];
+	
 	
 	
     //[_paneLayer setImage:[CPKeyedUnarchiver unarchiveObjectWithData:data]];

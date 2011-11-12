@@ -17,7 +17,6 @@
 
 - (void)init {
 	self = [super init];
-	
 	return self;
 }
 
@@ -31,25 +30,18 @@
 // Needed for drag & drop
 - (void)encodeWithCoder:(CPCoder)coder
 {
-	// debugger;
-
-	// [super encodeWithCoder:coder];
-	
-	//[coder encodeObject:name forKey:@"name"];
-	//[coder encodeObject:jobTitle forKey:@"jobTitle"];
-	//[coder encodeObject:company forKey:@"company"];
+	[coder encodeObject:name forKey:@"name"];
+	[coder encodeObject:inputs forKey:@"inputs"];
+	[coder encodeObject:outputs forKey:@"outputs"];
 }
 
 -(id)initWithCoder:(CPCoder)coder
 {
-	// debugger;
-
-    //if (self = [super initWithCoder:coder]) {
     if (self = [super init])
     {
-		//name = [coder decodeObjectForKey:@"name"];
-		//jobTitle = [coder decodeObjectForKey:@"jobTitle"];
-		//company = [coder decodeObjectForKey:@"company"];
+		name = [coder decodeObjectForKey:@"name"];
+		inputs = [coder decodeObjectForKey:@"inputs"];
+		outputs = [coder decodeObjectForKey:@"outputs"];
 	}
     
     return self;

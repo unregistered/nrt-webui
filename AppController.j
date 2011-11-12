@@ -12,6 +12,8 @@
 @import "NodeTemplateView.j"
 @import "CanvasViewController.j"
 @import "CanvasView.j"
+@import "NodeView.j"
+@import "NodeViewController.j"
 
 @implementation AppController : CPObject
 {
