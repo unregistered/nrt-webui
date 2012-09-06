@@ -1,3 +1,4 @@
-*.DS_Store
-.xCodeSupport/*
-Frameworks/*
+.DS_Store
+tmp/
+assets/
+.sass-cache
