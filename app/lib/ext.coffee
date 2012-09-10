@@ -12,3 +12,7 @@ Ember.View.reopen templateForName: (name, type) ->
     catch e
       throw new Ember.Error(fmt("%@ - Unable to find %@ \"%@\".", [this, type, name]))
   template
+
+Ember.RaphaelView = Ember.View.extend(
+    paperBinding: "parentView.paper"
+)

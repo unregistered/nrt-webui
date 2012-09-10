@@ -20,6 +20,18 @@ App.Server = Ember.Object.extend(
                 console.log "Got ", res
                 @set 'modules', res.message.namespaces[0].modules.map (item) =>
                     App.Module.create(item)
+                @set 'connections', res.message.namespaces[0].connections.map (item) =>
+                    source_params = item[0]
+                    destination_params = item[1]
+                    
+                    source = @get('modules').findProperty('moduid', source_params.moduid)
+                    destination = @get('modules').findProperty('moduid', destination_params.moduid)
+                    App.Connection.create(
+                        source: source
+                        source_port: source_params.portname
+                        destination: destination
+                        destination_port: destination_params.portname
+                    )
                 
             , (error, desc) =>
                 console.log "Not got", error, desc

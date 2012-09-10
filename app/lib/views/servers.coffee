@@ -16,143 +16,216 @@ App.ServerView = Ember.View.extend(
         classNames: ['workspace']
         
         template: Ember.Handlebars.compile("""
-        {{#each module in App.router.modulesController.content}}
-            {{view view.Module moduleBinding="module"}}
-        {{/each}}
+        {{view view.Connections}}
+        {{view view.Modules}}
         """)
         
         didInsertElement: ->
             el = @$()[0]
-            console.log el[0]
-            @paper = new Raphael(el, "100%", "100%")
+            @set 'paper', new Raphael(el, "100%", "100%")
+                    
+        Connections: Ember.CollectionView.extend(
+            contentBinding: "App.router.connectionsController.content"
+            itemViewClass: Ember.View.extend(
+                connectionBinding: "content"
+                paperBinding: "parentView.paper"
+                template: Ember.Handlebars.compile("connection")
+            
+                didInsertElement: ->
+                    console.log "Connection", @get('connection')
+                    # console.log @connection.get('source.coordx')
+                    # path = [
+                    #     "M"
+                    #     @connection.get('source.coordx'), @connection.get('source.coordy')
+                    #     "C"
+                    #     # point2.x, point2.y
+                    #     # point3.x, point3.y
+                    #     @connection.get('destination.coordx'), @connection.get('destination.coordy')
+                    # ].join ","
+                    # console.log path
+            )
+        )
         
-        Module: Ember.View.extend(
-            module: null
+        Modules: Ember.CollectionView.extend(
+            contentBinding: "App.router.modulesController.content"
             paperBinding: "parentView.paper"
-            template: Ember.Handlebars.compile("""
-            <h2>Module</h2>
-            {{module.moduid}}
-            """)
+            itemViewClass:  Ember.View.extend(
+                moduleBinding: "content"
+                paperBinding: "parentView.paper"
+                template: Ember.Handlebars.compile("""
+                <h2>Module: {{module.moduid}}</h2>
+                <ul>
+                {{#each view.input_params}}
+                    {{view view.Bubble paramsBinding="this"}}
+                {{/each}}
             
-            name: (->
-                if Ember.empty @get('module.instance')
-                    return @get('module.classname')
+                {{#each view.output_params}}
+                    {{view view.Bubble paramsBinding="this"}}
+                {{/each}}
+                </ul>
+                """)
+            
+                name: (->
+                    if Ember.empty @get('module.instance')
+                        return @get('module.classname')
                 
-                return @get('module.instance')
-            ).property('module.instance', 'module.classname')
+                    return @get('module.instance')
+                ).property('module.instance', 'module.classname')
+                        
+                coordx: (->
+                    # try
+                    @get('container').getBBox().x
+                ).property().volatile()
             
-            viewDidChange: (->
-                console.log "View did change"
-            ).observes('module.moduid')
+                coordy: (->
+                    @get('container').getBBox().y
+                ).property().volatile()
             
-            coordx: (->
-                @get('module.coordinates')[0]
-            ).property('module.coordinates')
+                width: (->
+                    100
+                ).property()
             
-            coordy: (->
-                @get('module.coordinates')[1]
-            ).property('module.coordinates')
+                height: (->
+                    150
+                ).property()
             
-            width: (->
-                100
-            ).property()
+                ###
+                Components
+                ###
+                input_params: (->
+                    @get('module.subscribers').map (item, idx) ->
+                        $.extend item, (
+                            index: idx
+                            orientation: 'input'
+                        )
+                ).property()
             
-            height: (->
-                150
-            ).property()
+                output_params: (->
+                    @get('module.posters').map (item, idx) ->
+                        $.extend item, (
+                            index: idx
+                            orientation: 'output'
+                        )
+                ).property()
             
-            ###
-            Components
-            ###
-            input_bubbles: (->
-                coordx = @get('coordx')
-                coordy = @get('coordy')
-                width = @get('width')
-                height = @get 'height'
-                radius = 7 # Radius of each bubble
+            
+                box: (->
+                    # The base box                
+                    rect =  @get('paper').rect(0, 0, @get('width'), @get('height'), 7)
+                    color = Raphael.getColor()
+                    rect.attr
+                        fill: color
+                        stroke: color
+                        "fill-opacity": 0
+                        "stroke-width": 2
+                        cursor: "move"
                 
-                initial_offset = 20 # How many pixels to offset the first bubble
-                spacing = 8 # How many pixels to space each bubble after the first
+                    return rect
+                ).property()
+            
+                text: (->
+                    @get('paper').text(50, 50, @get('name'))
+                ).property()
+            
+                container: (->
+                    # All the objects that will be grouped into a Raphael set
+                    console.log "Container?", @get('parentView.parentView.paper')
+                    c = @get('paper').set()
+                    console.log "Set?"
+                    c.push @get('box')
+                    c.push @get('text')
+                    return c
+                ).property()
+            
+                willDestroyElement: ->
+                    @get('container').remove()
                 
-                @get('module.subscribers').map (item, idx) =>
-                    yoffset = initial_offset + idx * (radius * 2) + spacing * idx
-                    bubble = @get('paper').circle(coordx, coordy + yoffset, radius)
+                beforeRender: ->
+                    console.log "BEFORE RENDER"
+                    module = @
+                    container = @get('container')
+                
+                    dragger = =>
+                        container.oBB = container.getBBox()
+                        @get('box').animate "fill-opacity": .2, 500
+
+                    move = (dx, dy) =>
+                        bb = container.getBBox()
+                        container.translate(container.oBB.x - bb.x + dx, container.oBB.y - bb.y + dy)
+                        # update connections
+                        # for connection in connections
+                        #     r.connection connection
+                        # r.safari()
+
+                    up = =>
+                        @get('box').animate "fill-opacity": 0, 500
+                
+                    container.drag move, dragger, up
+                    container.mousedown ->
+                        $.each module.get('container'), (idx, item) =>
+                            item.toFront()
+                
+                didInsertElement: ->
+                    # Move to location
+                    x = @get('module.coordinates')[0]
+                    y = @get('module.coordinates')[1]
+                    @moveTo(x, y)
+            
+                moveTo: (x, y) ->
+                    @get('container').translate(x, y)
+            
+                Bubble: Ember.View.extend(
+                    template: Ember.Handlebars.compile("Bubble")
+                    radius: 7 # Radius of each bubble
+                    initial_offset: 20 # How many pixels to offset the first bubble
+                    spacing: 8 # How many pixels to space each bubble after the first
+                    containerBinding: 'parentView.container'
+                    boxBinding: 'parentView.box'
+                    paperBinding: 'parentView.paper'
+                
+                    coordx: (->
+                        @get('circle').getBBox().x
+                    ).property().volatile()
+                
+                    coordy: (->
+                        @get('circle').getBBox().y
+                    ).property().volatile()
+                
+                    circle:(->
+                        xpos = @get('parentView.width') * (@get('params.orientation') is 'output')
+                        ypos = @get('initial_offset') + @get('params.index') * (@get('radius') * 2) + @get('spacing') * @get('params.index')
+                        @get('paper').circle(xpos, ypos, @get('radius'))
+                    ).property()
+                
+                    label:(->
+                        console.log @get('x')
+                        t = @get('paper').text(@get('coordx')+20, @get('coordy'), @get('params.portname'))
+                        t.attr (
+                            'text-anchor': 'start'
+                        )
+                    ).property()
+                
+                    beforeRender: ->
+                        c = @get('circle')
                     
-                    bubble.hover (arg) ->
-                        console.log "hover", arg
-
-                    return bubble
-            ).property()
-            
-            output_bubbles: (->
-                coordx = @get('coordx')
-                coordy = @get('coordy')
-                width = @get('width')
-                height = @get 'height'
-                radius = 7 # Radius of each bubble
-                
-                initial_offset = 20 # How many pixels to offset the first bubble
-                spacing = 8 # How many pixels to space each bubble after the first
-                
-                @get('module.posters').map (item, idx) =>
-                    yoffset = initial_offset + idx * (radius * 2) + spacing * idx
-                    @get('paper').circle(coordx + width, coordy + yoffset, radius)
-            ).property()
-            
-            
-            box: (->
-                # All the raphael objects together that should move as a group
-                paper = @get('parentView').paper
-                
-                coordx = @get('coordx')
-                coordy = @get('coordy')
-                
-                rect = paper.rect(coordx, coordy, @get('width'), @get('height'), 7)
-                set = paper.set()
-                set.push(rect)
-                set.push(paper.text(coordx+50, coordy+50, @get('name')))
-                
-                for bubble in @get('input_bubbles')
-                    set.push bubble
-                
-                for bubble in @get('output_bubbles')
-                    set.push bubble
+                        # Add a tag
+                        module = @
+                        c.mouseover (arg) =>
+                            console.log @get('label')
+                            # module.get('paper').rect(this.attrs.cx + 20, this.attrs.cy, 100, 20)
+                            @get('circle').attr({fill: 'green'})
+                            console.log "hover", arg
+                        c.mouseout (arg) =>
+                            @get('circle').attr({fill: 'none'})
+                            console.log "Mouseout"
+                            @get('label').remove()
+                            @notifyPropertyChange 'label'
                     
-                color = Raphael.getColor()
-                rect.attr
-                    fill: color
-                    stroke: color
-                    "fill-opacity": 0
-                    "stroke-width": 2
-                    cursor: "move"
+                        @get('container').push c
+                    
+                )
                 
-                return set
-            ).property()
-            
-            willDestroyElement: ->
-                @set.remove()
-                
-            didInsertElement: ->
-                box = @get('box')
-                
-                dragger = ->
-                    box.oBB = box.getBBox()
-                    @animate "fill-opacity": .2, 500
-
-                move = (dx, dy) =>
-                    bb = box.getBBox()
-                    box.translate(box.oBB.x - bb.x + dx, box.oBB.y - bb.y + dy);
-                    # update connections
-                    # for connection in connections
-                    #     r.connection connection
-                    # r.safari()
-
-                up = -> @animate "fill-opacity": 0, 500
-                
-                box.drag move, dragger, up
-                box.mousedown ->
-                    @.toFront()
-                
+            )
         )
     )
 

@@ -29,12 +29,12 @@ bbfs = {
                     [
                         {
                             'bbuid': 'ilab21[8323329]:3174:0x7e3f40',
-                            'moduleid': 'ilab21[8323329]:3174:0x1882bf8',
+                            'moduid': 'ilab21[8323329]:3174:0x1882bf8',
                             'portname': 'TweetReceived'
                         },
                         {
                             'bbuid': 'ilab21[8323329]:3174:0x7e3f40',
-                            'moduleid': 'ilab21[8323329]:3180:0x188f4a8',
+                            'moduid': 'ilab21[8323329]:3180:0x188f4a8',
                             'portname': 'SendEmail'
                         }
                     ]
