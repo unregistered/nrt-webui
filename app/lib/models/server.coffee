@@ -19,7 +19,8 @@ App.Server = Ember.Object.extend(
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then (res) =>
                 console.log "Got ", res
                 @set 'modules', res.message.namespaces[0].modules.map (item) =>
-                    App.Module.create(item)
+                    mod = App.Module.create(item)
+
                 @set 'connections', res.message.namespaces[0].connections.map (item) =>
                     source_params = item[0]
                     destination_params = item[1]

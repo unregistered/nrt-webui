@@ -10,4 +10,10 @@ App.Module = Ember.Object.extend(
     parent: null
     posters: []
     subscribers: null
+    x: 0
+    y: 0
+    
+    init: ->
+        @set 'x', @get('coordinates')[0]
+        @set 'y', @get('coordinates')[1]
 )
