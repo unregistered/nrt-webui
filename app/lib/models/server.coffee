@@ -5,7 +5,8 @@ App.Server = Ember.Object.extend(
     host: ''
     port: 0
     
-    modules: []
+    modulesBinding: "App.router.modulesController.content"
+    connectionsBinding: "App.router.connectionsController.content"
     
     wsuri: (->
         "ws://#{@get 'host'}:#{@get 'port'}"
@@ -18,20 +19,14 @@ App.Server = Ember.Object.extend(
             # Get state
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then (res) =>
                 console.log "Got ", res
-                @set 'modules', res.message.namespaces[0].modules.map (item) =>
-                    mod = App.Module.create(item)
+                App.router.modulesController.set 'content', res.message.namespaces[0].modules.map (item) =>
+                    App.Module.create(
+                        from: item
+                    )
 
-                @set 'connections', res.message.namespaces[0].connections.map (item) =>
-                    source_params = item[0]
-                    destination_params = item[1]
-                    
-                    source = @get('modules').findProperty('moduid', source_params.moduid)
-                    destination = @get('modules').findProperty('moduid', destination_params.moduid)
+                App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map (item) =>
                     App.Connection.create(
-                        source: source
-                        source_port: source_params.portname
-                        destination: destination
-                        destination_port: destination_params.portname
+                        from: item
                     )
                 
             , (error, desc) =>

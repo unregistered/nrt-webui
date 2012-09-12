@@ -1,4 +1,5 @@
 Ember.RaphaelView = Ember.View.extend(
+    tagName: 'li'
     paperBinding: "parentView.paper"
     
     beforeRender: ->

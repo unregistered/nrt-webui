@@ -27,16 +27,17 @@ App.ServerView = Ember.View.extend(
         didInsertElement: ->
             el = @$()[0]
             @set 'paper', new Raphael(el, "100%", "100%")
-                    
+        
         Connection: Ember.RaphaelView.extend(
-            connectionBinding: "content"
             template: Ember.Handlebars.compile("connection")
             
-            didInsertElement: ->                
-                # console.log "SV", sourceView
-                console.log @get('connection.source')
-                console.log "Connection", @get('connection')
-                # console.log @connection.get('source.coordx')
+            didInsertElement: ->
+                source = @get 'connection.source_port'
+                destination = @get 'connection.destination_port'
+                                
+                source_view = Ember.View.views[source.get('id')]
+                destination_view = Ember.View.views[destination.get('id')]
+                
                 path = [
                     "M"
                     @connection.get('source.x'), @connection.get('source.y')
@@ -50,18 +51,19 @@ App.ServerView = Ember.View.extend(
         )
         
         Module: Ember.RaphaelView.extend(
-            moduleBinding: "content"
+            elementId: (->
+                @get('module.id')
+            ).property('module.moduid')
+            
             template: Ember.Handlebars.compile("""
-            <h2>Module: {{module.moduid}}</h2>
-            <ul>
-            {{#each view.input_params}}
-                {{view view.Bubble paramsBinding="this"}}
+            Module: {{view.module}}
+            {{#each view.module.subscribers}}
+                {{view view.Port portBinding="this"}}
             {{/each}}
             
-            {{#each view.output_params}}
-                {{view view.Bubble paramsBinding="this"}}
+            {{#each view.module.posters}}
+                {{view view.Port portBinding="this"}}
             {{/each}}
-            </ul>
             """)
             
             name: (->
@@ -86,27 +88,7 @@ App.ServerView = Ember.View.extend(
             
             height: (->
                 150
-            ).property()
-            
-            ###
-            Components
-            ###
-            input_params: (->
-                @get('module.subscribers').map (item, idx) ->
-                    $.extend item, (
-                        index: idx
-                        orientation: 'input'
-                    )
-            ).property()
-            
-            output_params: (->
-                @get('module.posters').map (item, idx) ->
-                    $.extend item, (
-                        index: idx
-                        orientation: 'output'
-                    )
-            ).property()
-            
+            ).property()            
             
             box: (->
                 # The base box                
@@ -166,21 +148,23 @@ App.ServerView = Ember.View.extend(
                 
             didInsertElement: ->
                 # Move to location
-                x = @get('module.coordinates')[0]
-                y = @get('module.coordinates')[1]
+                x = @get('module.x')
+                y = @get('module.y')
                 @moveTo(x, y)
             
             moveTo: (x, y) ->
                 @get('container').translate(x, y)
             
-            Bubble: Ember.RaphaelView.extend(
-                template: Ember.Handlebars.compile("Bubble")
+            Port: Ember.RaphaelView.extend(
+                template: Ember.Handlebars.compile("""
+                Port: {{view.port.id}}
+                """)
                 radius: 7 # Radius of each bubble
                 initial_offset: 20 # How many pixels to offset the first bubble
                 spacing: 8 # How many pixels to space each bubble after the first
                 containerBinding: 'parentView.container'
                 boxBinding: 'parentView.box'
-                paperBinding: 'parentView.paper'
+                elementIdBinding: "port.id"
                 
                 coordx: (->
                     @get('circle').getBBox().x
@@ -191,13 +175,13 @@ App.ServerView = Ember.View.extend(
                 ).property().volatile()
                 
                 circle:(->
-                    xpos = @get('parentView.width') * (@get('params.orientation') is 'output')
-                    ypos = @get('initial_offset') + @get('params.index') * (@get('radius') * 2) + @get('spacing') * @get('params.index')
+                    xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
+                    ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
                     @get('paper').circle(xpos, ypos, @get('radius'))
                 ).property()
                 
                 label:(->
-                    t = @get('paper').text(@get('coordx')+20, @get('coordy'), @get('params.portname'))
+                    t = @get('paper').text(@get('coordx')+20, @get('coordy'), @get('port.portname'))
                     t.attr (
                         'text-anchor': 'start'
                     )
