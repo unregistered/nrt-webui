@@ -124,16 +124,22 @@ App.ServerView = Ember.View.extend(
                 container = @get('container')
                 
                 dragger = =>
-                    container.oBB = container.getBBox()
+                    container.oBB = (
+                        x: @get('module.x')
+                        y: @get('module.y')
+                    )
                     @get('box').animate "fill-opacity": .2, 500
 
                 move = (dx, dy) =>
-                    bb = container.getBBox()
-                    container.translate(container.oBB.x - bb.x + dx, container.oBB.y - bb.y + dy)
+                    obb = container.oBB
+                    @get('module').setProperties (
+                        x: obb.x + dx
+                        y: obb.y + dy
+                    )
                     # update connections
                     # for connection in connections
                     #     r.connection connection
-                    # r.safari()
+                    # r.safari()                    
 
                 up = =>
                     bb = container.getBBox()
@@ -145,7 +151,12 @@ App.ServerView = Ember.View.extend(
                 container.mousedown ->
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
-                
+            
+            move: (->
+                m = @get('module')
+                @moveTo(m.get('x'), m.get('y'))
+            ).observes('module.x', 'module.y')
+            
             didInsertElement: ->
                 # Move to location
                 x = @get('module.x')
@@ -153,7 +164,7 @@ App.ServerView = Ember.View.extend(
                 @moveTo(x, y)
             
             moveTo: (x, y) ->
-                @get('container').translate(x, y)
+                @get('container').transform("T#{x},#{y}")
             
             Port: Ember.RaphaelView.extend(
                 template: Ember.Handlebars.compile("""
