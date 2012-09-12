@@ -30,6 +30,11 @@ App.ServerView = Ember.View.extend(
         
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
+                        
+            onUpdate: (->
+                console.log "Require update"
+                @get('paper').connection @get('line')
+            ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
             
             didInsertElement: ->
                 source = @get 'connection.source_port'
@@ -37,17 +42,10 @@ App.ServerView = Ember.View.extend(
                                 
                 source_view = Ember.View.views[source.get('id')]
                 destination_view = Ember.View.views[destination.get('id')]
+                                
+                @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle')
                 
-                path = [
-                    "M"
-                    @connection.get('source.x'), @connection.get('source.y')
-                    "C"
-                    # point2.x, point2.y
-                    # point3.x, point3.y
-                    @connection.get('destination.x'), @connection.get('destination.y')
-                ].join ","
                 
-                console.log path
         )
         
         Module: Ember.RaphaelView.extend(

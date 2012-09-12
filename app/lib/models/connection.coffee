@@ -4,6 +4,9 @@ App.Connection = Ember.Object.extend(
     source_port: null
     destination_port: null
     
+    source_moduleBinding: "source_port.module"
+    destination_moduleBinding: "destination_port.module"
+    
     init: ->
         source_params = @get('from')[0]
         destination_params = @get('from')[1]
