@@ -15,19 +15,12 @@ App.Server = Ember.Object.extend(
     connect: ->
         # WAMP session was established
         ab.connect @get('wsuri'), ((session) =>
+            @set 'session', session
   
             # Get state
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then (res) =>
                 console.log "Got ", res
-                App.router.modulesController.set 'content', res.message.namespaces[0].modules.map (item) =>
-                    App.Module.create(
-                        from: item
-                    )
-
-                App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map (item) =>
-                    App.Connection.create(
-                        from: item
-                    )
+                @deserialize_bbfs(res)
                 
             , (error, desc) =>
                 console.log "Not got", error, desc
@@ -35,13 +28,32 @@ App.Server = Ember.Object.extend(
             # on event publication callback
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, event) =>
                 console.log "got event1: ", event, @
-                @set 'modules', event.message.namespaces[0].modules.map (item) =>
-                    App.Module.create(item)
+                @deserialize_bbfs(event)
             
-                
+            session.subscribe "org.nrtkit.designer/event/module_position_update", (topic, event) =>
+                console.log "Module position updated", event
+                module = App.router.modulesController.findProperty 'moduid', event.moduid
+                module.set 'x', event.x
+                module.set 'y', event.y
 
         # WAMP session is gone
         ), (code, reason) ->
             console.log reason
+    
+    deserialize_bbfs: (res) ->
+        App.router.modulesController.set 'content', res.message.namespaces[0].modules.map (item) =>
+            App.Module.create(
+                from: item
+            )
+
+        App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map (item) =>
+            App.Connection.create(
+                from: item
+            )
+            
+        App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>
+            App.Prototype.create(
+                from: item
+            )
         
 )

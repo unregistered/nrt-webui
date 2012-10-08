@@ -9,6 +9,7 @@ require 'bootstrap'
 require 'when' # Deferreds for autobahn
 require 'autobahn'
 require 'raphael'
+require 'jquery-ui'
 
 Raphael.fn.connection = (obj1, obj2, line, bg) ->
   if obj1.line and obj1.from and obj1.to

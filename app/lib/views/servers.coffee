@@ -26,13 +26,24 @@ App.ServerView = Ember.View.extend(
         
         didInsertElement: ->
             el = @$()[0]
+            @$().droppable(
+                activeClass: "ui-state-active"
+                hoverClass: "ui-state-hover"
+                drop: (event, ui) =>
+                    prototype = $(ui.draggable).data('context')
+                    
+                    svg_offset = @$().find('svg').offset()
+                    adjusted_x = event.clientX - svg_offset.left
+                    adjusted_y = event.clientY - svg_offset.top
+                    
+                    @get('controller').createModule(prototype, adjusted_x, adjusted_y)
+            )
             @set 'paper', new Raphael(el, "100%", "100%")
         
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
                         
             onUpdate: (->
-                console.log "Require update"
                 @get('paper').connection @get('line')
             ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
             
@@ -122,6 +133,7 @@ App.ServerView = Ember.View.extend(
                 container = @get('container')
                 
                 dragger = =>
+                    @set 'module.dragging', true
                     container.oBB = (
                         x: @get('module.x')
                         y: @get('module.y')
@@ -143,6 +155,7 @@ App.ServerView = Ember.View.extend(
                     bb = container.getBBox()
                     @set 'module.x', bb.x
                     @set 'module.y', bb.y
+                    @set 'module.dragging', false
                     @get('box').animate "fill-opacity": 0, 500
                 
                 container.drag move, dragger, up
@@ -202,12 +215,25 @@ App.ServerView = Ember.View.extend(
                     # Add a tag
                     module = @
                     c.mouseover (arg) =>
-                        # module.get('paper').rect(this.attrs.cx + 20, this.attrs.cy, 100, 20)
+                        # module.get('paper').rect(@get('coordx') + 20, @get('coordy'), 100, 20)
+                        @get('label')
                         @get('circle').attr({fill: 'green'})
                     c.mouseout (arg) =>
                         @get('circle').attr({fill: 'none'})
                         @get('label').remove()
                         @notifyPropertyChange 'label'
+                    
+                    # Dragging
+                    dragger = =>
+                        console.log "start"
+
+                    move = (dx, dy) =>
+                        console.log "Move"               
+
+                    up = =>
+                        console.log "Up"
+                
+                    c.drag move, dragger, up
                     
                     @get('container').push c
                     
@@ -217,19 +243,46 @@ App.ServerView = Ember.View.extend(
     )
 
     TrayView: Ember.View.extend(
+        controllerBinding: "App.router.prototypesController"
         template: Ember.Handlebars.compile("""
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Modules</th>
+                    <th>
+                    <form class="form-search">
+                      <input type="text" class="input-medium search-query">
+                      <button type="submit" class="btn">Search</button>
+                    </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>
+                {{#each controller.content}}
                 <tr>
-                    <th>Module</th>
+                    {{view view.PrototypeView prototypeBinding="this"}}
                 </tr>
+                {{/each}}
             </tbody>
         </table>
         """)
+        
+        PrototypeView: Ember.View.extend(
+            tagName: 'td'
+            template: Ember.Handlebars.compile("""
+            {{view.prototype}}
+            """)
+            
+            didInsertElement: ->
+                prototype = @get('prototype')
+                
+                @.$().draggable(
+                    opacity: 0.7
+                    helper: "clone"
+                    revert: "invalid"
+                    start: (event, ui) ->
+                        $(this).data('context', prototype)
+                )
+            
+        )
     )
 )

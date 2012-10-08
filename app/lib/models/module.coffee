@@ -7,7 +7,8 @@ App.Module = Ember.Object.extend(
     
     # bbuid: null
     # checkers: []
-    # classname: null
+    dragging: false
+    classname: null
     instance: null
     moduid: null
     # parameters: []
@@ -17,12 +18,20 @@ App.Module = Ember.Object.extend(
     x: 0
     y: 0
     
+    positionUpdater: (->
+        if @get('dragging')
+            App.router.serverController.publishModulePositionChange(@, @get('x'), @get('y'))
+    ).observes('x', 'y')
+    
     init: ->
+        return unless @get('from')
+        
         @set 'x', @get('from.coordinates')[0]
         @set 'y', @get('from.coordinates')[1]
         
         @set 'instance', @get 'from.instance'
         @set 'moduid', @get 'from.moduid'
+        @set 'classname', @get 'from.classname'
                 
         @set 'posters', @get('from.posters').map (item, idx) =>
             p = App.Port.create(item)
