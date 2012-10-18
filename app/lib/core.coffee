@@ -9,6 +9,7 @@ require 'bootstrap'
 require 'when' # Deferreds for autobahn
 require 'autobahn'
 require 'raphael'
+require 'raphael-zpd' # Zoom
 require 'jquery-ui'
 
 Raphael.fn.connection = (obj1, obj2, line, bg) ->

@@ -39,6 +39,7 @@ App.ServerView = Ember.View.extend(
                     @get('controller').createModule(prototype, adjusted_x, adjusted_y)
             )
             @set 'paper', new Raphael(el, "100%", "100%")
+            @set 'zpd', new RaphaelZPD(@get('paper'), { zoom: true, pan: true, drag: true })
         
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
@@ -55,7 +56,9 @@ App.ServerView = Ember.View.extend(
                 destination_view = Ember.View.views[destination.get('id')]
                                 
                 @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle')
-                
+              
+            willDestroyElement: ->
+                @get('line').line.remove()
                 
         )
         
@@ -274,10 +277,12 @@ App.ServerView = Ember.View.extend(
             
             didInsertElement: ->
                 prototype = @get('prototype')
-                
+
                 @.$().draggable(
                     opacity: 0.7
-                    helper: "clone"
+                    cursorAt: { top: -12, left: -20 }
+                    helper: (event) ->
+                      return $("<span class='ui-widget-helper'>New '#{prototype.name}'</span>")
                     revert: "invalid"
                     start: (event, ui) ->
                         $(this).data('context', prototype)
