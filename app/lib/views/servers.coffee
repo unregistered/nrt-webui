@@ -246,17 +246,16 @@ App.ServerView = Ember.View.extend(
                         @notifyPropertyChange 'label'
                     
                     # Dragging
-                    dragger = =>
+                    c.node.draggable = true
+                    c.node.onDragStart = (event) =>
                         console.log "start"
 
-                    move = (dx, dy) =>
+                    c.node.onDrag = (delta, event) =>
                         console.log "Move"               
 
-                    up = =>
+                    c.node.onDragStop = =>
                         console.log "Up"
-                
-                    c.drag move, dragger, up
-                    
+                                    
                     @get('container').push c
                     
             )

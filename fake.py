@@ -212,11 +212,29 @@ class PubSubServer1(WampServerProtocol):
         
         notificationCenter.postNotification("bbfs_updated", self)
     
+    @exportRpc
+    def module(self, args):
+        try:
+            # Find the module
+            mods = bbfs['message']['namespaces'][0]['modules']
+            try:
+                mod = (m for m in mods if m['moduid'] == args['moduid']).next()
+            except StopIterationError:
+                print "Module with uid " + event['moduid'] + " not found."
+                return
+        
+            mods.remove(mod)
+        except Exception as e:
+            print e
+
+        notificationCenter.postNotification("bbfs_updated", self)
+
     def onSessionOpen(self):
         ## register a URI and all URIs having the string as prefix as PubSub topic
         self.registerForPubSub("org.nrtkit.designer/event", True)
         self.registerForRpc(self, "org.nrtkit.designer/get/")
         self.registerForRpc(self, "org.nrtkit.designer/post/")
+        self.registerForRpc(self, "org.nrtkit.designer/delete/")
  
 
 if __name__ == '__main__':

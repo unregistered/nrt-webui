@@ -456,8 +456,8 @@ var currentScale = gTransform.a;
                     fromY: me.stateOrigin.y,
                     toY: p.y,
                 }, evt);
-            else
-                me.setCTM(me.stateTarget, me.root.createSVGMatrix().translate(p.x - me.stateOrigin.x, p.y - me.stateOrigin.y).multiply(g.getCTM().inverse()).multiply(me.stateTarget.getCTM()));
+            // else
+            //     me.setCTM(me.stateTarget, me.root.createSVGMatrix().translate(p.x - me.stateOrigin.x, p.y - me.stateOrigin.y).multiply(g.getCTM().inverse()).multiply(me.stateTarget.getCTM()));
 
             // me.stateOrigin = p;
 		}

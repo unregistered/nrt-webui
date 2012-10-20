@@ -94,9 +94,14 @@ App.CurrentModuleTrayView = Ember.View.extend(
                     </dl>
                 </td>
             </tr>
+            
+            <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
         </tbody>
     </table>
     """
+    
+    deleteCurrentModule: ->
+        App.router.serverController.deleteModule @get('module')
 )
 
 # Shows a list of connected machines in the network
