@@ -128,8 +128,8 @@ App.ServerView = Ember.View.extend(
             container: (->
                 # All the objects that will be grouped into a Raphael set
                 c = @get('paper').set()
-                c.push @get('box')
                 c.push @get('text')
+                c.push @get('box')
                 return c
             ).property('box', 'text')
             
