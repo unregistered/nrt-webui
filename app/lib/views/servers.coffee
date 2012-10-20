@@ -4,7 +4,7 @@ App.ServerView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <div class="row-fluid">
         <div class="span4">
-            {{view view.TrayView}}
+            {{view App.TrayView}}
         </div>
         <div class="span8">
             {{view view.WorkspaceView}}
@@ -39,7 +39,12 @@ App.ServerView = Ember.View.extend(
                     @get('controller').createModule(prototype, adjusted_x, adjusted_y)
             )
             @set 'paper', new Raphael(el, "100%", "100%")
-            @set 'zpd', new RaphaelZPD(@get('paper'), { zoom: true, pan: true, drag: true })
+            @set 'zpd', new RaphaelZPD(@get('paper'), {
+                zoom: true
+                pan: true 
+                drag: true
+                zoomThreshold: [0.3, 2]
+            })
         
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
@@ -149,10 +154,6 @@ App.ServerView = Ember.View.extend(
                         x: obb.x + dx
                         y: obb.y + dy
                     )
-                    # update connections
-                    # for connection in connections
-                    #     r.connection connection
-                    # r.safari()                    
 
                 up = =>
                     bb = container.getBBox()
@@ -165,6 +166,8 @@ App.ServerView = Ember.View.extend(
                 container.mousedown ->
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
+                container.mouseup ->
+                    console.log "MU"
             
             move: (->
                 m = @get('module')
@@ -202,7 +205,9 @@ App.ServerView = Ember.View.extend(
                 circle:(->
                     xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
                     ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
-                    @get('paper').circle(xpos, ypos, @get('radius'))
+                    circle = @get('paper').circle(xpos, ypos, @get('radius'))
+                    circle.node.draggable = false
+                    return circle
                 ).property()
                 
                 label:(->
@@ -242,52 +247,6 @@ App.ServerView = Ember.View.extend(
                     
             )
                 
-        )
-    )
-
-    TrayView: Ember.View.extend(
-        controllerBinding: "App.router.prototypesController"
-        template: Ember.Handlebars.compile("""
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                    <form class="form-search">
-                      <input type="text" class="input-medium search-query">
-                      <button type="submit" class="btn">Search</button>
-                    </form>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each controller.content}}
-                <tr>
-                    {{view view.PrototypeView prototypeBinding="this"}}
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-        """)
-        
-        PrototypeView: Ember.View.extend(
-            tagName: 'td'
-            template: Ember.Handlebars.compile("""
-            {{view.prototype}}
-            """)
-            
-            didInsertElement: ->
-                prototype = @get('prototype')
-
-                @.$().draggable(
-                    opacity: 0.7
-                    cursorAt: { top: -12, left: -20 }
-                    helper: (event) ->
-                      return $("<span class='ui-widget-helper'>New '#{prototype.name}'</span>")
-                    revert: "invalid"
-                    start: (event, ui) ->
-                        $(this).data('context', prototype)
-                )
-            
         )
     )
 )

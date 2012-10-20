@@ -7,4 +7,5 @@ Ember.RaphaelView = Ember.View.extend(
 )
 
 require "nrt-webui/views/application"
+require "nrt-webui/views/trays"
 require "nrt-webui/views/servers"
