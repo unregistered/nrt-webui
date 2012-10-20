@@ -140,7 +140,9 @@ App.ServerView = Ember.View.extend(
                 module = @
                 container = @get('container')
                 
-                dragger = =>
+                box = @get('box')
+                box.node.draggable = true
+                box.node.onDragStart = (event) =>
                     @set 'module.dragging', true
                     container.oBB = (
                         x: @get('module.x')
@@ -148,27 +150,25 @@ App.ServerView = Ember.View.extend(
                     )
                     @get('box').animate "fill-opacity": .2, 500
 
-                move = (dx, dy) =>
+                box.node.onDrag = (delta, event) =>
                     obb = container.oBB
                     @get('module').setProperties (
-                        x: obb.x + dx
-                        y: obb.y + dy
+                        x: obb.x + delta.toX - delta.fromX
+                        y: obb.y + delta.toY - delta.fromY
                     )
 
-                up = =>
+                box.node.onDragStop = =>
                     bb = container.getBBox()
                     @set 'module.x', bb.x
                     @set 'module.y', bb.y
                     @set 'module.dragging', false
                     @get('box').animate "fill-opacity": 0, 500
                 
-                container.drag move, dragger, up
+                # container.drag move, dragger, up
                 container.mousedown ->
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
-                container.mouseup ->
-                    console.log "MU"
-            
+                            
             move: (->
                 m = @get('module')
                 @moveTo(m.get('x'), m.get('y'))

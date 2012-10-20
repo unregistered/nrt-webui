@@ -4,6 +4,7 @@
  *
  * This code is licensed under the following BSD license:
  * 
+ * Copyright 2012 Chris Li <licy@usc.edu> (Callbacks)
  * Copyright 2012 Jameson Quave <jquave@gmail.com> (iOS compatibility). All right reserved.
  * Copyright 2010 Gabriel Zabusek <gabriel.zabusek@gmail.com> (Interface and feature extensions and modifications). All rights reserved.
  * Copyright 2010 Daniel Assange <somnidea@lemma.org> (Raphaël integration and extensions). All rights reserved.
@@ -157,9 +158,8 @@ RaphaelZPD = function(raphaelPaper, o) {
 	me.getEventPoint = function(evt) {
 		var p = me.root.createSVGPoint();
 
-        console.log(evt)
-		p.x = evt.clientX;
-		p.y = evt.clientY;
+		p.x = evt.layerX;
+		p.y = evt.layerY;
 
 		return p;
 	};
@@ -228,7 +228,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 			me.stateOrigin = p;
 		} else {
 			// Move mode
-			if (!me.opts.drag || evt.target.draggable == false) return;
+			if (!me.opts.drag || evt.target.draggable != true) return;
 
 			me.state = 'move';
 
@@ -448,10 +448,18 @@ var currentScale = gTransform.a;
 			if (!me.opts.drag) return;
 
 			var p = me.getEventPoint(evt).matrixTransform(g.getCTM().inverse());
+            
+            if(typeof me.stateTarget.onDrag == 'function')
+                me.stateTarget.onDrag({
+                    fromX: me.stateOrigin.x,
+                    toX: p.x,
+                    fromY: me.stateOrigin.y,
+                    toY: p.y,
+                }, evt);
+            else
+                me.setCTM(me.stateTarget, me.root.createSVGMatrix().translate(p.x - me.stateOrigin.x, p.y - me.stateOrigin.y).multiply(g.getCTM().inverse()).multiply(me.stateTarget.getCTM()));
 
-			me.setCTM(me.stateTarget, me.root.createSVGMatrix().translate(p.x - me.stateOrigin.x, p.y - me.stateOrigin.y).multiply(g.getCTM().inverse()).multiply(me.stateTarget.getCTM()));
-
-			me.stateOrigin = p;
+            // me.stateOrigin = p;
 		}
 	};
 	
@@ -468,7 +476,7 @@ var currentScale = gTransform.a;
 
 		var g = svgDoc.getElementById("viewport"+me.id);
 
-		if (evt.target.tagName == "svg" || !me.opts.drag || (me.opts.drag && evt.target.draggable == false)) {
+		if (evt.target.tagName == "svg" || !me.opts.drag || (me.opts.drag && evt.target.draggable != true)) {
 			// Pan mode
 			if (!me.opts.pan) return;
 
@@ -479,7 +487,7 @@ var currentScale = gTransform.a;
 			me.stateOrigin = me.getEventPoint(evt).matrixTransform(me.stateTf);
 		} else {
 			// Move mode
-			if (!me.opts.drag || evt.target.draggable == false) return;
+			if (!me.opts.drag || evt.target.draggable != true) return;
 
 			me.state = 'move';
 
@@ -488,6 +496,9 @@ var currentScale = gTransform.a;
 			me.stateTf = g.getCTM().inverse();
 
 			me.stateOrigin = me.getEventPoint(evt).matrixTransform(me.stateTf);
+            
+            if(typeof evt.target.onDragStart == 'function') 
+                evt.target.onDragStart(evt);
 		}
 	};
 	
@@ -502,10 +513,16 @@ var currentScale = gTransform.a;
 
 		var svgDoc = evt.target.ownerDocument;
 
-		if ((me.state == 'pan' && me.opts.pan) || (me.state == 'move' && me.opts.drag)) {
+		if (me.state == 'pan' && me.opts.pan) {
 			// Quit pan mode
 			me.state = '';
 		}
+        if (me.state == 'move' && me.opts.drag) {
+            // Quit drag
+            me.state = '';
+            if(typeof me.stateTarget.onDragStop == 'function') 
+                me.stateTarget.onDragStop(evt);
+        }
 	};
 	
 	/**
