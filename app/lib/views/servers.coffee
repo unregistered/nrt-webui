@@ -148,7 +148,6 @@ App.ServerView = Ember.View.extend(
                         x: @get('module.x')
                         y: @get('module.y')
                     )
-                    @get('box').animate "fill-opacity": .2, 500
 
                 box.node.onDrag = (delta, event) =>
                     obb = container.oBB
@@ -162,10 +161,10 @@ App.ServerView = Ember.View.extend(
                     @set 'module.x', bb.x
                     @set 'module.y', bb.y
                     @set 'module.dragging', false
-                    @get('box').animate "fill-opacity": 0, 500
                 
                 # container.drag move, dragger, up
-                container.mousedown ->
+                container.mousedown =>
+                    App.router.modulesController.set 'selected', @get('module')
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
                             
@@ -173,6 +172,21 @@ App.ServerView = Ember.View.extend(
                 m = @get('module')
                 @moveTo(m.get('x'), m.get('y'))
             ).observes('module.x', 'module.y')
+            
+            draggingStatusChanged: (->
+                if @get('module.dragging')
+                    @get('box').animate "opacity": .6, 200
+                else
+                    @get('box').animate "opacity": 1, 500
+            ).observes('module.dragging')
+            
+            selectedStatusChanged: (->
+                if @get('module.selected')
+                    @get('box').animate "fill-opacity": .2, 500
+                else
+                    @get('box').animate "fill-opacity": 0, 500
+                
+            ).observes('module.selected')
             
             didInsertElement: ->
                 # Move to location

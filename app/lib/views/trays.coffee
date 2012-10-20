@@ -52,17 +52,79 @@ App.ModuleTrayView = Ember.View.extend(
     
 )
 
+# Shows info about the currently selected module
+App.CurrentModuleTrayView = Ember.View.extend(
+    moduleBinding: "App.router.modulesController.selected"
+    template: Ember.Handlebars.compile """
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>{{view.module.instance}}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Basic Info</td></tr>
+            <tr>
+                <td>
+                    <dl>
+                        <dt>moduid</dt>
+                        <dd>{{view.module.moduid}}</dd>
+                        <dt>coordinates</dt>
+                        <dd>({{view.module.x}}, {{view.module.y}})</dd>
+                    </dl>
+                </td>
+            </tr>
+            
+            <tr><td>Ports</td></tr>
+            <tr>
+                <td>
+                    <dl>
+                        {{#each view.module.posters}}
+                            <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
+                            <dd>
+                                {{this.description}}
+                            </dd>
+                        {{/each}}
+                        {{#each view.module.subscribers}}
+                            <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
+                            <dd>
+                                {{this.description}}
+                            </dd>
+                        {{/each}}
+                    </dl>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    """
+)
+
 # Shows a list of connected machines in the network
 App.NetworkTrayView = Ember.View.extend(
-    template: Ember.Handlebars.compile """
-    Hello there
-    """
+    template: Ember.Handlebars.compile "Network"
+    
+    # """
+    # <table class="table table-bordered">
+    #     <thead>
+    #         <tr>
+    #             <td>Network</td>
+    #         </tr>
+    #     </thead>
+    #     <tbody>
+    #         {{#each controller.content}}
+    #             <tr>
+    #                 <th>{{this}}</th>
+    #             </tr>
+    #         {{/each}}
+    #     </tbody>
+    # </table>
+    # """
 )
 
 # This is the actual tray view, which registers trays and displays them
 App.TrayView = Ember.View.extend(
     controllerBinding: "App.router.prototypesController"
-    traysAvailable: ["App.ModuleTrayView", "App.NetworkTrayView"]
+    traysAvailable: ["App.ModuleTrayView", "App.NetworkTrayView", "App.CurrentModuleTrayView"]
     traysActive: null
     init: ->
         @_super()

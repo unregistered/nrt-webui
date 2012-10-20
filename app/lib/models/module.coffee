@@ -18,6 +18,10 @@ App.Module = Ember.Object.extend(
     x: 0
     y: 0
     
+    selected: (->
+        App.router.modulesController.get('selected') == @
+    ).property("App.router.modulesController.selected")
+    
     positionUpdater: (->
         if @get('dragging')
             App.router.serverController.publishModulePositionChange(@, @get('x'), @get('y'))
