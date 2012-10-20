@@ -29,6 +29,7 @@ App.ModuleTrayView = Ember.View.extend(
     
     PrototypeView: Ember.View.extend(
         tagName: 'td'
+        classNames: ["module-prototype"]
         template: Ember.Handlebars.compile("""
         {{view.prototype}}
         """)
@@ -38,7 +39,8 @@ App.ModuleTrayView = Ember.View.extend(
 
             @.$().draggable(
                 opacity: 0.7
-                cursorAt: { top: -12, left: -20 }
+                cursor: "crosshair"
+                cursorAt: { top: 5, left: 0 }
                 helper: (event) ->
                   return $("<span class='ui-widget-helper'>New '#{prototype.name}'</span>")
                 revert: "invalid"
@@ -66,25 +68,44 @@ App.TrayView = Ember.View.extend(
         @_super()
         @set 'traysActive', Ember.Set.create()
     
+    didInsertElement: ->
+        @get('traysActive').add @get('traysAvailable.firstObject')
+    
     template: Ember.Handlebars.compile("""
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-pills">
         {{#each tray in view.traysAvailable}}
-            <li><a {{action toggleTray tray target="view"}}>{{tray}}</a></li>
+            {{view view.MenuItemView trayNameBinding="tray"}}
         {{/each}}
     </ul>
     
-    {{view view.ViewList}}
+    {{view view.ListView}}
     """)
     
-    toggleTray: (event) ->
-        classname = event.context
-            
+    toggleTray: (classname) ->
         if @traysActive.contains classname
             @traysActive.remove classname
         else
             @traysActive.add classname
+    
+    MenuItemView: Ember.View.extend(
+        trayName: null
+        tagName: 'li'
+        template: Ember.Handlebars.compile """<a>{{view.trayName}}</a>"""
         
-    ViewList: Ember.CollectionView.extend(
+        classNameBindings: ['activeClass']
+        classNames: ['pointable']
+        activeClass: (->
+            if @get('parentView.traysActive').contains @get('trayName')
+                "active"
+            else
+                ""
+        ).property('parentView.traysActive.[]')
+        
+        click: ->
+            @get('parentView').toggleTray @get('trayName')
+    )
+    
+    ListView: Ember.ContainerView.extend(
         # Transform the text list into view classes
         childViews: []
         
