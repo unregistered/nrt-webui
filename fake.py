@@ -178,11 +178,11 @@ class PubSubClient1(WampClientProtocol):
 
 class PubSubServer1(WampServerProtocol):
     @exportRpc
-    def blackboard_federation_summary(self):
+    def get_blackboard_federation_summary(self):
         return bbfs
         
     @exportRpc
-    def prototype(self, args):
+    def create_module(self, args):
         new_mod = {
             'coordinates': [args['x'], args['y']],
             u'bbuid': u'ilab21[8323329]:3174:0x7e3f40',
@@ -213,7 +213,7 @@ class PubSubServer1(WampServerProtocol):
         notificationCenter.postNotification("bbfs_updated", self)
     
     @exportRpc
-    def module(self, args):
+    def delete_module(self, args):        
         try:
             # Find the module
             mods = bbfs['message']['namespaces'][0]['modules']
@@ -232,10 +232,9 @@ class PubSubServer1(WampServerProtocol):
     def onSessionOpen(self):
         ## register a URI and all URIs having the string as prefix as PubSub topic
         self.registerForPubSub("org.nrtkit.designer/event", True)
-        self.registerForRpc(self, "org.nrtkit.designer/get/")
-        self.registerForRpc(self, "org.nrtkit.designer/post/")
-        self.registerForRpc(self, "org.nrtkit.designer/delete/")
- 
+        self.registerMethodForRpc("org.nrtkit.designer/get/blackboard_federation_summary", self, self.__class__.get_blackboard_federation_summary) 
+        self.registerMethodForRpc("org.nrtkit.designer/post/module", self, self.__class__.create_module)
+        self.registerMethodForRpc("org.nrtkit.designer/delete/module", self, self.__class__.delete_module)
 
 if __name__ == '__main__':
     

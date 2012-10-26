@@ -10,7 +10,7 @@ App.ServerController = Ember.Controller.extend(
     
     createModule: (prototype, x, y) ->
         console.log @get('content')
-        @get('content.session').call("org.nrtkit.designer/post/prototype", 
+        @get('content.session').call("org.nrtkit.designer/post/module", 
             classname: prototype.get('classname'),
             x: x,
             y: y
