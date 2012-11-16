@@ -200,6 +200,9 @@ App.ServerView = Ember.View.extend(
             Port: Ember.RaphaelView.extend(
                 template: Ember.Handlebars.compile("""
                 Port: {{view.port.id}}
+                {{#if view.phantomDragging}}
+                    {{view view.PhantomPortView}}
+                {{/if}}
                 """)
                 radius: 7 # Radius of each bubble
                 initial_offset: 20 # How many pixels to offset the first bubble
@@ -207,6 +210,7 @@ App.ServerView = Ember.View.extend(
                 containerBinding: 'parentView.container'
                 boxBinding: 'parentView.box'
                 elementIdBinding: "port.id"
+                phantomDragging: false
                 
                 coordx: (->
                     @get('circle').getBBox().x
@@ -249,15 +253,21 @@ App.ServerView = Ember.View.extend(
                     c.node.draggable = true
                     c.node.onDragStart = (event) =>
                         console.log "start"
+                        @set 'phantomDragging', true
 
                     c.node.onDrag = (delta, event) =>
-                        console.log "Move"               
+                        console.log "Move"
 
                     c.node.onDragStop = =>
-                        console.log "Up"
+                        console.log "Up", @
+                        @set 'phantomDragging', false
+                        window.a = @
                                     
                     @get('container').push c
                     
+                PhantomPortView: Ember.View.extend(
+                    template: Ember.Handlebars.compile "(Phantom Port)"
+                )
             )
                 
         )

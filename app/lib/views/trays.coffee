@@ -11,8 +11,7 @@ App.ModuleTrayView = Ember.View.extend(
             <tr>
                 <th>
                 <form class="form-search">
-                  <input type="text" class="input-medium search-query">
-                  <button type="submit" class="btn">Search</button>
+                  <input type="text" class="input-medium search-query" placeholder="Filter">
                 </form>
                 </th>
             </tr>
@@ -31,7 +30,7 @@ App.ModuleTrayView = Ember.View.extend(
         tagName: 'td'
         classNames: ["module-prototype"]
         template: Ember.Handlebars.compile("""
-        {{view.prototype}}
+        Module: {{view.prototype.name}}
         """)
             
         didInsertElement: ->
@@ -59,46 +58,52 @@ App.CurrentModuleTrayView = Ember.View.extend(
     <table class="table table-bordered">
         <thead>
             <tr>
-                <td>{{view.module.instance}}</td>
+                <td>{{view.title}}</td>
             </tr>
         </thead>
-        <tbody>
-            <tr><td>Basic Info</td></tr>
-            <tr>
-                <td>
-                    <dl>
-                        <dt>moduid</dt>
-                        <dd>{{view.module.moduid}}</dd>
-                        <dt>coordinates</dt>
-                        <dd>({{view.module.x}}, {{view.module.y}})</dd>
-                    </dl>
-                </td>
-            </tr>
+        {{#if view.module}}
+            <tbody>
+                <tr><td>Basic Info</td></tr>
+                <tr>
+                    <td>
+                        <dl>
+                            <dt>moduid</dt>
+                            <dd>{{view.module.moduid}}</dd>
+                            <dt>coordinates</dt>
+                            <dd>({{view.module.x}}, {{view.module.y}})</dd>
+                        </dl>
+                    </td>
+                </tr>
             
-            <tr><td>Ports</td></tr>
-            <tr>
-                <td>
-                    <dl>
-                        {{#each view.module.posters}}
-                            <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
-                            <dd>
-                                {{this.description}}
-                            </dd>
-                        {{/each}}
-                        {{#each view.module.subscribers}}
-                            <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
-                            <dd>
-                                {{this.description}}
-                            </dd>
-                        {{/each}}
-                    </dl>
-                </td>
-            </tr>
+                <tr><td>Ports</td></tr>
+                <tr>
+                    <td>
+                        <dl>
+                            {{#each view.module.posters}}
+                                <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
+                                <dd>
+                                    {{this.description}}
+                                </dd>
+                            {{/each}}
+                            {{#each view.module.subscribers}}
+                                <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
+                                <dd>
+                                    {{this.description}}
+                                </dd>
+                            {{/each}}
+                        </dl>
+                    </td>
+                </tr>
             
-            <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
-        </tbody>
+                <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
+            </tbody>
+        {{/if}}
     </table>
     """
+    
+    title: (->
+        @get('module.instance') || "No Module Selected"
+    ).property('module.instance')
     
     deleteCurrentModule: ->
         App.router.serverController.deleteModule @get('module')
@@ -129,7 +134,20 @@ App.NetworkTrayView = Ember.View.extend(
 # This is the actual tray view, which registers trays and displays them
 App.TrayView = Ember.View.extend(
     controllerBinding: "App.router.prototypesController"
-    traysAvailable: ["App.ModuleTrayView", "App.NetworkTrayView", "App.CurrentModuleTrayView"]
+    traysAvailable: [
+        Ember.Object.create(
+            class: "App.ModuleTrayView"
+            icon: "icon-plus"
+        ), 
+        Ember.Object.create(
+            class: "App.NetworkTrayView"
+            icon: "icon-globe"
+        ),
+        Ember.Object.create(
+            class: "App.CurrentModuleTrayView"
+            icon: "icon-info-sign"
+        )
+    ]
     traysActive: null
     init: ->
         @_super()
@@ -141,7 +159,7 @@ App.TrayView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <ul class="nav nav-pills">
         {{#each tray in view.traysAvailable}}
-            {{view view.MenuItemView trayNameBinding="tray"}}
+            {{view view.MenuItemView contentBinding="tray"}}
         {{/each}}
     </ul>
     
@@ -155,21 +173,28 @@ App.TrayView = Ember.View.extend(
             @traysActive.add classname
     
     MenuItemView: Ember.View.extend(
-        trayName: null
+        content: null
         tagName: 'li'
-        template: Ember.Handlebars.compile """<a>{{view.trayName}}</a>"""
+        template: Ember.Handlebars.compile """
+        <a><i {{bindAttr class="view.iconClass"}}></i></a>
+        """
+        
+        iconClass: (->
+            @get('content.icon')
+        ).property('content.icon')
+        
         
         classNameBindings: ['activeClass']
         classNames: ['pointable']
         activeClass: (->
-            if @get('parentView.traysActive').contains @get('trayName')
+            if @get('parentView.traysActive').contains @get('content')
                 "active"
             else
                 ""
         ).property('parentView.traysActive.[]')
         
         click: ->
-            @get('parentView').toggleTray @get('trayName')
+            @get('parentView').toggleTray @get('content')
     )
     
     ListView: Ember.ContainerView.extend(
@@ -179,7 +204,7 @@ App.TrayView = Ember.View.extend(
         shouldRerender: (->
             @get('childViews').clear()
             @get('parentView.traysActive').forEach (item) =>
-                vc = Ember.get(item).create()
+                vc = Ember.get(item.get('class')).create()
                 @get('childViews').pushObject vc
         ).observes('parentView.traysActive.[]')
         
