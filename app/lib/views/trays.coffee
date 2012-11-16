@@ -111,24 +111,20 @@ App.CurrentModuleTrayView = Ember.View.extend(
 
 # Shows a list of connected machines in the network
 App.NetworkTrayView = Ember.View.extend(
-    template: Ember.Handlebars.compile "Network"
-    
-    # """
-    # <table class="table table-bordered">
-    #     <thead>
-    #         <tr>
-    #             <td>Network</td>
-    #         </tr>
-    #     </thead>
-    #     <tbody>
-    #         {{#each controller.content}}
-    #             <tr>
-    #                 <th>{{this}}</th>
-    #             </tr>
-    #         {{/each}}
-    #     </tbody>
-    # </table>
-    # """
+    template: Ember.Handlebars.compile """
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>Network</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>localhost <i class="icon-ok-sign"></i></th>
+            </tr>
+        </tbody>
+    </table>
+    """
 )
 
 # This is the actual tray view, which registers trays and displays them
@@ -136,13 +132,13 @@ App.TrayView = Ember.View.extend(
     controllerBinding: "App.router.prototypesController"
     traysAvailable: [
         Ember.Object.create(
-            class: "App.ModuleTrayView"
-            icon: "icon-plus"
-        ), 
-        Ember.Object.create(
             class: "App.NetworkTrayView"
             icon: "icon-globe"
         ),
+        Ember.Object.create(
+            class: "App.ModuleTrayView"
+            icon: "icon-plus"
+        ), 
         Ember.Object.create(
             class: "App.CurrentModuleTrayView"
             icon: "icon-info-sign"
@@ -167,10 +163,17 @@ App.TrayView = Ember.View.extend(
     """)
     
     toggleTray: (classname) ->
+        # If allowing one
+        @traysActive.clear()
+        @traysActive.add classname
+        
+        # If allowing multiple
+        ###
         if @traysActive.contains classname
             @traysActive.remove classname
         else
             @traysActive.add classname
+        ###
     
     MenuItemView: Ember.View.extend(
         content: null
