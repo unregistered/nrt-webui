@@ -7,19 +7,24 @@ require "nrt-webui/core"
 App.ModuleTrayView = Ember.View.extend(
     searchField: ''
     template: Ember.Handlebars.compile("""
-    <table class="table table-bordered">
+    <table class="table table-bordered tray">
         <thead>
             <tr>
-                <th>
-                <form class="form-search">
-                    {{view Ember.TextField 
-                    valueBinding="view.searchField"
-                    class="input-medium search-query"
-                    placeholder="Filter"
-                    }}
-                </form>
-                </th>
+                <td class="h1">
+                    Modules
+                </td>
             </tr>
+            <tr>
+                <td>
+                    <form class="form-search" style="margin: 0">
+                        {{view Ember.TextField 
+                        valueBinding="view.searchField"
+                        class="input-medium search-query"
+                        placeholder="Filter"
+                        }}
+                    </form>
+                </td>
+            </td>
         </thead>
         <tbody>
             {{#each view.filteredPrototypes}}
@@ -70,17 +75,13 @@ App.CurrentModuleTrayView = Ember.View.extend(
     <table class="table table-bordered tray">
         <thead>
             <tr>
-                {{#if view.module}}
-                    <td class="h1">{{view.module.instance}}</td>
-                {{else}}
-                    <td>No Module Selected</td>
-                {{/if}}
+                <td class="h1">Info</td>
             </tr>
         </thead>
         
-        {{#if view.module}}            
+        {{#if view.module}}
             <tbody>
-                <tr><td class="h2">Basic Info</td></tr>
+                <tr><td class="h2">{{view.module.instance}}</td></tr>
                 <tr>
                     <td class="background">
                         <dl>
@@ -114,6 +115,12 @@ App.CurrentModuleTrayView = Ember.View.extend(
             
                 <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
             </tbody>
+        {{else}}
+            <tbody>
+                <tr>
+                    <td>No module selected</td>
+                </tr>
+            </tbody>
         {{/if}}
     </table>
     """
@@ -129,10 +136,10 @@ App.CurrentModuleTrayView = Ember.View.extend(
 # Shows a list of connected machines in the network
 App.NetworkTrayView = Ember.View.extend(
     template: Ember.Handlebars.compile """
-    <table class="table table-bordered">
+    <table class="table table-bordered tray">
         <thead>
             <tr>
-                <td>Network</td>
+                <td class="h1">Network</td>
             </tr>
         </thead>
         <tbody>
