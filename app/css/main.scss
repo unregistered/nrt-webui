@@ -22,6 +22,10 @@ body {
     user-select: none;
 }
 
+.grabbable {
+    cursor: hand;
+}
+
 .hidden {
     display: none;
 }

@@ -47,6 +47,10 @@ App.ServerView = Ember.View.extend(
                 drag: true
                 zoomThreshold: [0.3, 2]
             })
+            
+            # Register click event
+            $(@get('paper').canvas).bind 'click', (e) =>
+                App.router.selectionController.selectCanvas @get('paper')
         
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
@@ -152,21 +156,21 @@ App.ServerView = Ember.View.extend(
                     )
 
                 box.node.onDrag = (delta, event) =>
-                    obb = container.oBB
+                    obb = container.oBB                    
                     @get('module').setProperties (
-                        x: obb.x + delta.toX - delta.fromX
-                        y: obb.y + delta.toY - delta.fromY
+                        x: Math.round(obb.x + delta.toX - delta.fromX)
+                        y: Math.round(obb.y + delta.toY - delta.fromY)
                     )
-
+                    
                 box.node.onDragStop = =>
                     bb = container.getBBox()
-                    @set 'module.x', bb.x
-                    @set 'module.y', bb.y
+                    @set 'module.x', Math.round(bb.x)
+                    @set 'module.y', Math.round(bb.y)
                     @set 'module.dragging', false
                 
                 # container.drag move, dragger, up
                 container.mousedown =>
-                    App.router.modulesController.set 'selected', @get('module')
+                    App.router.selectionController.selectModule @get('module')
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
                             
@@ -214,6 +218,23 @@ App.ServerView = Ember.View.extend(
                 elementIdBinding: "port.id"
                 phantomDragging: false
                 
+                isHovered: (->
+                    App.router.connectionsController.get('hovered') == @get('port')
+                ).property('App.router.connectionsController.hovered')
+                
+                willDestroyElement: ->
+                    @hideLabel()
+                    return true
+                
+                toggleHover: (->
+                    if @get('isHovered')
+                        @showLabel()
+                        @get('circle').attr({fill: 'green'})
+                    else
+                        @get('circle').attr({fill: 'none'})
+                        @hideLabel()
+                ).observes('isHovered')
+                
                 coordx: (->
                     @get('circle').getBBox().x
                 ).property().volatile()
@@ -230,12 +251,17 @@ App.ServerView = Ember.View.extend(
                     return circle
                 ).property()
                 
-                label:(->
+                showLabel: ->
                     t = @get('paper').text(@get('coordx')+20, @get('coordy'), @get('port.portname'))
                     t.attr (
                         'text-anchor': 'start'
                     )
-                ).property()
+                    @set 'label', t
+                
+                hideLabel: ->
+                    try
+                        @get('label').remove()
+                        @notifyPropertyChange 'label'
                 
                 beforeRender: ->
                     c = @get('circle')
@@ -243,27 +269,23 @@ App.ServerView = Ember.View.extend(
                     # Add a tag
                     module = @
                     c.mouseover (arg) =>
-                        # module.get('paper').rect(@get('coordx') + 20, @get('coordy'), 100, 20)
-                        @get('label')
-                        @get('circle').attr({fill: 'green'})
+                        App.router.connectionsController.set 'hovered', @get('port')
+                        
                     c.mouseout (arg) =>
-                        @get('circle').attr({fill: 'none'})
-                        @get('label').remove()
-                        @notifyPropertyChange 'label'
+                        App.router.connectionsController.set 'hovered', null
                     
                     # Dragging
                     c.node.draggable = true
                     c.node.onDragStart = (event) =>
                         console.log "start"
-                        @set 'phantomDragging', true
+                        App.router.connectionsController.startPairing @get('port')
 
                     c.node.onDrag = (delta, event) =>
                         console.log "Move"
 
                     c.node.onDragStop = =>
                         console.log "Up", @
-                        @set 'phantomDragging', false
-                        window.a = @
+                        App.router.connectionsController.completePairing()
                                     
                     @get('container').push c
                     

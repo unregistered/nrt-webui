@@ -23,7 +23,7 @@ App.ModuleTrayView = Ember.View.extend(
         </thead>
         <tbody>
             {{#each view.filteredPrototypes}}
-            <tr>
+            <tr class="pointable">
                 {{view view.PrototypeView prototypeBinding="this"}}
             </tr>
             {{/each}}

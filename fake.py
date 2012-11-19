@@ -213,6 +213,23 @@ class PubSubServer1(WampServerProtocol):
         notificationCenter.postNotification("bbfs_updated", self)
     
     @exportRpc
+    def create_connection(self, args):
+        new_conn =      [{
+                            'bbuid': 'ilab21[8323329]:3174:0x7e3f40',
+                            'moduid': args['from_moduid'],
+                            'portname': args['from_portname']
+                        },
+                        {
+                            'bbuid': 'ilab21[8323329]:3174:0x7e3f40',
+                            'moduid': args['to_moduid'],
+                            'portname': args['to_portname']
+                        }]
+        
+        bbfs['message']['namespaces'][0]['connections'].append(new_conn)
+        
+        notificationCenter.postNotification("bbfs_updated", self)
+
+    @exportRpc
     def delete_module(self, args):        
         try:
             # Find the module
@@ -234,6 +251,7 @@ class PubSubServer1(WampServerProtocol):
         self.registerForPubSub("org.nrtkit.designer/event", True)
         self.registerMethodForRpc("org.nrtkit.designer/get/blackboard_federation_summary", self, self.__class__.get_blackboard_federation_summary) 
         self.registerMethodForRpc("org.nrtkit.designer/post/module", self, self.__class__.create_module)
+        self.registerMethodForRpc("org.nrtkit.designer/post/connection", self, self.__class__.create_connection)
         self.registerMethodForRpc("org.nrtkit.designer/delete/module", self, self.__class__.delete_module)
 
 if __name__ == '__main__':

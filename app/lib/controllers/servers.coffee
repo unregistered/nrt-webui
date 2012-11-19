@@ -32,4 +32,14 @@ App.ServerController = Ember.Controller.extend(
             y: y
         )
         console.log "Position updated"
+    
+    createConnection: (from, to) ->
+        console.log "Create connection on server"
+        @get('content.session').call("org.nrtkit.designer/post/connection",
+            from_moduid: from.get('module.moduid'),
+            from_portname: from.get('portname'),
+            to_moduid: to.get('module.moduid'),
+            to_portname: to.get('portname')
+        ).then (res) =>
+            console.log res
 )

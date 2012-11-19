@@ -1,13 +1,14 @@
-Ember Skeleton
+NRT Designer
 ==============
 
-A skeleton application framework using Ember.js and Rake Pipeline.
+Interface to the Neuromorphic Robotics Toolkit. [nrtkit.org](http://nrtkit.org/)
 
 Running
 -------
 
     $ bundle install
-    $ bundle exec rackup
+    $ python fake.py
+    $ rake server
 
 App Structure
 -------------
@@ -38,7 +39,7 @@ App Structure
     │   └── run-tests.js - The PhantomJS QUnit test runner
     └── tmp - Temporary build files used by rakep
 
-Testing
+Testing TODO
 -------
 
 You can test the app by invoking:
