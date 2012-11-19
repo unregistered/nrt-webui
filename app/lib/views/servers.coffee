@@ -16,12 +16,14 @@ App.ServerView = Ember.View.extend(
         classNames: ['workspace']
         
         template: Ember.Handlebars.compile("""
-        {{#each App.router.connectionsController.content}}
-            {{view view.Connection connectionBinding="this"}}
-        {{/each}}
-        {{#each App.router.modulesController.content}}
-            {{view view.Module moduleBinding="this"}}
-        {{/each}}
+        <div class="hidden">
+            {{#each App.router.connectionsController.content}}
+                {{view view.Connection connectionBinding="this"}}
+            {{/each}}
+            {{#each App.router.modulesController.content}}
+                {{view view.Module moduleBinding="this"}}
+            {{/each}}
+        </div>
         """)
         
         didInsertElement: ->

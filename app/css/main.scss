@@ -21,3 +21,24 @@ body {
     -o-user-select: none;
     user-select: none;
 }
+
+.hidden {
+    display: none;
+}
+
+.tray {
+    td.h1 {
+        font-weight: bold;
+        font-size: 1.5em;
+        text-align: center;
+    }
+    
+    td.h2 {
+        font-weight: bold;
+        font-size: 1.25em;
+    }
+    
+    td.background {
+        background-color: #f0f0f0;
+    }
+}

@@ -5,19 +5,24 @@ require "nrt-webui/core"
 
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
+    searchField: ''
     template: Ember.Handlebars.compile("""
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>
                 <form class="form-search">
-                  <input type="text" class="input-medium search-query" placeholder="Filter">
+                    {{view Ember.TextField 
+                    valueBinding="view.searchField"
+                    class="input-medium search-query"
+                    placeholder="Filter"
+                    }}
                 </form>
                 </th>
             </tr>
         </thead>
         <tbody>
-            {{#each controller.content}}
+            {{#each view.filteredPrototypes}}
             <tr>
                 {{view view.PrototypeView prototypeBinding="this"}}
             </tr>
@@ -25,6 +30,13 @@ App.ModuleTrayView = Ember.View.extend(
         </tbody>
     </table>
     """)
+    
+    filteredPrototypes: (->
+        @get('controller.content').filter (item, idx) =>
+            filter = @get('searchField')
+            ~item.name.toLowerCase().indexOf(filter)
+
+    ).property('controller.content', 'searchField')
     
     PrototypeView: Ember.View.extend(
         tagName: 'td'
@@ -55,17 +67,22 @@ App.ModuleTrayView = Ember.View.extend(
 App.CurrentModuleTrayView = Ember.View.extend(
     moduleBinding: "App.router.modulesController.selected"
     template: Ember.Handlebars.compile """
-    <table class="table table-bordered">
+    <table class="table table-bordered tray">
         <thead>
             <tr>
-                <td>{{view.title}}</td>
+                {{#if view.module}}
+                    <td class="h1">{{view.module.instance}}</td>
+                {{else}}
+                    <td>No Module Selected</td>
+                {{/if}}
             </tr>
         </thead>
-        {{#if view.module}}
+        
+        {{#if view.module}}            
             <tbody>
-                <tr><td>Basic Info</td></tr>
+                <tr><td class="h2">Basic Info</td></tr>
                 <tr>
-                    <td>
+                    <td class="background">
                         <dl>
                             <dt>moduid</dt>
                             <dd>{{view.module.moduid}}</dd>
@@ -75,9 +92,9 @@ App.CurrentModuleTrayView = Ember.View.extend(
                     </td>
                 </tr>
             
-                <tr><td>Ports</td></tr>
+                <tr><td class="h2">Ports</td></tr>
                 <tr>
-                    <td>
+                    <td class="background">
                         <dl>
                             {{#each view.module.posters}}
                                 <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
