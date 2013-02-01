@@ -5,6 +5,9 @@
 * Connection creation and destruction
 * Parameter editing
 * Handling multiple networks
+* Autocomplete
+* C++ WAMP subprotocol
+* Macromodule support
 
 ## Nice to have
 

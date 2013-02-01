@@ -14,6 +14,7 @@ App.Server = Ember.Object.extend(
     
     connect: ->
         # WAMP session was established
+        ab.debug(true, true)
         ab.connect @get('wsuri'), ((session) =>
             @set 'session', session
   

@@ -1,5 +1,9 @@
 require "nrt-webui/core"
 
+UI_PORT_RADIUS = 7
+UI_PORT_INITIAL_OFFSET = 20
+UI_PORT_SPACING = 8
+
 App.ServerView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <div class="row-fluid">
@@ -110,7 +114,16 @@ App.ServerView = Ember.View.extend(
             ).property()
             
             height: (->
-                150
+                min_height = 150
+                
+                posters = @get('module.posters').length
+                subscribers = @get('module.subscribers').length
+                
+                number_of_ports = Math.max(posters, subscribers)
+                port_height = 2*UI_PORT_RADIUS + UI_PORT_SPACING
+                computed_height = port_height * number_of_ports + UI_PORT_INITIAL_OFFSET
+                
+                return Math.max(computed_height, min_height)
             ).property()            
             
             box: (->
@@ -210,9 +223,9 @@ App.ServerView = Ember.View.extend(
                     {{view view.PhantomPortView}}
                 {{/if}}
                 """)
-                radius: 7 # Radius of each bubble
-                initial_offset: 20 # How many pixels to offset the first bubble
-                spacing: 8 # How many pixels to space each bubble after the first
+                radius: UI_PORT_RADIUS # Radius of each bubble
+                initial_offset: UI_PORT_INITIAL_OFFSET # How many pixels to offset the first bubble
+                spacing: UI_PORT_SPACING # How many pixels to space each bubble after the first
                 containerBinding: 'parentView.container'
                 boxBinding: 'parentView.box'
                 elementIdBinding: "port.id"
@@ -243,7 +256,7 @@ App.ServerView = Ember.View.extend(
                     @get('circle').getBBox().y
                 ).property().volatile()
                 
-                circle:(->
+                circle: (->
                     xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
                     ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
                     circle = @get('paper').circle(xpos, ypos, @get('radius'))

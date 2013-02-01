@@ -30,8 +30,8 @@ App.Module = Ember.Object.extend(
     init: ->
         return unless @get('from')
         
-        @set 'x', @get('from.coordinates')[0]
-        @set 'y', @get('from.coordinates')[1]
+        @set 'x', 0 #@get('from.coordinates')[0]
+        @set 'y', 0 #@get('from.coordinates')[1]
         
         @set 'instance', @get 'from.instance'
         @set 'moduid', @get 'from.moduid'

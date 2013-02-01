@@ -95,10 +95,15 @@ window.App = Ember.Application.create(
   VERSION: '0.1'
   ready: ->    
     App.router.serversController.pushObjects [
+        # App.Server.create(
+        #     name: 'localhost'
+        #     host: 'localhost'
+        #     port: 9000
+        # ),
         App.Server.create(
-            name: 'localhost'
-            host: 'localhost'
-            port: 9000
+            name: 'UbuntuVM'
+            host: 'ubuntu1204.local'
+            port: 8080
         ),
         App.Server.create(
             name: 'iLab'
