@@ -22,13 +22,25 @@ App.Server = Ember.Object.extend(
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then (res) =>
                 console.log "Got ", res
                 @deserialize_bbfs(res)
-                
             , (error, desc) =>
                 console.log "Not got", error, desc
+
+            # Get GUI coords
+            session.call("org.nrtkit.designer/get/gui_data").then (res) =>
+                console.log "Got ", res
+            , (error, desc) =>
+                console.log "Not got", error, desc
+
+            # Get Prototypes
+            session.call("org.nrtkit.designer/get/prototypes", "bbnick1").then (res) =>
+                console.log "Got ", res
+            , (error, desc) =>
+                console.log "Not got", error, desc
+
   
             # on event publication callback
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, event) =>
-                console.log "got event1: ", event, @
+                console.log "got event1: ", event
                 @deserialize_bbfs(event)
             
             session.subscribe "org.nrtkit.designer/event/module_position_update", (topic, event) =>
@@ -36,6 +48,13 @@ App.Server = Ember.Object.extend(
                 module = App.router.modulesController.findProperty 'moduid', event.moduid
                 module.set 'x', event.x
                 module.set 'y', event.y
+            
+            # session.subscribe "org.nrtkit.designer/event/gui_data_input", (topic, event) =>
+            #     console.log event
+                # console.log "Module position updated", event
+                # module = App.router.modulesController.findProperty 'moduid', event.moduid
+                # module.set 'x', event.x
+                # module.set 'y', event.y
 
         # WAMP session is gone
         ), (code, reason) ->
@@ -48,13 +67,13 @@ App.Server = Ember.Object.extend(
             )
 
         App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map (item) =>
-            App.Connection.create(
+            c = App.Connection.create(
                 from: item
             )
             
-        App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>
-            App.Prototype.create(
-                from: item
-            )
+        # App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>
+        #     App.Prototype.create(
+        #         from: item
+        #     )
         
 )
