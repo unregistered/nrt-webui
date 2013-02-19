@@ -63,6 +63,21 @@ App.ServerView = Ember.View.extend(
                 @get('paper').connection @get('line')
             ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
             
+            onModuleSelect: (->
+                color = "#000"
+                if @get('connection.source_module.selected') || @get('connection.destination_module.selected')
+                    color = "#000"
+                else
+                    if App.router.modulesController.get('selected')
+                        color = "#ccc"
+                    else
+                        color = "#000"
+
+                @get('line').line.attr
+                    stroke: color
+                
+            ).observes('connection.source_module.selected', 'connection.destination_module.selected')
+            
             didInsertElement: ->
                 source = @get 'connection.source_port'
                 destination = @get 'connection.destination_port'
@@ -71,7 +86,6 @@ App.ServerView = Ember.View.extend(
                 destination_view = Ember.View.views[destination.get('id')]
                                 
                 @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle')
-              
             willDestroyElement: ->
                 @get('line').line.remove()
                 
@@ -94,10 +108,7 @@ App.ServerView = Ember.View.extend(
             """)
             
             name: (->
-                if Ember.empty @get('module.instance')
-                    return @get('module.classname')
-                
-                return @get('module.instance')
+                @get('module.displayName')
             ).property('module.instance', 'module.classname')
                         
             coordx: (->

@@ -32,7 +32,7 @@ App.Server = Ember.Object.extend(
                 console.log "Not got", error, desc
 
             # Get Prototypes
-            session.call("org.nrtkit.designer/get/prototypes", "bbnick1").then (res) =>
+            session.call("org.nrtkit.designer/get/prototypes", "ubuntu1204").then (res) =>
                 console.log "Got ", res
             , (error, desc) =>
                 console.log "Not got", error, desc
@@ -66,10 +66,14 @@ App.Server = Ember.Object.extend(
                 from: item
             )
 
-        App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map (item) =>
+        App.router.connectionsController.set 'content', res.message.namespaces[0].connections.map( (item) =>
             c = App.Connection.create(
                 from: item
             )
+        ).filter( (item) =>
+            # Ignore bad connections
+            item.get('source_port') && item.get('destination_port')
+        )
             
         # App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>
         #     App.Prototype.create(

@@ -18,6 +18,10 @@ App.Module = Ember.Object.extend(
     x: 0
     y: 0
     
+    displayName: (->
+        @get('classname')
+    ).property('classname')
+    
     selected: (->
         App.router.modulesController.get('selected') == @
     ).property("App.router.modulesController.selected")
@@ -30,8 +34,8 @@ App.Module = Ember.Object.extend(
     init: ->
         return unless @get('from')
         
-        @set 'x', 0 #@get('from.coordinates')[0]
-        @set 'y', 0 #@get('from.coordinates')[1]
+        @set 'x', 0
+        @set 'y', 0
         
         @set 'instance', @get 'from.instance'
         @set 'moduid', @get 'from.moduid'
