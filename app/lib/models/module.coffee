@@ -27,10 +27,16 @@ App.Module = Ember.Object.extend(
     ).property("App.router.modulesController.selected")
     
     positionUpdater: (->
-        if @get('dragging')
-            App.router.serverController.publishModulePositionChange(@, @get('x'), @get('y'))
+        if @get('dragging') && !@get('position_update_cooling_down')
+            App.router.serverController.updateModulePosition(@, @get('x'), @get('y'))
+            @set 'position_update_cooling_down', true
+            
+            # Only once every 100ms
+            Ember.run.later(@, ->
+                @set 'position_update_cooling_down', false
+            , 100)
     ).observes('x', 'y')
-    
+        
     init: ->
         return unless @get('from')
         
@@ -40,7 +46,7 @@ App.Module = Ember.Object.extend(
         @set 'instance', @get 'from.instance'
         @set 'moduid', @get 'from.moduid'
         @set 'classname', @get 'from.classname'
-                
+        
         @set 'posters', @get('from.posters').map (item, idx) =>
             p = App.Port.create(item)
             p.reopen(

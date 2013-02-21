@@ -6,8 +6,8 @@ App.Prototype = Ember.Object.extend(
     description: null
     
     init: ->
-        @set 'classname', @get 'from.classname'
-        @set 'name', @get 'from.name'
-        @set 'description', @get 'from.description'
+        @set 'classname', "Classname"
+        @set 'name', @get 'from.logicalPath'
+        @set 'description', "Desc"
             
 )

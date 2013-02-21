@@ -27,39 +27,42 @@ App.Server = Ember.Object.extend(
 
             # Get GUI coords
             session.call("org.nrtkit.designer/get/gui_data").then (res) =>
-                console.log "Got ", res
+                @deserialize_gui_data(res)                
             , (error, desc) =>
                 console.log "Not got", error, desc
 
             # Get Prototypes
             session.call("org.nrtkit.designer/get/prototypes", "ubuntu1204").then (res) =>
                 console.log "Got ", res
+                App.router.prototypesController.set 'content', res.message.modules.map (item) =>
+                    App.Prototype.create(from: item)
+                    
             , (error, desc) =>
                 console.log "Not got", error, desc
-
   
             # on event publication callback
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, event) =>
                 console.log "got event1: ", event
                 @deserialize_bbfs(event)
-            
-            session.subscribe "org.nrtkit.designer/event/module_position_update", (topic, event) =>
+                        
+            session.subscribe "org.nrtkit.designer/event/gui_data_update", (topic, event) =>
                 console.log "Module position updated", event
-                module = App.router.modulesController.findProperty 'moduid', event.moduid
-                module.set 'x', event.x
-                module.set 'y', event.y
-            
-            # session.subscribe "org.nrtkit.designer/event/gui_data_input", (topic, event) =>
-            #     console.log event
-                # console.log "Module position updated", event
-                # module = App.router.modulesController.findProperty 'moduid', event.moduid
-                # module.set 'x', event.x
-                # module.set 'y', event.y
-
+                @deserialize_gui_data(event)
+                    
         # WAMP session is gone
         ), (code, reason) ->
             console.log reason
     
+    deserialize_gui_data: (res) ->
+        for item in res.message
+            if item.id.substring(0, 2) == "m:"
+                module = App.router.modulesController.findProperty('moduid', item.id.substring(2, item.id.length))
+                if module
+                    module.set 'x', item.x
+                    module.set 'y', item.y
+                else
+                    console.log "Not found:", item
+        
     deserialize_bbfs: (res) ->
         App.router.modulesController.set 'content', res.message.namespaces[0].modules.map (item) =>
             App.Module.create(

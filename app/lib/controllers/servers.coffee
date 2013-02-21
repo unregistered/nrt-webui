@@ -25,8 +25,8 @@ App.ServerController = Ember.Controller.extend(
             console.log res
             App.router.modulesController.set('selected', null)
         
-    publishModulePositionChange: (module, x, y) ->
-        @get('content.session').publish("org.nrtkit.designer/event/module_position_update",
+    updateModulePosition: (module, x, y) ->
+        @get('content.session').call("org.nrtkit.designer/update/module_position",
             moduid: module.get('moduid')
             x: x
             y: y
