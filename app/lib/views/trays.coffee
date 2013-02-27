@@ -17,7 +17,7 @@ App.ModuleTrayView = Ember.View.extend(
             <tr>
                 <td>
                     <form class="form-search" style="margin: 0">
-                        {{view Ember.TextField 
+                        {{view Ember.TextField
                         valueBinding="view.searchField"
                         class="input-medium search-query"
                         placeholder="Filter"
@@ -35,21 +35,21 @@ App.ModuleTrayView = Ember.View.extend(
         </tbody>
     </table>
     """)
-    
+
     filteredPrototypes: (->
         @get('controller.content').filter (item, idx) =>
             filter = @get('searchField')
             ~item.name.toLowerCase().indexOf(filter)
 
-    ).property('controller.content', 'searchField')
-    
+    ).property('controller.content.@each', 'searchField')
+
     PrototypeView: Ember.View.extend(
         tagName: 'td'
         classNames: ["module-prototype"]
         template: Ember.Handlebars.compile("""
         Module: {{view.prototype.name}}
         """)
-            
+
         didInsertElement: ->
             prototype = @get('prototype')
 
@@ -63,9 +63,9 @@ App.ModuleTrayView = Ember.View.extend(
                 start: (event, ui) ->
                     $(this).data('context', prototype)
             )
-            
+
     )
-    
+
 )
 
 # Shows info about the currently selected module
@@ -78,7 +78,7 @@ App.CurrentModuleTrayView = Ember.View.extend(
                 <td class="h1">Info</td>
             </tr>
         </thead>
-        
+
         {{#if view.module}}
             <tbody>
                 <tr><td class="h2">{{view.module.instance}}</td></tr>
@@ -92,7 +92,7 @@ App.CurrentModuleTrayView = Ember.View.extend(
                         </dl>
                     </td>
                 </tr>
-            
+
                 <tr><td class="h2">Ports</td></tr>
                 <tr>
                     <td class="background">
@@ -112,7 +112,7 @@ App.CurrentModuleTrayView = Ember.View.extend(
                         </dl>
                     </td>
                 </tr>
-            
+
                 <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
             </tbody>
         {{else}}
@@ -124,11 +124,11 @@ App.CurrentModuleTrayView = Ember.View.extend(
         {{/if}}
     </table>
     """
-    
+
     title: (->
         @get('module.instance') || "No Module Selected"
     ).property('module.instance')
-    
+
     deleteCurrentModule: ->
         App.router.serverController.deleteModule @get('module')
 )
@@ -156,41 +156,42 @@ App.TrayView = Ember.View.extend(
     controllerBinding: "App.router.prototypesController"
     traysAvailable: [
         Ember.Object.create(
-            class: "App.NetworkTrayView"
-            icon: "icon-globe"
-        ),
-        Ember.Object.create(
             class: "App.ModuleTrayView"
             icon: "icon-plus"
-        ), 
+        ),
         Ember.Object.create(
             class: "App.CurrentModuleTrayView"
             icon: "icon-info-sign"
+        ),
+        Ember.Object.create(
+            class: "App.NetworkTrayView"
+            icon: "icon-globe"
         )
+
     ]
     traysActive: null
     init: ->
         @_super()
         @set 'traysActive', Ember.Set.create()
-    
+
     didInsertElement: ->
         @get('traysActive').add @get('traysAvailable.firstObject')
-    
+
     template: Ember.Handlebars.compile("""
     <ul class="nav nav-pills">
         {{#each tray in view.traysAvailable}}
             {{view view.MenuItemView contentBinding="tray"}}
         {{/each}}
     </ul>
-    
+
     {{view view.ListView}}
     """)
-    
+
     toggleTray: (classname) ->
         # If allowing one
         @traysActive.clear()
         @traysActive.add classname
-        
+
         # If allowing multiple
         ###
         if @traysActive.contains classname
@@ -198,19 +199,19 @@ App.TrayView = Ember.View.extend(
         else
             @traysActive.add classname
         ###
-    
+
     MenuItemView: Ember.View.extend(
         content: null
         tagName: 'li'
         template: Ember.Handlebars.compile """
         <a><i {{bindAttr class="view.iconClass"}}></i></a>
         """
-        
+
         iconClass: (->
             @get('content.icon')
         ).property('content.icon')
-        
-        
+
+
         classNameBindings: ['activeClass']
         classNames: ['pointable']
         activeClass: (->
@@ -219,21 +220,21 @@ App.TrayView = Ember.View.extend(
             else
                 ""
         ).property('parentView.traysActive.[]')
-        
+
         click: ->
             @get('parentView').toggleTray @get('content')
     )
-    
+
     ListView: Ember.ContainerView.extend(
         # Transform the text list into view classes
         childViews: []
-        
+
         shouldRerender: (->
             @get('childViews').clear()
             @get('parentView.traysActive').forEach (item) =>
                 vc = Ember.get(item.get('class')).create()
                 @get('childViews').pushObject vc
         ).observes('parentView.traysActive.[]')
-        
+
     )
 )

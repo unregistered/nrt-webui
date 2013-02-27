@@ -7,16 +7,19 @@ App.ServersController = Ember.ArrayController.extend(
 
 App.ServerController = Ember.Controller.extend(
     contentBinding: "App.router.serversController.selected"
-    
-    createModule: (prototype, x, y) ->
+
+    createModule: (prototype, x, y, bbnick) ->
         console.log @get('content')
-        @get('content.session').call("org.nrtkit.designer/post/module", 
-            classname: prototype.get('classname'),
-            x: x,
-            y: y
-        ).then (res) =>
+        @get('content.session').call("org.nrtkit.designer/post/module",
+            logicalPath: prototype.get('logicalPath'),
+            bbNick: prototype.get('blackboard.bbnick')
+        ).then( (res) =>
             console.log res
-        
+        , (error, desc) =>
+            console.log "Nope", error, desc
+        )
+
+
     deleteModule: (module) ->
         console.log "Destroy module", module
         @get('content.session').call("org.nrtkit.designer/delete/module",
@@ -24,7 +27,7 @@ App.ServerController = Ember.Controller.extend(
         ).then (res) =>
             console.log res
             App.router.modulesController.set('selected', null)
-        
+
     updateModulePosition: (module, x, y) ->
         @get('content.session').call("org.nrtkit.designer/update/module_position",
             moduid: module.get('moduid')
@@ -32,7 +35,7 @@ App.ServerController = Ember.Controller.extend(
             y: y
         )
         console.log "Position updated"
-    
+
     createConnection: (from, to) ->
         console.log "Create connection on server"
         @get('content.session').call("org.nrtkit.designer/post/connection",
