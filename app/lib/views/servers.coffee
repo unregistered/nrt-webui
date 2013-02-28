@@ -11,10 +11,21 @@ App.ServerView = Ember.View.extend(
             {{view App.TrayView}}
         </div>
         <div class="span8">
+            {{view view.NamespaceView}}
             {{view view.WorkspaceView}}
         </div>
     </div>
     """)
+
+    NamespaceView: Ember.View.extend(
+        template: Ember.Handlebars.compile("""
+            <ul class="breadcrumb">
+              <li><a href="#">root</a> <span class="divider">/</span></li>
+              <li><a href="#">to</a> <span class="divider">/</span></li>
+              <li class="active">do</li>
+            </ul>
+        """)
+    )
 
     WorkspaceView: Ember.View.extend(
         classNames: ['workspace']

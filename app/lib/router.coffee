@@ -3,7 +3,7 @@ require "nrt-webui/core"
 
 App.Router = Ember.Router.extend(
     enableLogging: true
-  
+
     root: Ember.Route.extend(
         index: Ember.Route.extend(
             route: "/"
@@ -18,13 +18,15 @@ App.Router = Ember.Router.extend(
                 host = context.get 'host'
                 port = context.get 'port'
                 return host: "#{host}:#{port}"
-                
+
             connectOutlets: (router, context) =>
                 router.get('serversController').set 'selected', context
                 router.get('applicationController').connectOutlet('server')
+                router.get('namespaceController').set 'content', "/"
                 context.connect()
+
         )
-        
+
         viewServer: Ember.Route.transitionTo 'server'
     )
 )
