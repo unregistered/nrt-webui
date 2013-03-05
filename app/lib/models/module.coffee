@@ -40,13 +40,18 @@ App.Module = Ember.Object.extend(
     init: ->
         return unless @get('from')
 
-        @set 'x', 0
-        @set 'y', 0
-
         @set 'instance', @get 'from.instance'
         @set 'moduid', @get 'from.moduid'
         @set 'classname', @get 'from.classname'
         @set 'bbuid', @get('from.bbuid')
+
+        cached_coords = App.router.cacheController.get('content.module_position').get(@get('moduid'))
+        if cached_coords
+            @set 'x', cached_coords[0]
+            @set 'y', cached_coords[1]
+        else
+            @set 'x', 0
+            @set 'y', 0
 
         @set 'posters', @get('from.posters').map (item, idx) =>
             p = App.Port.create(item)

@@ -14,11 +14,14 @@ App.ServerController = Ember.Controller.extend(
             logicalPath: prototype.get('logicalPath'),
             bbNick: prototype.get('blackboard.bbnick')
         ).then( (res) =>
-            console.log res
+            console.log "Now set position"
+            mod = App.Module.create(
+                moduid: res
+            )
+            @updateModulePosition(mod, x, y)
         , (error, desc) =>
             console.log "Nope", error, desc
         )
-
 
     deleteModule: (module) ->
         console.log "Destroy module", module
@@ -34,6 +37,7 @@ App.ServerController = Ember.Controller.extend(
             x: x
             y: y
         )
+
         console.log "Position updated"
 
     createConnection: (from, to) ->

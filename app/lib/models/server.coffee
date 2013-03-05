@@ -62,6 +62,7 @@ App.Server = Ember.Object.extend(
                 if module
                     module.set 'x', item.x
                     module.set 'y', item.y
+                    App.router.cacheController.get('content.module_position').set module.get('moduid'), [item.x, item.y]
                 else
                     console.log "Not found:", item
 
