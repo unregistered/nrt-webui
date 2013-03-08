@@ -11,7 +11,7 @@ App.Prototype = Ember.Object.extend(
         logicalPath = @get 'from.logicalPath'
         @set 'logicalPath', logicalPath
         @set 'classname', logicalPath.split('/').pop()
-        @set 'name', logicalPath.split('/').pop()
+        @set 'name', logicalPath
         @set 'description', "Desc"
 
 )

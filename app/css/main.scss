@@ -4,7 +4,7 @@ body {
 
 .workspace {
     border: 1px solid #ccc;
-	
+
 	&.ui-state-active {
 		border: 1px solid black;
 	}
@@ -15,7 +15,7 @@ body {
 
 .pointable {
     cursor: pointer;
-    -webkit-user-select: none; /* Chrome/Safari */        
+    -webkit-user-select: none; /* Chrome/Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+ */
     -o-user-select: none;
@@ -36,13 +36,26 @@ body {
         font-size: 1.5em;
         text-align: center;
     }
-    
+
     td.h2 {
         font-weight: bold;
         font-size: 1.25em;
     }
-    
+
     td.background {
         background-color: #f0f0f0;
     }
 }
+
+.resizing.search-query {
+    -webkit-transition:width 300ms ease-in-out;
+    -moz-transition:width 300ms ease-in-out;
+    -o-transition:width 300ms ease-in-out;
+    transition:width 300ms ease-in-out;
+
+    width: 50px;
+    &:hover, &:focus {
+        width: 200px;
+    }
+}
+

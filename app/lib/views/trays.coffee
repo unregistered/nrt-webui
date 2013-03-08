@@ -3,9 +3,34 @@ Contains tray views used in the main designer interface.
 ###
 require "nrt-webui/core"
 
+App.TreeItemView = Ember.View.extend(
+    tagName: 'tr'
+    classNameBindings: ["computedClassName"]
+    elementIdBinding: "computedId"
+
+    computedClassName: (->
+        parts = @get('path').split('/')
+        parts.pop()
+        parent = parts.join('/')
+
+        if typeof parent == "undefined"
+            return 'treedir_' + '/'
+        else
+            return 'treedir_' + parent.replace(/\//g, '')
+    ).property('path')
+
+    computedId: (->
+        console.log @get('path').replace(/\//g, '')
+        return 'treedir_' + @get('path').replace(/\//g, '')
+    ).property('path')
+
+)
+
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
     searchField: ''
+    currentDirectory: '/'
+
     template: Ember.Handlebars.compile("""
     <table class="table table-bordered tray">
         <thead>
@@ -16,25 +41,38 @@ App.ModuleTrayView = Ember.View.extend(
             </tr>
             <tr>
                 <td>
-                    <form class="form-search" style="margin: 0">
+
+                    <form class="form-search float-right" style="margin: 0">
                         {{view Ember.TextField
                         valueBinding="view.searchField"
-                        class="input-medium search-query"
+                        class="input-medium search-query resizing"
                         placeholder="Filter"
                         }}
                     </form>
+
                 </td>
-            </td>
+            </tr>
         </thead>
         <tbody>
+            {{#each view.filteredDirectories}}
+                {{view view.DirectoryView pathBinding="this"}}
+            {{/each}}
+
             {{#each view.filteredPrototypes}}
-            <tr class="pointable">
                 {{view view.PrototypeView prototypeBinding="this"}}
-            </tr>
             {{/each}}
         </tbody>
     </table>
     """)
+
+    filteredDirectories: (->
+        dirs = []
+
+        @get('controller.directories').forEach (item) ->
+            dirs.pushObject item
+
+        return dirs
+    ).property('controller.directories.[]')
 
     filteredPrototypes: (->
         @get('controller.content').filter (item, idx) =>
@@ -43,12 +81,18 @@ App.ModuleTrayView = Ember.View.extend(
 
     ).property('controller.content.@each', 'searchField')
 
-    PrototypeView: Ember.View.extend(
-        tagName: 'td'
-        classNames: ["module-prototype"]
+    DirectoryView: App.TreeItemView.extend(
+        template: Ember.Handlebars.compile """
+        <td>{{view.path}}</td>
+        """
+    )
+
+    PrototypeView: App.TreeItemView.extend(
+        classNames: ["module-prototype", "pointable"]
         template: Ember.Handlebars.compile("""
-        Module: {{view.prototype.name}}
+        <td>Module: {{view.prototype.name}}</td>
         """)
+        pathBinding: "prototype.logicalPath"
 
         didInsertElement: ->
             prototype = @get('prototype')
