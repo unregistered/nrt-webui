@@ -3,29 +3,6 @@ Contains tray views used in the main designer interface.
 ###
 require "nrt-webui/core"
 
-App.TreeItemView = Ember.View.extend(
-    tagName: 'tr'
-    classNameBindings: ["computedClassName"]
-    elementIdBinding: "computedId"
-
-    computedClassName: (->
-        parts = @get('path').split('/')
-        parts.pop()
-        parent = parts.join('/')
-
-        if typeof parent == "undefined"
-            return 'treedir_' + '/'
-        else
-            return 'treedir_' + parent.replace(/\//g, '')
-    ).property('path')
-
-    computedId: (->
-        console.log @get('path').replace(/\//g, '')
-        return 'treedir_' + @get('path').replace(/\//g, '')
-    ).property('path')
-
-)
-
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
     searchField: ''
@@ -54,13 +31,11 @@ App.ModuleTrayView = Ember.View.extend(
             </tr>
         </thead>
         <tbody>
-            {{#each view.filteredDirectories}}
-                {{view view.DirectoryView pathBinding="this"}}
-            {{/each}}
-
-            {{#each view.filteredPrototypes}}
-                {{view view.PrototypeView prototypeBinding="this"}}
-            {{/each}}
+            <tr>
+                <td>
+                    {{view App.TreeView}}
+                </td>
+            </tr>
         </tbody>
     </table>
     """)
@@ -80,36 +55,6 @@ App.ModuleTrayView = Ember.View.extend(
             ~item.name.toLowerCase().indexOf(filter)
 
     ).property('controller.content.@each', 'searchField')
-
-    DirectoryView: App.TreeItemView.extend(
-        template: Ember.Handlebars.compile """
-        <td>{{view.path}}</td>
-        """
-    )
-
-    PrototypeView: App.TreeItemView.extend(
-        classNames: ["module-prototype", "pointable"]
-        template: Ember.Handlebars.compile("""
-        <td>Module: {{view.prototype.name}}</td>
-        """)
-        pathBinding: "prototype.logicalPath"
-
-        didInsertElement: ->
-            prototype = @get('prototype')
-
-            @.$().draggable(
-                opacity: 0.7
-                cursor: "crosshair"
-                cursorAt: { top: 5, left: 0 }
-                helper: (event) ->
-                  return $("<span class='ui-widget-helper'>New '#{prototype.name}'</span>")
-                revert: "invalid"
-                start: (event, ui) ->
-                    $(this).data('context', prototype)
-            )
-
-    )
-
 )
 
 # Shows info about the currently selected module

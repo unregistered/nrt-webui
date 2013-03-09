@@ -93,7 +93,7 @@ Raphael.fn.connection = (obj1, obj2, line, bg) ->
 
 window.App = Ember.Application.create(
   VERSION: '0.1'
-  ready: ->    
+  ready: ->
     App.router.serversController.pushObjects [
         # App.Server.create(
         #     name: 'localhost'

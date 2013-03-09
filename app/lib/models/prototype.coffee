@@ -7,11 +7,16 @@ App.Prototype = Ember.Object.extend(
     logicalPath: null
     blackboard: null
 
+    readableName: (->
+        name = @get('name')
+        name.replace(/([a-z])([A-Z])/g, '$1 $2')
+    ).property('name')
+
     init: ->
         logicalPath = @get 'from.logicalPath'
         @set 'logicalPath', logicalPath
         @set 'classname', logicalPath.split('/').pop()
-        @set 'name', logicalPath
+        @set 'name', logicalPath.split('/').pop()
         @set 'description', "Desc"
 
 )
