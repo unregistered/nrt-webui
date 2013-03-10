@@ -8,6 +8,10 @@ App.TreeNodeView = Ember.View.extend(
     tagName: "li"
     classNameBindings: ["isDirectory", "isPrototype"]
     template: Ember.Handlebars.compile """
+    {{#if view.isPrototype}}
+        {{view view.ImageView prototypeBinding="view.prototype"}}
+    {{/if}}
+
     {{view.label}}
     <ul>
         {{#each view.branches}}
@@ -18,14 +22,17 @@ App.TreeNodeView = Ember.View.extend(
 
     didInsertElement: ->
         if @get('isPrototype')
-            prototype = @get('subtree')
+            prototype = @get('prototype')
 
             @.$().draggable(
                 opacity: 0.7
                 cursor: "crosshair"
                 cursorAt: { top: 5, left: 0 }
-                helper: (event) ->
-                  return $("<span class='ui-widget-helper'>New '#{prototype.name}'</span>")
+                helper: (event) =>
+                    img = @.$().find('img')
+                    e = $("<span class='ui-widget-helper'>'#{prototype.name}'</span>")
+                    $(img[0]).clone().prependTo(e)
+                    return e
                 revert: "invalid"
                 start: (event, ui) ->
                     $(this).data('context', prototype)
@@ -58,10 +65,32 @@ App.TreeNodeView = Ember.View.extend(
         @get('tree')[@get('branch')]
     ).property("tree", "branch")
 
+    # Alias for subtree
+    prototype: (->
+        return @get('subtree') if @get('isPrototype')
+        return null
+    ).property('subtree', 'isPrototype')
+
     branches: (->
         return [] unless @get('isDirectory')
         Object.keys(@get('subtree'))
     ).property("subtree", "isDirectory")
+
+    ImageView: Ember.View.extend(
+        prototype: null
+        tagName: "img"
+        classNames: ["prototype-icon"]
+        attributeBindings: ["src", "width"]
+
+        width: "20px"
+
+        src: (->
+            p = @get('prototype')
+            mime = p.get('MIME')
+            data = p.get('icondata')
+            return "data:#{mime};base64, #{data}"
+        ).property('prototype.MIME', 'prototype.icondata')
+    )
 )
 
 App.TreeView = Ember.View.extend(

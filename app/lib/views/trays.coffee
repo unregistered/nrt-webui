@@ -5,7 +5,6 @@ require "nrt-webui/core"
 
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
-    searchField: ''
     currentDirectory: '/'
 
     template: Ember.Handlebars.compile("""
@@ -21,7 +20,7 @@ App.ModuleTrayView = Ember.View.extend(
 
                     <form class="form-search float-right" style="margin: 0">
                         {{view Ember.TextField
-                        valueBinding="view.searchField"
+                        valueBinding="controller.filter"
                         class="input-medium search-query resizing"
                         placeholder="Filter"
                         }}

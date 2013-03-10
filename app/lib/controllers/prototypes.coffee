@@ -2,18 +2,22 @@ require "nrt-webui/core"
 
 App.PrototypesController = Ember.ArrayController.extend(
     content: []
+    filter: ""
 
     tree: (->
         tree = {}
+        constraint = @get('filter')
 
-        @get('content').forEach (item) =>
+        @get('content').filter (item) =>
+            ~item.get('name').toLowerCase().indexOf(constraint)
+        .forEach (item) =>
             path = item.get('logicalPath')
             path = path.split('/')
 
             @treeify(path, tree, item)
 
         return tree
-    ).property('content', 'content.@each')
+    ).property('content', 'content.@each', 'filter')
 
     # Recursively make truee
     # path: array of path components
