@@ -58,10 +58,14 @@ App.ServerView = Ember.View.extend(
             @set 'paper', new Raphael(el, "100%", "100%")
             @set 'zpd', new RaphaelZPD(@get('paper'), {
                 zoom: true
-                pan: true
+                pan: false
                 drag: true
                 zoomThreshold: [0.3, 2]
             })
+
+            # Mark the origin
+            @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
+            @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
 
             # Register click event
             $(@get('paper').canvas).bind 'click', (e) =>
@@ -198,9 +202,6 @@ App.ServerView = Ember.View.extend(
                     )
 
                 box.node.onDragStop = =>
-                    bb = container.getBBox()
-                    @set 'module.x', Math.round(bb.x)
-                    @set 'module.y', Math.round(bb.y)
                     @set 'module.dragging', false
 
                 # container.drag move, dragger, up

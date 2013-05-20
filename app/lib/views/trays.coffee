@@ -5,6 +5,7 @@ require "nrt-webui/core"
 
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
+    controllerBinding: "App.router.prototypesController"
     currentDirectory: '/'
 
     template: Ember.Handlebars.compile("""
@@ -141,7 +142,7 @@ App.NetworkTrayView = Ember.View.extend(
 
 # This is the actual tray view, which registers trays and displays them
 App.TrayView = Ember.View.extend(
-    controllerBinding: "App.router.prototypesController"
+    selectionControllerBinding: "App.router.selectionController"
     traysAvailable: [
         Ember.Object.create(
             class: "App.ModuleTrayView"
@@ -174,6 +175,11 @@ App.TrayView = Ember.View.extend(
 
     {{view view.ListView}}
     """)
+
+    # Automatically toggle trays based on selection
+    trayHelper: (->
+
+    ).observes("selectionController.hasSelection")
 
     toggleTray: (classname) ->
         # If allowing one
