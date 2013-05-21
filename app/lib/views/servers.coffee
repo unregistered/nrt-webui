@@ -186,7 +186,7 @@ App.ServerView = Ember.View.extend(
                     y = item.get('y')
                     (x > xlow && x < xhigh && y > ylow && y < yhigh) # In the bounding box
 
-                App.router.selectionController.setSelection 'modules', mods
+                App.router.selectionController.setSelection mods
 
                 @get('selbox').remove()
 
@@ -201,10 +201,6 @@ App.ServerView = Ember.View.extend(
             # Mark the origin
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
             @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
-
-            # Register click event
-            $(@get('paper').canvas).bind 'click', (e) =>
-                App.router.selectionController.clearSelection()
 
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
@@ -358,7 +354,7 @@ App.ServerView = Ember.View.extend(
 
                 # container.drag move, dragger, up
                 container.mousedown =>
-                    App.router.selectionController.setSelection 'module', @get('module')
+                    App.router.selectionController.setSelection @get('module')
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
 

@@ -1,18 +1,17 @@
 require "nrt-webui/core"
 
 App.SelectionController = Ember.ArrayController.extend(
-    type: null
     content: Ember.A()
 
-    setSelection: (type, obj) ->
-        @set 'type', type
+    setSelection: (obj) ->
         if obj instanceof Array
-            @set 'content', obj
+            @get('content').clear()
+            obj.forEach (item) =>
+                @get('content').pushObject item
         else
             @get('content').clear()
             @get('content').pushObject obj
 
     clearSelection: ->
-        @set 'type', null
         @set 'content', Ember.A()
 )

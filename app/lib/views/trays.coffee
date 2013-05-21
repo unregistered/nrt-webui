@@ -61,22 +61,26 @@ App.ModuleTrayView = Ember.View.extend(
 App.CurrentSelectionTrayView = Ember.View.extend(
     selectionBinding: "App.router.selectionController.content"
     module: (->
-        if App.router.selectionController.get('type') == 'module'
-            return App.router.selectionController.get('content.firstObject')
+        if @get('selection.length') == 1 && @get('selection.firstObject') instanceof App.Module
+            return @get('selection.firstObject')
         else
             return null
-    ).property("App.router.selectionController.content.@each")
+    ).property("selection.@each")
 
     modules: (->
-        if App.router.selectionController.get('type') == 'modules'
-            return App.router.selectionController.get('content')
+        # More than one module
+        modules = @get('selection').filter (item) ->
+            item instanceof App.Module
+
+        if modules.get('length') > 1
+            return modules
         else
             return null
-    ).property("App.router.selectionController.content.@each")
+    ).property("selection.@each")
 
     empty: (->
-        return App.router.selectionController.get('content.length') == 0
-    ).property("App.router.selectionController.content.@each")
+        return @get('selection.length') == 0
+    ).property("selection.@each")
 
     template: Ember.Handlebars.compile """
     <table class="table table-bordered tray">
