@@ -34,8 +34,8 @@ App.ServerController = Ember.Controller.extend(
     updateModulePosition: (module, x, y) ->
         @get('content.session').call("org.nrtkit.designer/update/module_position",
             moduid: module.get('moduid')
-            x: x
-            y: y
+            x: Math.round(x)
+            y: Math.round(y)
         )
 
         console.log "Position updated"

@@ -84,8 +84,14 @@ App.ServerView = Ember.View.extend(
         moveClass: (->
             App.router.settingsController.get('content.canvas_mousemode') == 'drag'
         ).property("App.router.settingsController.content.canvas_mousemode")
-        setPan: (->
-            @get('zpd').opts.pan = (App.router.settingsController.get('content.canvas_mousemode') == 'drag')
+        mouseModeChanged: (->
+            mode = App.router.settingsController.get('content.canvas_mousemode')
+
+            # We can pan around in drag mode
+            @get('zpd').opts.pan = (mode == 'drag')
+
+            # We can drag around on the mat when we're in select mode
+            @get('mat').node.draggable = (mode == 'select')
         ).observes('App.router.settingsController.content.canvas_mousemode')
 
         template: Ember.Handlebars.compile("""
@@ -99,6 +105,14 @@ App.ServerView = Ember.View.extend(
         </div>
         """)
 
+        # Scales point to zoomed point
+        transformedPoint: (point) ->
+            p = @get('zpd').getEventPoint(event)
+            svgDoc = event.target.ownerDocument;
+            g = svgDoc.getElementById("viewport"+@get('zpd').id);
+            p = p.matrixTransform(g.getCTM().inverse());
+            return p
+
         didInsertElement: ->
             el = @$()[0]
             @$().droppable(
@@ -108,10 +122,13 @@ App.ServerView = Ember.View.extend(
                     prototype = $(ui.draggable).data('context')
 
                     svg_offset = @$().find('svg').offset()
-                    adjusted_x = event.clientX - svg_offset.left
-                    adjusted_y = event.clientY - svg_offset.top
+                    point = {
+                        x: event.clientX - svg_offset.left
+                        y: event.clientY - svg_offset.top
+                    }
+                    point = @transformedPoint(point)
 
-                    @get('controller').createModule(prototype, adjusted_x, adjusted_y)
+                    @get('controller').createModule(prototype, point.x, point.y)
             )
             @set 'paper', new Raphael(el, "100%", "100%")
             @set 'zpd', new RaphaelZPD(@get('paper'), {
@@ -122,8 +139,56 @@ App.ServerView = Ember.View.extend(
             })
 
             # Draw a mat to intercept multiple selection, these are also the bounds of the program
-            mat = @get('paper').rect(-UI_CANVAS_WIDTH/2, -UI_CANVAS_HEIGHT/2, UI_CANVAS_WIDTH, UI_CANVAS_HEIGHT).attr("fill", "#FFF")
-            mat.drag
+            @set 'mat', @get('paper').rect(-UI_CANVAS_WIDTH/2, -UI_CANVAS_HEIGHT/2, UI_CANVAS_WIDTH, UI_CANVAS_HEIGHT).attr("fill", "#FFF")
+            @get('mat').node.draggable = false
+            @get('mat').node.onDragStart = (event) =>
+                App.router.selectionController.clearSelection()
+
+                p = @transformedPoint(event)
+
+                @set 'selbox', @get('paper').rect(p.x, p.y, 0, 0).attr(
+                    'stroke': "#9999FF"
+                    "fill-opacity": 0.2
+                    'fill': '#9999FF'
+                )
+
+            @get('mat').node.onDrag = (delta, event) =>
+                box = @get('selbox')
+                dx = delta.toX - delta.fromX
+                dy = delta.toY - delta.fromY
+                xoffset = 0
+                yoffset = 0
+
+                # If we have negative diff, we need to translate the box, since
+                # the rect won't accept a negative width/height
+                if dx < 0
+                    xoffset = dx
+                    dx = -dx
+
+                if dy < 0
+                    yoffset = dy
+                    dy = -dy
+
+                box.transform("T" + xoffset + "," + yoffset)
+                box.attr('width', dx)
+                box.attr('height', dy)
+
+            @get('mat').node.onDragStop = (event) =>
+                # Remove the box, and find who was selected
+                box = @get('selbox').getBBox()
+                xlow = box.x
+                xhigh = xlow + box.width
+                ylow = box.y
+                yhigh = ylow + box.height
+
+                mods = App.router.modulesController.content.filter (item) ->
+                    x = item.get('x')
+                    y = item.get('y')
+                    (x > xlow && x < xhigh && y > ylow && y < yhigh) # In the bounding box
+
+                App.router.selectionController.setSelection 'modules', mods
+
+                @get('selbox').remove()
 
             selbox =  @get('paper').rect(0, 0, 0, 0);
             color = Raphael.getColor()
@@ -133,33 +198,13 @@ App.ServerView = Ember.View.extend(
                 "fill-opacity": 0
                 "stroke-width": 2
 
-            @get('paper').draggable = true
-            @get('paper').onDragStart = (event) =>
-                console.log 'Start drag'
-                # @set 'module.dragging', true
-                # container.oBB = (
-                #     x: @get('module.x')
-                #     y: @get('module.y')
-                # )
-
-            @get('paper').onDrag = (delta, event) =>
-                console.log 'ON drag'
-                # obb = container.oBB
-                # @get('module').setProperties (
-                #     x: Math.round(obb.x + delta.toX - delta.fromX)
-                #     y: Math.round(obb.y + delta.toY - delta.fromY)
-                # )
-
-            @get('paper').onDragStop = =>
-                @set 'module.dragging', false
-
             # Mark the origin
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
             @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
 
             # Register click event
             $(@get('paper').canvas).bind 'click', (e) =>
-                App.router.selectionController.selectCanvas @get('paper')
+                App.router.selectionController.clearSelection()
 
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
@@ -168,20 +213,20 @@ App.ServerView = Ember.View.extend(
                 @get('paper').connection @get('line')
             ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
 
-            onModuleSelect: (->
-                color = "#000"
-                if @get('connection.source_module.selected') || @get('connection.destination_module.selected')
-                    color = "#000"
-                else
-                    if App.router.modulesController.get('selected')
-                        color = "#ccc"
-                    else
-                        color = "#000"
+            # onModuleSelect: (->
+            #     color = "#000"
+            #     if @get('connection.source_module.selected') || @get('connection.destination_module.selected')
+            #         color = "#000"
+            #     else
+            #         if App.router.modulesController.get('selected')
+            #             color = "#ccc"
+            #         else
+            #             color = "#000"
 
-                @get('line').line.attr
-                    stroke: color
+            #     @get('line').line.attr
+            #         stroke: color
 
-            ).observes('connection.source_module.selected', 'connection.destination_module.selected')
+            # ).observes('connection.source_module.selected', 'connection.destination_module.selected')
 
             didInsertElement: ->
                 source = @get 'connection.source_port'
@@ -313,7 +358,7 @@ App.ServerView = Ember.View.extend(
 
                 # container.drag move, dragger, up
                 container.mousedown =>
-                    App.router.selectionController.selectModule @get('module')
+                    App.router.selectionController.setSelection 'module', @get('module')
                     $.each module.get('container'), (idx, item) =>
                         item.toFront()
 
@@ -330,12 +375,12 @@ App.ServerView = Ember.View.extend(
             ).observes('module.dragging')
 
             selectedStatusChanged: (->
-                if @get('module.selected')
+                if App.router.selectionController.get('content').contains(@get('module'))
                     @get('box').animate "fill-opacity": .2, 500
                 else
                     @get('box').animate "fill-opacity": 0, 500
 
-            ).observes('module.selected')
+            ).observes('App.router.selectionController.content.@each')
 
             didInsertElement: ->
                 # Move to location

@@ -26,10 +26,6 @@ App.Module = Ember.Object.extend(
         @get('classname')
     ).property('classname')
 
-    selected: (->
-        App.router.modulesController.get('selected') == @
-    ).property("App.router.modulesController.selected")
-
     positionUpdater: (->
         if @get('dragging') && !@get('position_update_cooling_down')
             App.router.serverController.updateModulePosition(@, @get('x'), @get('y'))

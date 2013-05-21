@@ -179,7 +179,7 @@ App.TrayView = Ember.View.extend(
     # Automatically toggle trays based on selection
     trayHelper: (->
 
-    ).observes("selectionController.hasSelection")
+    ).observes("selectionController.content")
 
     toggleTray: (classname) ->
         # If allowing one
