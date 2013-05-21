@@ -143,6 +143,12 @@ App.ServerView = Ember.View.extend(
 
             # Draw a mat to intercept multiple selection, these are also the bounds of the program
             @set 'mat', @get('paper').rect(-UI_CANVAS_WIDTH/2, -UI_CANVAS_HEIGHT/2, UI_CANVAS_WIDTH, UI_CANVAS_HEIGHT).attr("fill", "#FFF")
+
+            # Deselect when the canvas is clicked
+            @get('mat').mousedown (event) =>
+                App.router.selectionController.clearSelection()
+
+            # Allow dragging of the canvas to multiply select things
             @get('mat').node.draggable = false
             @get('mat').node.onDragStart = (event) =>
                 App.router.selectionController.clearSelection()
@@ -205,17 +211,83 @@ App.ServerView = Ember.View.extend(
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
             @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
 
-            # Register click event
-            $(@get('paper').canvas).bind 'click', (e) =>
-                if App.router.settingsController.get('content.canvas_mousemode') == 'drag'
-                    App.router.selectionController.clearSelection()
-
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
+            start: null
+            end: null
 
-            onUpdate: (->
-                @get('paper').connection @get('line')
-            ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
+            path_string: (->
+                bb1 = @get('start').getBBox()
+                bb2 = @get('end').getBBox()
+
+                p = [
+                  x: bb1.x + bb1.width / 2
+                  y: bb1.y - 1
+                ,
+                  x: bb1.x + bb1.width / 2
+                  y: bb1.y + bb1.height + 1
+                ,
+                  x: bb1.x - 1
+                  y: bb1.y + bb1.height / 2
+                ,
+                  x: bb1.x + bb1.width + 1
+                  y: bb1.y + bb1.height / 2
+                ,
+                  x: bb2.x + bb2.width / 2
+                  y: bb2.y - 1
+                ,
+                  x: bb2.x + bb2.width / 2
+                  y: bb2.y + bb2.height + 1
+                ,
+                  x: bb2.x - 1
+                  y: bb2.y + bb2.height / 2
+                ,
+                  x: bb2.x + bb2.width + 1
+                  y: bb2.y + bb2.height / 2
+                ]
+                d = {}
+                dis = []
+                i = 0
+
+                while i < 4
+                  j = 4
+
+                  while j < 8
+                    dx = Math.abs(p[i].x - p[j].x)
+                    dy = Math.abs(p[i].y - p[j].y)
+                    if (i is j - 4) or (((i isnt 3 and j isnt 6) or p[i].x < p[j].x) and ((i isnt 2 and j isnt 7) or p[i].x > p[j].x) and ((i isnt 0 and j isnt 5) or p[i].y > p[j].y) and ((i isnt 1 and j isnt 4) or p[i].y < p[j].y))
+                      dis.push dx + dy
+                      d[dis[dis.length - 1]] = [i, j]
+                    j++
+                  i++
+                if dis.length is 0
+                  res = [0, 4]
+                else
+                  res = d[Math.min.apply(Math, dis)]
+                x1 = p[res[0]].x
+                y1 = p[res[0]].y
+                x4 = p[res[1]].x
+                y4 = p[res[1]].y
+                dx = Math.max(Math.abs(x1 - x4) / 2, 10)
+                dy = Math.max(Math.abs(y1 - y4) / 2, 10)
+                x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3)
+                y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3)
+                x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3)
+                y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3)
+                path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",")
+            ).property('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
+
+            pathUpdater: (->
+                @get('line').attr(path: @get('path_string'))
+                @get('line_hitbox').attr(path: @get('path_string'))
+            ).observes('path_string')
+
+            onConnectionSelect: (->
+                w = if @get('connection.selected') then 3 else 1
+                @get('line').attr(
+                    'stroke-width': w
+                )
+            ).observes('connection.selected')
 
             onModuleSelect: (->
                 color = UI_CONNECTION_ACTIVE_COLOR
@@ -227,7 +299,7 @@ App.ServerView = Ember.View.extend(
                     else
                         color = UI_CONNECTION_ACTIVE_COLOR
 
-                @get('line').line.attr
+                @get('line').attr
                     stroke: color
 
             ).observes('connection.source_module.selected', 'connection.destination_module.selected')
@@ -239,9 +311,28 @@ App.ServerView = Ember.View.extend(
                 source_view = Ember.View.views[source.get('id')]
                 destination_view = Ember.View.views[destination.get('id')]
 
-                @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle'), UI_CONNECTION_INACTIVE_COLOR
+                @set 'start', source_view.get('circle')
+                @set 'end', destination_view.get('circle')
+
+                # Draw the line
+                @set 'line', @get('paper').path(@get('path_string'))
+                @set 'line_hitbox', @get('paper').path(@get('path_string'))
+
+                @get('line').attr(
+                    stroke: UI_CONNECTION_INACTIVE_COLOR
+                    fill: "none"
+                )
+                @get('line_hitbox').attr(
+                    stroke: UI_CONNECTION_ACTIVE_COLOR
+                    'stroke-width': 10
+                    'stroke-opacity': 0
+                )
+
+                @get('line_hitbox').mousedown =>
+                    App.router.selectionController.setSelection(@get('connection'))
+
             willDestroyElement: ->
-                @get('line').line.remove()
+                @get('line').remove()
 
         )
 

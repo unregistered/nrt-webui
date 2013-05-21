@@ -78,6 +78,13 @@ App.CurrentSelectionTrayView = Ember.View.extend(
             return null
     ).property("selection.@each")
 
+    connection: (->
+        if @get('selection.length') == 1 && @get('selection.firstObject') instanceof App.Connection
+            return @get('selection.firstObject')
+        else
+            return null
+    ).property("selection.@each")
+
     empty: (->
         return @get('selection.length') == 0
     ).property("selection.@each")
@@ -133,6 +140,24 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                 <tr><td class="h2">{{view.modules.length}} modules selected</td></tr>
 
                 <tr><td><a class="btn btn-danger" {{action deleteSelectedModules target="view"}}>Delete Selected</a></td></tr>
+            </tbody>
+        {{/if}}
+
+        {{#if view.connection}}
+            <tbody>
+                <tr><td class="h2">Connection</td></tr>
+
+                <tr>
+                    <td class="background">
+                        <dl>
+                            <dt>Source</dt>
+                            <dd>{{view.connection.source_module.moduid}} : {{view.connection.source_port.portname}}</dd>
+                            <dt>Destination</dt>
+                            <dd>{{view.connection.destination_module.moduid}} : {{view.connection.destination_port.portname}}</dd>
+
+                        </dl>
+                    </td>
+                </tr>
             </tbody>
         {{/if}}
 
@@ -210,20 +235,30 @@ App.TrayView = Ember.View.extend(
 
     # Automatically toggle trays based on selection
     trayHelper: (->
+        selection = @get('selectionController.content')
 
-    ).observes("selectionController.content")
+        classname = "App.ModuleTrayView"
+        if selection.get('length') == 0
+            classname = "App.ModuleTrayView"
+        else
+            classname = "App.CurrentSelectionTrayView"
 
-    toggleTray: (classname) ->
+        tray = @traysAvailable.findProperty("class", classname)
+        @toggleTray(tray)
+
+    ).observes("selectionController.content.@each")
+
+    toggleTray: (trayobj) ->
         # If allowing one
         @traysActive.clear()
-        @traysActive.add classname
+        @traysActive.add trayobj
 
         # If allowing multiple
         ###
-        if @traysActive.contains classname
-            @traysActive.remove classname
+        if @traysActive.contains trayobj
+            @traysActive.remove trayobj
         else
-            @traysActive.add classname
+            @traysActive.add trayobj
         ###
 
     MenuItemView: Ember.View.extend(

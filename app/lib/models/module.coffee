@@ -28,11 +28,12 @@ App.Module = Ember.Object.extend(
 
     positionUpdater: (->
         if @get('dragging') && !@get('position_update_cooling_down')
-            App.router.serverController.updateModulePosition(@, @get('x'), @get('y'))
             @set 'position_update_cooling_down', true
 
             # Only once every 100ms
             Ember.run.later(@, ->
+                # This means the module update will be AT LEAST 100ms late
+                App.router.serverController.updateModulePosition(@, @get('x'), @get('y'))
                 @set 'position_update_cooling_down', false
             , 100)
     ).observes('x', 'y')
