@@ -4,14 +4,21 @@ App.SelectionController = Ember.ArrayController.extend(
     content: Ember.A()
 
     setSelection: (obj) ->
+        console.log "Set sel"
+        @clearSelection()
+
         if obj instanceof Array
-            @get('content').clear()
             obj.forEach (item) =>
+                item.set 'selected', true
                 @get('content').pushObject item
         else
-            @get('content').clear()
+            obj.set 'selected', true
             @get('content').pushObject obj
 
     clearSelection: ->
-        @set 'content', Ember.A()
+        console.log "Clear"
+        @get('content').forEach (item) ->
+            item.set('selected', false)
+
+        @get('content').clear()
 )

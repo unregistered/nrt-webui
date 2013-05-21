@@ -9,6 +9,9 @@ UI_CANVAS_HEIGHT = 1000
 
 UI_MODULE_WIDTH = 100
 
+UI_CONNECTION_INACTIVE_COLOR = "#ccc"
+UI_CONNECTION_ACTIVE_COLOR = "#000"
+
 App.ServerView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <div class="row-fluid">
@@ -202,6 +205,11 @@ App.ServerView = Ember.View.extend(
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
             @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
 
+            # Register click event
+            $(@get('paper').canvas).bind 'click', (e) =>
+                if App.router.settingsController.get('content.canvas_mousemode') == 'drag'
+                    App.router.selectionController.clearSelection()
+
         Connection: Ember.RaphaelView.extend(
             template: Ember.Handlebars.compile("connection")
 
@@ -209,20 +217,20 @@ App.ServerView = Ember.View.extend(
                 @get('paper').connection @get('line')
             ).observes('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
 
-            # onModuleSelect: (->
-            #     color = "#000"
-            #     if @get('connection.source_module.selected') || @get('connection.destination_module.selected')
-            #         color = "#000"
-            #     else
-            #         if App.router.modulesController.get('selected')
-            #             color = "#ccc"
-            #         else
-            #             color = "#000"
+            onModuleSelect: (->
+                color = UI_CONNECTION_ACTIVE_COLOR
+                if @get('connection.source_module.selected') || @get('connection.destination_module.selected')
+                    color = UI_CONNECTION_ACTIVE_COLOR
+                else
+                    if App.router.selectionController.get('content.length')
+                        color = UI_CONNECTION_INACTIVE_COLOR
+                    else
+                        color = UI_CONNECTION_ACTIVE_COLOR
 
-            #     @get('line').line.attr
-            #         stroke: color
+                @get('line').line.attr
+                    stroke: color
 
-            # ).observes('connection.source_module.selected', 'connection.destination_module.selected')
+            ).observes('connection.source_module.selected', 'connection.destination_module.selected')
 
             didInsertElement: ->
                 source = @get 'connection.source_port'
@@ -231,7 +239,7 @@ App.ServerView = Ember.View.extend(
                 source_view = Ember.View.views[source.get('id')]
                 destination_view = Ember.View.views[destination.get('id')]
 
-                @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle')
+                @set 'line', @get('paper').connection source_view.get('circle'), destination_view.get('circle'), UI_CONNECTION_INACTIVE_COLOR
             willDestroyElement: ->
                 @get('line').line.remove()
 
