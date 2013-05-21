@@ -311,6 +311,17 @@ App.ServerView = Ember.View.extend(
                 return c
             ).property('box', 'text')
 
+            selectedModules: (->
+                selection = App.router.selectionController.get('content')
+                selection.filter (item) =>
+                    item instanceof App.Module
+            ).property('App.router.selectionController.content.@each')
+
+            isPartOfMultipleSelection: (->
+                modules = @get('selectedModules')
+                return modules.contains(@get('module')) && (modules.get('length') > 1)
+            ).property('selectedModules')
+
             willDestroyElement: ->
                 @get('container').remove()
 
@@ -321,42 +332,48 @@ App.ServerView = Ember.View.extend(
                 box = @get('box')
                 box.node.draggable = true
                 box.node.onDragStart = (event) =>
-                    @set 'module.dragging', true
-                    container.oBB = (
-                        x: @get('module.x')
-                        y: @get('module.y')
-                    )
+                    @get('selectedModules').forEach (module) =>
+                        module.set 'dragging', true
+                        module.set 'start_x', module.get('x')
+                        module.set 'start_y', module.get('y')
 
                 box.node.onDrag = (delta, event) =>
-                    obb = container.oBB
+                    @get('selectedModules').forEach (module) =>
+                        dx = delta.toX - delta.fromX
+                        dy = delta.toY - delta.fromY
 
-                    nextx = Math.round(obb.x + delta.toX - delta.fromX)
-                    nexty = Math.round(obb.y + delta.toY - delta.fromY)
+                        nextx = Math.round(module.get('start_x') + dx)
+                        nexty = Math.round(module.get('start_y') + dy)
 
-                    # Check bounds
-                    if (nextx + UI_MODULE_WIDTH) > UI_CANVAS_WIDTH/2
-                        nextx = UI_CANVAS_WIDTH/2 - @get('module.width')
-                    else if nextx < -UI_CANVAS_WIDTH/2
-                        nextx = -UI_CANVAS_WIDTH/2
+                        # Check bounds
+                        if (nextx + UI_MODULE_WIDTH) > UI_CANVAS_WIDTH/2
+                            nextx = UI_CANVAS_WIDTH/2 - module.get('width')
+                        else if nextx < -UI_CANVAS_WIDTH/2
+                            nextx = -UI_CANVAS_WIDTH/2
 
-                    if (nexty + @get('module.height')) > UI_CANVAS_HEIGHT/2
-                        nexty = UI_CANVAS_HEIGHT/2 - @get('module.height')
-                    else if nexty < -UI_CANVAS_HEIGHT/2
-                        nexty = -UI_CANVAS_HEIGHT/2
+                        if (nexty + module.get('height')) > UI_CANVAS_HEIGHT/2
+                            nexty = UI_CANVAS_HEIGHT/2 - module.get('height')
+                        else if nexty < -UI_CANVAS_HEIGHT/2
+                            nexty = -UI_CANVAS_HEIGHT/2
 
-                    @get('module').setProperties (
-                        x: nextx
-                        y: nexty
-                    )
+                        module.setProperties (
+                            x: nextx
+                            y: nexty
+                        )
 
                 box.node.onDragStop = =>
-                    @set 'module.dragging', false
+                    @get('selectedModules').forEach (module) =>
+                        module.set 'dragging', false
 
                 # container.drag move, dragger, up
                 container.mousedown =>
-                    App.router.selectionController.setSelection @get('module')
-                    $.each module.get('container'), (idx, item) =>
-                        item.toFront()
+                    if @get('isPartOfMultipleSelection')
+                        # The user in dragging a group of modules
+                    else
+                        # Then we can become active
+                        App.router.selectionController.setSelection @get('module')
+                        $.each module.get('container'), (idx, item) =>
+                            item.toFront()
 
             move: (->
                 m = @get('module')
