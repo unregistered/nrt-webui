@@ -58,8 +58,26 @@ App.ModuleTrayView = Ember.View.extend(
 )
 
 # Shows info about the currently selected module
-App.CurrentModuleTrayView = Ember.View.extend(
-    moduleBinding: "App.router.modulesController.selected"
+App.CurrentSelectionTrayView = Ember.View.extend(
+    selectionBinding: "App.router.selectionController.content"
+    module: (->
+        if App.router.selectionController.get('type') == 'module'
+            return App.router.selectionController.get('content.firstObject')
+        else
+            return null
+    ).property("App.router.selectionController.content.@each")
+
+    modules: (->
+        if App.router.selectionController.get('type') == 'modules'
+            return App.router.selectionController.get('content')
+        else
+            return null
+    ).property("App.router.selectionController.content.@each")
+
+    empty: (->
+        return App.router.selectionController.get('content.length') == 0
+    ).property("App.router.selectionController.content.@each")
+
     template: Ember.Handlebars.compile """
     <table class="table table-bordered tray">
         <thead>
@@ -104,7 +122,17 @@ App.CurrentModuleTrayView = Ember.View.extend(
 
                 <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
             </tbody>
-        {{else}}
+        {{/if}}
+
+        {{#if view.modules}}
+            <tbody>
+                <tr><td class="h2">{{view.modules.length}} modules selected</td></tr>
+
+                <tr><td><a class="btn btn-danger" {{action deleteSelectedModules target="view"}}>Delete Selected</a></td></tr>
+            </tbody>
+        {{/if}}
+
+        {{#if view.empty}}
             <tbody>
                 <tr>
                     <td>No module selected</td>
@@ -114,9 +142,9 @@ App.CurrentModuleTrayView = Ember.View.extend(
     </table>
     """
 
-    title: (->
-        @get('module.instance') || "No Module Selected"
-    ).property('module.instance')
+    deleteSelectedModules: ->
+        @get('modules').forEach (item) ->
+            App.router.serverController.deleteModule item
 
     deleteCurrentModule: ->
         App.router.serverController.deleteModule @get('module')
@@ -149,7 +177,7 @@ App.TrayView = Ember.View.extend(
             icon: "icon-plus"
         ),
         Ember.Object.create(
-            class: "App.CurrentModuleTrayView"
+            class: "App.CurrentSelectionTrayView"
             icon: "icon-info-sign"
         ),
         Ember.Object.create(
