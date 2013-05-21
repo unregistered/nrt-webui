@@ -11,6 +11,10 @@ body {
 	&.ui-state-hover {
 		border: 1px solid red;
 	}
+
+    &.canvas-drag-mode {
+        cursor: move;
+    }
 }
 
 .pointable {

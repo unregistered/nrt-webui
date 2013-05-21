@@ -11,11 +11,55 @@ App.ServerView = Ember.View.extend(
             {{view App.TrayView}}
         </div>
         <div class="span8">
+            {{view view.ToolbarView}}
             {{view view.NamespaceView}}
             {{view view.WorkspaceView}}
         </div>
     </div>
     """)
+
+    ToolbarView: Ember.View.extend(
+        template: Ember.Handlebars.compile """
+            <div class="btn-toolbar">
+                <div class="btn-group">
+                    {{view view.MoveButton}}
+                    {{view view.SelectButton}}
+                </div>
+            </div>
+        """
+
+        MoveButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small']
+            classNameBindings: ['active']
+            attributeBindings: ['title']
+            title: "Move"
+            template: Ember.Handlebars.compile """<i class="icon-move"></i>"""
+
+            active: (->
+                App.router.settingsController.get('content.canvas_mousemode') == 'drag'
+            ).property('App.router.settingsController.content.canvas_mousemode')
+
+            click: ->
+                App.router.settingsController.set('content.canvas_mousemode', 'drag')
+        )
+
+        SelectButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small']
+            classNameBindings: ['active']
+            attributeBindings: ['title']
+            title: "Multiple Selection"
+            template: Ember.Handlebars.compile """<i class="icon-check-empty"></i>"""
+
+            active: (->
+                App.router.settingsController.get('content.canvas_mousemode') == 'select'
+            ).property('App.router.settingsController.content.canvas_mousemode')
+
+            click: ->
+                App.router.settingsController.set('content.canvas_mousemode', 'select')
+        )
+    )
 
     NamespaceView: Ember.View.extend(
         template: Ember.Handlebars.compile("""
@@ -29,6 +73,15 @@ App.ServerView = Ember.View.extend(
 
     WorkspaceView: Ember.View.extend(
         classNames: ['workspace']
+
+        # Panning setting
+        classNameBindings: ['moveClass:canvas-drag-mode']
+        moveClass: (->
+            App.router.settingsController.get('content.canvas_mousemode') == 'drag'
+        ).property("App.router.settingsController.content.canvas_mousemode")
+        setPan: (->
+            @get('zpd').opts.pan = (App.router.settingsController.get('content.canvas_mousemode') == 'drag')
+        ).observes('App.router.settingsController.content.canvas_mousemode')
 
         template: Ember.Handlebars.compile("""
         <div class="hidden">
