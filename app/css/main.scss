@@ -4,6 +4,9 @@ body {
 
 .workspace {
     border: 1px solid #ccc;
+    svg {
+        background: #eee;
+    }
 
 	&.ui-state-active {
 		border: 1px solid black;
@@ -15,6 +18,7 @@ body {
     &.canvas-drag-mode {
         cursor: move;
     }
+
 }
 
 .pointable {

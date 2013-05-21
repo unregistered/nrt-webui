@@ -18,6 +18,10 @@ App.Module = Ember.Object.extend(
     x: 0
     y: 0
 
+    # Width and height are set by the view
+    width: 0
+    height: 0
+
     displayName: (->
         @get('classname')
     ).property('classname')

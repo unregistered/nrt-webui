@@ -4,6 +4,11 @@ UI_PORT_RADIUS = 7
 UI_PORT_INITIAL_OFFSET = 20
 UI_PORT_SPACING = 8
 
+UI_CANVAS_WIDTH = 2000
+UI_CANVAS_HEIGHT = 1000
+
+UI_MODULE_WIDTH = 100
+
 App.ServerView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <div class="row-fluid">
@@ -111,10 +116,42 @@ App.ServerView = Ember.View.extend(
             @set 'paper', new Raphael(el, "100%", "100%")
             @set 'zpd', new RaphaelZPD(@get('paper'), {
                 zoom: true
-                pan: false
+                pan: (App.router.settingsController.get('content.canvas_mousemode') == 'drag')
                 drag: true
                 zoomThreshold: [0.3, 2]
             })
+
+            # Draw a mat to intercept multiple selection, these are also the bounds of the program
+            mat = @get('paper').rect(-UI_CANVAS_WIDTH/2, -UI_CANVAS_HEIGHT/2, UI_CANVAS_WIDTH, UI_CANVAS_HEIGHT).attr("fill", "#FFF")
+            mat.drag
+
+            selbox =  @get('paper').rect(0, 0, 0, 0);
+            color = Raphael.getColor()
+            selbox.attr
+                fill: color
+                stroke: color
+                "fill-opacity": 0
+                "stroke-width": 2
+
+            @get('paper').draggable = true
+            @get('paper').onDragStart = (event) =>
+                console.log 'Start drag'
+                # @set 'module.dragging', true
+                # container.oBB = (
+                #     x: @get('module.x')
+                #     y: @get('module.y')
+                # )
+
+            @get('paper').onDrag = (delta, event) =>
+                console.log 'ON drag'
+                # obb = container.oBB
+                # @get('module').setProperties (
+                #     x: Math.round(obb.x + delta.toX - delta.fromX)
+                #     y: Math.round(obb.y + delta.toY - delta.fromY)
+                # )
+
+            @get('paper').onDragStop = =>
+                @set 'module.dragging', false
 
             # Mark the origin
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
@@ -189,7 +226,7 @@ App.ServerView = Ember.View.extend(
             ).property().volatile()
 
             width: (->
-                100
+                UI_MODULE_WIDTH
             ).property()
 
             height: (->
@@ -208,6 +245,8 @@ App.ServerView = Ember.View.extend(
             box: (->
                 # The base box
                 rect =  @get('paper').rect(0, 0, @get('width'), @get('height'), 7)
+                @set('module.width', @get('width'))
+                @set('module.height', @get('height'))
                 color = Raphael.getColor()
                 rect.attr
                     fill: color
@@ -249,9 +288,24 @@ App.ServerView = Ember.View.extend(
 
                 box.node.onDrag = (delta, event) =>
                     obb = container.oBB
+
+                    nextx = Math.round(obb.x + delta.toX - delta.fromX)
+                    nexty = Math.round(obb.y + delta.toY - delta.fromY)
+
+                    # Check bounds
+                    if (nextx + UI_MODULE_WIDTH) > UI_CANVAS_WIDTH/2
+                        nextx = UI_CANVAS_WIDTH/2 - @get('module.width')
+                    else if nextx < -UI_CANVAS_WIDTH/2
+                        nextx = -UI_CANVAS_WIDTH/2
+
+                    if (nexty + @get('module.height')) > UI_CANVAS_HEIGHT/2
+                        nexty = UI_CANVAS_HEIGHT/2 - @get('module.height')
+                    else if nexty < -UI_CANVAS_HEIGHT/2
+                        nexty = -UI_CANVAS_HEIGHT/2
+
                     @get('module').setProperties (
-                        x: Math.round(obb.x + delta.toX - delta.fromX)
-                        y: Math.round(obb.y + delta.toY - delta.fromY)
+                        x: nextx
+                        y: nexty
                     )
 
                 box.node.onDragStop = =>
