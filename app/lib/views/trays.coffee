@@ -85,6 +85,13 @@ App.CurrentSelectionTrayView = Ember.View.extend(
             return null
     ).property("selection.@each")
 
+    port: (->
+        if @get('selection.length') == 1 && @get('selection.firstObject') instanceof App.Port
+            return @get('selection.firstObject')
+        else
+            return null
+    ).property('selection.@each')
+
     empty: (->
         return @get('selection.length') == 0
     ).property("selection.@each")
@@ -154,6 +161,32 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                             <dd>{{view.connection.source_module.moduid}} : {{view.connection.source_port.portname}}</dd>
                             <dt>Destination</dt>
                             <dd>{{view.connection.destination_module.moduid}} : {{view.connection.destination_port.portname}}</dd>
+
+                        </dl>
+                    </td>
+                </tr>
+            </tbody>
+        {{/if}}
+
+        {{#if view.port}}
+            <tbody>
+                <tr><td class="h2">Port</td></tr>
+
+                <tr>
+                    <td class="background">
+                        <dl>
+                            <dt>Module</dt>
+                            <dd>{{view.port.module.moduid}}</dd>
+                            <dt>Port Name</dt>
+                            <dd>{{view.port.portname}}</dd>
+                            <dt>Message Type</dt>
+                            <dd>{{view.port.msgtype}}</dd>
+                            <dt>Return Type</dt>
+                            <dd>{{view.port.rettype}}</dd>
+                            <dt>Topic</dt>
+                            <dd>{{view.port.topi}}</dd>
+                            <dt>Description</dt>
+                            <dd>{{view.port.description}}</dd>
 
                         </dl>
                     </td>

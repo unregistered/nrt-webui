@@ -4,7 +4,7 @@ App.ConnectionsController = Ember.ArrayController.extend(
     contentBinding: []
     selected: null
     hovered: null # What the user is hovering over
-    
+
     pairFrom: null
     pairToBinding: 'hovered'
     state: 'IDLE'
@@ -18,9 +18,8 @@ App.ConnectionsController = Ember.ArrayController.extend(
     startPairing: (port) ->
         console.log "Start with port", port
         @set 'pairFrom', port
-        @set 'pairTo', null
         @set 'state', 'PAIRING'
-        
+
     completePairing: ->
         if @get('pairTo')
             console.log "Completed with", @get('pairTo')
@@ -28,5 +27,6 @@ App.ConnectionsController = Ember.ArrayController.extend(
         else
             console.log "Fail to complete"
 
+        @set 'pairFrom', null
         @set 'state', 'IDLE'
 )

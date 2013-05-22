@@ -99,11 +99,11 @@ App.ServerView = Ember.View.extend(
 
         template: Ember.Handlebars.compile("""
         <div class="hidden">
-            {{#each App.router.connectionsController.content}}
-                {{view view.Connection connectionBinding="this"}}
-            {{/each}}
             {{#each App.router.modulesController.content}}
                 {{view view.Module moduleBinding="this"}}
+            {{/each}}
+            {{#each App.router.connectionsController.content}}
+                {{view view.Connection connectionBinding="this"}}
             {{/each}}
         </div>
         """)
@@ -506,9 +506,6 @@ App.ServerView = Ember.View.extend(
             Port: Ember.RaphaelView.extend(
                 template: Ember.Handlebars.compile("""
                 Port: {{view.port.id}}
-                {{#if view.phantomDragging}}
-                    {{view view.PhantomPortView}}
-                {{/if}}
                 """)
                 radius: UI_PORT_RADIUS # Radius of each bubble
                 initial_offset: UI_PORT_INITIAL_OFFSET # How many pixels to offset the first bubble
@@ -516,7 +513,6 @@ App.ServerView = Ember.View.extend(
                 containerBinding: 'parentView.container'
                 boxBinding: 'parentView.box'
                 elementIdBinding: "port.id"
-                phantomDragging: false
 
                 isHovered: (->
                     App.router.connectionsController.get('hovered') == @get('port')
@@ -529,11 +525,50 @@ App.ServerView = Ember.View.extend(
                 toggleHover: (->
                     if @get('isHovered')
                         @showLabel()
-                        @get('circle').attr({fill: 'green'})
+                        @get('circle').attr(
+                            fill: 'green'
+                            opacity: 0.5
+                        )
                     else
-                        @get('circle').attr({fill: 'none'})
+                        @get('circle').attr(
+                            fill: 'white'
+                            opacity: 1
+                        )
                         @hideLabel()
                 ).observes('isHovered')
+
+                onSelect: (->
+                    if App.router.selectionController.get('content').contains @get('port')
+                        @get('circle').attr(
+                            'stroke': 'black'
+                            'stroke-width': 2
+                        )
+                    else
+                        @get('circle').attr(
+                            'stroke': 'black'
+                            'stroke-width': 1
+                        )
+                ).observes('App.router.selectionController.content.@each')
+
+                onPairing: (->
+                    source = App.router.connectionsController.get('pairFrom')
+
+                    if source
+                        # Check if we're a viable candidate
+                        if @get('port.msgtype') == source.get('msgtype')
+                            # Show our hitbox
+                            @get('hitbox').attr(
+                                'fill': 'green'
+                                opacity: 0.2
+                            )
+
+                    else
+                        @get('hitbox').attr(
+                            'fill': 'green'
+                            opacity: 0
+                        )
+
+                ).observes('App.router.connectionsController.pairFrom')
 
                 coordx: (->
                     @get('circle').getBBox().x
@@ -547,8 +582,21 @@ App.ServerView = Ember.View.extend(
                     xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
                     ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
                     circle = @get('paper').circle(xpos, ypos, @get('radius'))
-                    circle.node.draggable = false
                     return circle
+                ).property()
+
+                hitbox: (->
+                    xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
+                    ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
+                    w = @get('radius') * 2 + 16
+                    h = @get('radius') * 2 + 4 * 2
+                    box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
+                    box.attr(
+                        'fill': 'green'
+                        opacity: 0
+                        stroke: 'none'
+                    )
+                    return box
                 ).property()
 
                 showLabel: ->
@@ -565,33 +613,33 @@ App.ServerView = Ember.View.extend(
 
                 beforeRender: ->
                     c = @get('circle')
+                    b = @get('hitbox')
 
                     # Add a tag
                     module = @
-                    c.mouseover (arg) =>
+                    b.mouseover (arg) =>
                         App.router.connectionsController.set 'hovered', @get('port')
 
-                    c.mouseout (arg) =>
+                    b.mouseout (arg) =>
                         App.router.connectionsController.set 'hovered', null
 
                     # Dragging
-                    c.node.draggable = true
-                    c.node.onDragStart = (event) =>
+                    b.node.draggable = true
+                    b.node.onDragStart = (event) =>
                         console.log "start"
                         App.router.connectionsController.startPairing @get('port')
 
-                    c.node.onDrag = (delta, event) =>
+                    b.node.onDrag = (delta, event) =>
                         console.log "Move"
 
-                    c.node.onDragStop = =>
+                    b.node.onDragStop = =>
                         console.log "Up", @
                         App.router.connectionsController.completePairing()
+                        App.router.selectionController.setSelection @get('port')
 
                     @get('container').push c
+                    @get('container').push b
 
-                PhantomPortView: Ember.View.extend(
-                    template: Ember.Handlebars.compile "(Phantom Port)"
-                )
             )
 
         )
