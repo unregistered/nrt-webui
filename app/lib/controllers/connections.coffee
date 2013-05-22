@@ -29,4 +29,26 @@ App.ConnectionsController = Ember.ArrayController.extend(
 
         @set 'pairFrom', null
         @set 'state', 'IDLE'
+
+    candidatePorts: (->
+        source = @get('pairFrom')
+        return [] unless App.router.portsController.get("content") && source
+
+        App.router.portsController.get("content").filter (port) =>
+            port.get('msgtype') == source.get('msgtype')
+
+    ).property('pairFrom', "App.router.portsController.content.@each")
+
+    candidateConnections: (->
+        # Potential connections
+        source = @get('pairFrom')
+        return [] unless source
+
+        @get('candidatePorts').map (port) =>
+            App.Connection.create(
+                source_port: source
+                destination_port: port
+            )
+
+    ).property('candidatePorts')
 )

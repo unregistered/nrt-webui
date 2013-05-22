@@ -105,6 +105,9 @@ App.ServerView = Ember.View.extend(
             {{#each App.router.connectionsController.content}}
                 {{view view.Connection connectionBinding="this"}}
             {{/each}}
+            {{#each App.router.connectionsController.candidateConnections}}
+                {{view view.Connection connectionBinding="this" phantom="true"}}
+            {{/each}}
         </div>
         """)
 
@@ -215,6 +218,7 @@ App.ServerView = Ember.View.extend(
             template: Ember.Handlebars.compile("connection")
             start: null
             end: null
+            phantom: false # Phantom connections are not yet real
 
             path_string: (->
                 bb1 = @get('start').getBBox()
@@ -279,7 +283,7 @@ App.ServerView = Ember.View.extend(
 
             pathUpdater: (->
                 @get('line').attr(path: @get('path_string'))
-                @get('line_hitbox').attr(path: @get('path_string'))
+                @get('hitbox').attr(path: @get('path_string'))
             ).observes('path_string')
 
             onConnectionSelect: (->
@@ -304,6 +308,41 @@ App.ServerView = Ember.View.extend(
 
             ).observes('connection.source_module.selected', 'connection.destination_module.selected')
 
+            # onPhantomHover: (->
+            #     if @get('phantom') && (App.router.connectionsController.get('hovered') == @get('connection'))
+            #         @get('line').attr(
+            #             stroke: UI_CONNECTION_ACTIVE_COLOR
+            #         )
+            #     else
+            #         @get('line').attr(
+            #             stroke: UI_CONNECTION_INACTIVE_COLOR
+            #         )
+            # ).observes('App.router.connectionsController.hovered')
+
+            line: (->
+                l = @get('paper').path(@get('path_string'))
+                l.attr(
+                    stroke: UI_CONNECTION_INACTIVE_COLOR
+                    'stroke-width': 1
+                    fill: "none"
+                )
+
+                if @get('phantom')
+                    l.attr('stroke-dasharray': '--')
+
+                return l
+            ).property()
+
+            hitbox: (->
+                b = @get('paper').path(@get('path_string'))
+                b.attr(
+                    stroke: UI_CONNECTION_ACTIVE_COLOR
+                    'stroke-width': 10
+                    'stroke-opacity': 0
+                )
+                return b
+            ).property()
+
             didInsertElement: ->
                 source = @get 'connection.source_port'
                 destination = @get 'connection.destination_port'
@@ -315,23 +354,28 @@ App.ServerView = Ember.View.extend(
                 @set 'end', destination_view.get('circle')
 
                 # Draw the line
-                @set 'line', @get('paper').path(@get('path_string'))
-                @set 'line_hitbox', @get('paper').path(@get('path_string'))
+                @get('line')
 
-                @get('line').attr(
-                    stroke: UI_CONNECTION_INACTIVE_COLOR
-                    fill: "none"
-                )
-                @get('line_hitbox').attr(
-                    stroke: UI_CONNECTION_ACTIVE_COLOR
-                    'stroke-width': 10
-                    'stroke-opacity': 0
-                )
-
-                @get('line_hitbox').mousedown =>
+                # Allow for selection
+                @get('hitbox').mousedown =>
                     App.router.selectionController.setSelection(@get('connection'))
 
+                # Allow for easy connection creation by hovering
+                if @get('phantom')
+                    @get('hitbox').mouseover =>
+                        @get('line').attr(
+                            stroke: UI_CONNECTION_ACTIVE_COLOR
+                        )
+                        App.router.connectionsController.set 'hovered', @get('connection.destination_port')
+                    .mouseout =>
+                        # line may not exist if we made a successful connection and delete ourself
+                        @get('line') && @get('line').attr(
+                            stroke: UI_CONNECTION_INACTIVE_COLOR
+                        )
+                        App.router.connectionsController.set 'hovered', false
+
             willDestroyElement: ->
+                @get('hitbox').remove()
                 @get('line').remove()
 
         )
@@ -551,24 +595,18 @@ App.ServerView = Ember.View.extend(
                 ).observes('App.router.selectionController.content.@each')
 
                 onPairing: (->
-                    source = App.router.connectionsController.get('pairFrom')
-
-                    if source
-                        # Check if we're a viable candidate
-                        if @get('port.msgtype') == source.get('msgtype')
-                            # Show our hitbox
-                            @get('hitbox').attr(
-                                'fill': 'green'
-                                opacity: 0.2
-                            )
-
+                    if App.router.connectionsController.get('candidatePorts').contains @get('port')
+                        # Show our hitbox
+                        @get('hitbox').attr(
+                            'fill': 'green'
+                            opacity: 0.2
+                        )
                     else
                         @get('hitbox').attr(
                             'fill': 'green'
                             opacity: 0
                         )
-
-                ).observes('App.router.connectionsController.pairFrom')
+                ).observes('App.router.connectionsController.candidatePorts')
 
                 coordx: (->
                     @get('circle').getBBox().x

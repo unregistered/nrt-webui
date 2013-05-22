@@ -12,7 +12,6 @@ require 'raphael'
 require 'raphael-zpd' # Zoom
 require 'jquery-ui'
 
-
 window.App = Ember.Application.create(
   VERSION: '0.1'
   ready: ->
