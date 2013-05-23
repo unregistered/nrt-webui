@@ -111,11 +111,16 @@ App.ServerView = Ember.View.extend(
         </div>
         """)
 
-        # Scales point to zoomed point
-        transformedPoint: (point) ->
+        # Scales point to zoomed point. Event should contain members layerX and layerY
+        transformedPoint: (event) ->
+            # ZPD expects an event with layerX and layerY as x and y
+            # Get an SVGPoint object, which has the matrixTransform method
             p = @get('zpd').getEventPoint(event)
-            svgDoc = event.target.ownerDocument;
+
+            svgDoc = @$().find('svg')[0]
             g = svgDoc.getElementById("viewport"+@get('zpd').id);
+
+            # See raphael-zpd plugin for details
             p = p.matrixTransform(g.getCTM().inverse());
             return p
 
@@ -129,8 +134,8 @@ App.ServerView = Ember.View.extend(
 
                     svg_offset = @$().find('svg').offset()
                     point = {
-                        x: event.clientX - svg_offset.left
-                        y: event.clientY - svg_offset.top
+                        layerX: event.clientX - svg_offset.left
+                        layerY: event.clientY - svg_offset.top
                     }
                     point = @transformedPoint(point)
 

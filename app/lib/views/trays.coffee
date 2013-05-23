@@ -105,111 +105,139 @@ App.CurrentSelectionTrayView = Ember.View.extend(
         </thead>
 
         {{#if view.module}}
-            <tbody>
-                <tr><td class="h2">{{view.module.instance}}</td></tr>
-                <tr>
-                    <td class="background">
-                        <dl>
-                            <dt>moduid</dt>
-                            <dd>{{view.module.moduid}}</dd>
-                            <dt>coordinates</dt>
-                            <dd>({{view.module.x}}, {{view.module.y}})</dd>
-                        </dl>
-                    </td>
-                </tr>
-
-                <tr><td class="h2">Ports</td></tr>
-                <tr>
-                    <td class="background">
-                        <dl>
-                            {{#each view.module.posters}}
-                                <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
-                                <dd>
-                                    {{this.description}}
-                                </dd>
-                            {{/each}}
-                            {{#each view.module.subscribers}}
-                                <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
-                                <dd>
-                                    {{this.description}}
-                                </dd>
-                            {{/each}}
-                        </dl>
-                    </td>
-                </tr>
-
-                <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
-            </tbody>
+            {{view view.ModuleView}}
         {{/if}}
 
         {{#if view.modules}}
-            <tbody>
-                <tr><td class="h2">{{view.modules.length}} modules selected</td></tr>
-
-                <tr><td><a class="btn btn-danger" {{action deleteSelectedModules target="view"}}>Delete Selected</a></td></tr>
-            </tbody>
+            {{view view.ModulesView}}
         {{/if}}
 
         {{#if view.connection}}
-            <tbody>
-                <tr><td class="h2">Connection</td></tr>
-
-                <tr>
-                    <td class="background">
-                        <dl>
-                            <dt>Source</dt>
-                            <dd>{{view.connection.source_module.moduid}} : {{view.connection.source_port.portname}}</dd>
-                            <dt>Destination</dt>
-                            <dd>{{view.connection.destination_module.moduid}} : {{view.connection.destination_port.portname}}</dd>
-
-                        </dl>
-                    </td>
-                </tr>
-            </tbody>
+            {{view view.ConnectionView}}
         {{/if}}
 
         {{#if view.port}}
-            <tbody>
-                <tr><td class="h2">Port</td></tr>
-
-                <tr>
-                    <td class="background">
-                        <dl>
-                            <dt>Module</dt>
-                            <dd>{{view.port.module.moduid}}</dd>
-                            <dt>Port Name</dt>
-                            <dd>{{view.port.portname}}</dd>
-                            <dt>Message Type</dt>
-                            <dd>{{view.port.msgtype}}</dd>
-                            <dt>Return Type</dt>
-                            <dd>{{view.port.rettype}}</dd>
-                            <dt>Topic</dt>
-                            <dd>{{view.port.topi}}</dd>
-                            <dt>Description</dt>
-                            <dd>{{view.port.description}}</dd>
-
-                        </dl>
-                    </td>
-                </tr>
-            </tbody>
+            {{view view.PortView}}
         {{/if}}
 
         {{#if view.empty}}
-            <tbody>
-                <tr>
-                    <td>No module selected</td>
-                </tr>
-            </tbody>
+            {{view view.NoSelectionView}}
         {{/if}}
     </table>
     """
 
-    deleteSelectedModules: ->
-        @get('modules').forEach (item) ->
-            App.router.serverController.deleteModule item
+    PortView: Ember.View.extend(
+        portBinding: 'parentView.port'
+        tagName: 'tbody'
+        template: Ember.Handlebars.compile """
+        <tr><td class="h2">Port</td></tr>
 
-    deleteCurrentModule: ->
-        App.router.serverController.deleteModule @get('module')
+        <tr>
+            <td class="background">
+                <dl>
+                    <dt>Module</dt>
+                    <dd>{{view.port.module.moduid}}</dd>
+                    <dt>Port Name</dt>
+                    <dd>{{view.port.portname}}</dd>
+                    <dt>Message Type</dt>
+                    <dd>{{view.port.msgtype}}</dd>
+                    <dt>Return Type</dt>
+                    <dd>{{view.port.rettype}}</dd>
+                    <dt>Topic</dt>
+                    <dd>{{view.port.topi}}</dd>
+                    <dd>{{view Ember.TextField valueBinding="view.port.topi"}}</dd>
+                    <dt>Description</dt>
+                    <dd>{{view.port.description}}</dd>
+                </dl>
+            </td>
+        </tr>
+        """
+    )
+
+    ModuleView: Ember.View.extend(
+        moduleBinding: 'parentView.module'
+        tagName: 'tbody'
+        template: Ember.Handlebars.compile """
+        <tr><td class="h2">{{view.module.instance}}</td></tr>
+        <tr>
+            <td class="background">
+                <dl>
+                    <dt>moduid</dt>
+                    <dd>{{view.module.moduid}}</dd>
+                    <dt>coordinates</dt>
+                    <dd>({{view.module.x}}, {{view.module.y}})</dd>
+                </dl>
+            </td>
+        </tr>
+
+        <tr><td class="h2">Ports</td></tr>
+        <tr>
+            <td class="background">
+                <dl>
+                    {{#each view.module.posters}}
+                        <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
+                        <dd>
+                            {{this.description}}
+                        </dd>
+                    {{/each}}
+                    {{#each view.module.subscribers}}
+                        <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
+                        <dd>
+                            {{this.description}}
+                        </dd>
+                    {{/each}}
+                </dl>
+            </td>
+        </tr>
+
+        <tr><td><a class="btn btn-danger" {{action deleteCurrentModule target="view"}}>Delete</a></td></tr>
+        """
+
+        deleteCurrentModule: ->
+            App.router.serverController.deleteModule @get('module')
+    )
+
+    ModulesView: Ember.View.extend(
+        modulesBinding: 'parentView.modules'
+        tagName: 'tbody'
+        template: Ember.Handlebars.compile """
+        <tr><td class="h2">{{view.modules.length}} modules selected</td></tr>
+
+        <tr><td><a class="btn btn-danger" {{action deleteSelectedModules target="view"}}>Delete Selected</a></td></tr>
+        """
+
+        deleteSelectedModules: ->
+            @get('modules').forEach (item) ->
+                App.router.serverController.deleteModule item
+    )
+
+    ConnectionView: Ember.View.extend(
+        connectionBinding: 'parentView.connection'
+        tagName: 'tbody'
+        template: Ember.Handlebars.compile """
+        <tr><td class="h2">Connection</td></tr>
+
+        <tr>
+            <td class="background">
+                <dl>
+                    <dt>Source</dt>
+                    <dd>{{view.connection.source_module.moduid}} : {{view.connection.source_port.portname}}</dd>
+                    <dt>Destination</dt>
+                    <dd>{{view.connection.destination_module.moduid}} : {{view.connection.destination_port.portname}}</dd>
+                </dl>
+            </td>
+        </tr>
+        """
+    )
+
+    NoSelectionView: Ember.View.extend(
+        tagName: 'tbody'
+        template: Ember.Handlebars.compile """
+        <tr>
+            <td>Selection is empty</td>
+        </tr>
+        """
+    )
 )
 
 # Shows a list of connected machines in the network

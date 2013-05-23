@@ -9,7 +9,7 @@ App.ServerController = Ember.Controller.extend(
     contentBinding: "App.router.serversController.selected"
 
     createModule: (prototype, x, y, bbnick) ->
-        console.log @get('content')
+        console.log "Create module at xy", x, y
         @get('content.session').call("org.nrtkit.designer/post/module",
             logicalPath: prototype.get('logicalPath'),
             bbNick: prototype.get('blackboard.bbnick')

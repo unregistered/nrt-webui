@@ -2,6 +2,10 @@ body {
   padding: 20px 10px;
 }
 
+.ui-widget-helper {
+    z-index: 100;
+}
+
 .workspace {
     border: 1px solid #ccc;
     svg {
@@ -15,7 +19,7 @@ body {
 		border: 1px solid red;
 	}
 
-    &.canvas-drag-mode {
+    &.canvas-drag-mode:not(.ui-state-active) {
         cursor: move;
     }
 
