@@ -73,6 +73,9 @@ App.Module = Ember.Object.extend(
 
 App.Port = Ember.Object.extend(
     module: null
+    orientation: null
+    index: null
+
     description: null
     msgtype: null
     portname: null

@@ -220,7 +220,7 @@ App.ServerView = Ember.View.extend(
             end: null
             phantom: false # Phantom connections are not yet real
 
-            path_string: (->
+            curved_path_string: (->
                 bb1 = @get('start').getBBox()
                 bb2 = @get('end').getBBox()
 
@@ -280,6 +280,29 @@ App.ServerView = Ember.View.extend(
                 y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3)
                 path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",")
             ).property('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
+
+            straight_path_string: (->
+                bb1 = @get('start').getBBox()
+                bb2 = @get('end').getBBox()
+
+                x1 = bb1.x + bb1.width/2
+                y1 = bb1.y + bb1.height/2
+
+                x2 = bb2.x + bb2.width/2
+                y2 = bb2.y + bb2.height/2
+
+                ["M", x1.toFixed(3), y1.toFixed(3), "L", x2.toFixed(3), y2.toFixed(3)].join(",")
+            ).property('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
+
+            ###
+            Choose between path appearances.
+            ###
+            path_string: (->
+                if @get('connection.source_module.dragging') or @get('connection.destination_module.dragging')
+                    return @get('straight_path_string')
+                else
+                    return @get('curved_path_string')
+            ).property('connection.source_module.dragging', 'connection.destination_module.dragging', 'curved_path_string', 'straight_path_string')
 
             pathUpdater: (->
                 @get('line').attr(path: @get('path_string'))
@@ -543,6 +566,7 @@ App.ServerView = Ember.View.extend(
                 x = @get('module.x')
                 y = @get('module.y')
                 @moveTo(x, y)
+                @get('container').toFront()
 
             moveTo: (x, y) ->
                 @get('container').transform("T#{x},#{y}")
@@ -566,9 +590,15 @@ App.ServerView = Ember.View.extend(
                     @hideLabel()
                     return true
 
-                toggleHover: (->
+                toggleLabel: (->
                     if @get('isHovered')
                         @showLabel()
+                    else
+                        @hideLabel()
+                ).observes('isHovered')
+
+                toggleHover: (->
+                    if @get('isHovered')
                         @get('circle').attr(
                             fill: 'green'
                             opacity: 0.5
@@ -578,7 +608,6 @@ App.ServerView = Ember.View.extend(
                             fill: 'white'
                             opacity: 1
                         )
-                        @hideLabel()
                 ).observes('isHovered')
 
                 onSelect: (->
@@ -660,6 +689,12 @@ App.ServerView = Ember.View.extend(
 
                     b.mouseout (arg) =>
                         App.router.connectionsController.set 'hovered', null
+
+                    # Raphael does not support the contextmenu event, so we do it the jQuery way
+                    $(b.node).bind('contextmenu', (event) =>
+                        console.log "CTX", event
+                        return false
+                    )
 
                     # Dragging
                     b.node.draggable = true

@@ -38,13 +38,25 @@ App.ServerController = Ember.Controller.extend(
             y: Math.round(y)
         )
 
-    createConnection: (from, to) ->
-        console.log "Create connection on server"
-        @get('content.session').call("org.nrtkit.designer/post/connection",
-            from_moduid: from.get('module.moduid'),
-            from_portname: from.get('portname'),
-            to_moduid: to.get('module.moduid'),
-            to_portname: to.get('portname')
+    setTopic: (port, topic) ->
+        console.log "Set module topic"
+        @get('content.session').call('org.nrtkit.designer/edit/module/topic',
+            moduid: port.get('module.moduid')
+            port_type: port.get('orientation')
+            portname: port.get('portname')
+            topi: topic
         ).then (res) =>
             console.log res
+
+    createConnection: (from, to) ->
+        console.log "Create connection on server"
+        @setTopic(from, "Hello")
+        @setTopic(to, "Hello")
+        # @get('content.session').call("org.nrtkit.designer/post/connection",
+        #     from_moduid: from.get('module.moduid'),
+        #     from_portname: from.get('portname'),
+        #     to_moduid: to.get('module.moduid'),
+        #     to_portname: to.get('portname')
+        # ).then (res) =>
+        #     console.log res
 )
