@@ -17,6 +17,7 @@ App.EditableText = Ember.View.extend(
             <button class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li><a {{action revertEdit target="view"}}>Cancel</a></li>
+                <li><a {{action finishAndClear target="view"}}>Clear</a></li>
             </ul>
         </div>
         <div class="clearfix"></div>
@@ -35,6 +36,10 @@ App.EditableText = Ember.View.extend(
 
     finishEdit: (evt) ->
         @set 'value', @get('temp')
+        @set 'is_editing', false
+
+    finishAndClear: (evt) ->
+        @set 'value', ''
         @set 'is_editing', false
 
     revertEdit: (evt) ->
@@ -263,9 +268,9 @@ App.CurrentSelectionTrayView = Ember.View.extend(
             <td class="background">
                 <dl>
                     <dt>Source</dt>
-                    <dd>{{view.connection.source_module.moduid}} : {{view.connection.source_port.portname}}</dd>
+                    <dd>{{view.connection.source_module.displayName}} : {{view.connection.source_port.portname}}</dd>
                     <dt>Destination</dt>
-                    <dd>{{view.connection.destination_module.moduid}} : {{view.connection.destination_port.portname}}</dd>
+                    <dd>{{view.connection.destination_module.displayName}} : {{view.connection.destination_port.portname}}</dd>
                 </dl>
             </td>
         </tr>

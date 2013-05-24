@@ -81,4 +81,9 @@ App.ServerController = Ember.Controller.extend(
 
         @setTopic(from, fromNewTopic)
         @setTopic(to, toNewTopic)
+
+    deleteConnection: (from, to) =>
+        console.log "Remove connection"
+
+
 )
