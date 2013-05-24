@@ -82,8 +82,34 @@ App.ServerController = Ember.Controller.extend(
         @setTopic(from, fromNewTopic)
         @setTopic(to, toNewTopic)
 
-    deleteConnection: (from, to) =>
+    deleteConnection: (connection) ->
         console.log "Remove connection"
 
+        source = connection.get('source_port')
+        source_topic = source.get('topic')
 
+        destination = connection.get('destination_port')
+        destination_topic = destination.get('topic')
+        destination_topic_array = destination_topic.split('|')
+        # Filter out the matching name
+        destination_topic_array = destination_topic_array.filter (item) ->
+            item != source_topic
+
+        @setTopic(destination, destination_topic_array.join("|"))
+
+        # Now the source topic. The source topic will only be removed if there are no
+        # other destination ports requiring the topic.
+        ports_exist_requiring_topic = App.router.connectionsController.get('content').some (c) ->
+            return false if c == connection # Don't count ourself
+
+            port = c.get('destination_port')
+
+            topics = port.get('topic').split('|')
+            return true if topics.contains source_topic
+
+            return false
+
+        # 1 because we've included ourself
+        unless ports_exist_requiring_topic
+            @setTopic(source, '')
 )

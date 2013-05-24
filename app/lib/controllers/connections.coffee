@@ -23,7 +23,10 @@ App.ConnectionsController = Ember.ArrayController.extend(
     completePairing: ->
         if @get('pairTo') && @get('pairTo') != @get('pairFrom')
             console.log "Completed with", @get('pairTo')
-            App.router.serverController.createConnection @get('pairFrom'), @get('pairTo')
+            if @get('pairFrom.orientation') == 'output'
+                App.router.serverController.createConnection @get('pairFrom'), @get('pairTo')
+            else
+                App.router.serverController.createConnection @get('pairTo'), @get('pairFrom')
         else
             console.log "Fail to complete"
 

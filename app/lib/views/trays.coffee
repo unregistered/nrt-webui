@@ -274,7 +274,12 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                 </dl>
             </td>
         </tr>
+
+        <tr><td><a class="btn btn-danger" {{action deleteConnection target="view"}}>Delete Connection</a></td></tr>
         """
+
+        deleteConnection: ->
+            App.router.serverController.deleteConnection @get('connection')
     )
 
     NoSelectionView: Ember.View.extend(
