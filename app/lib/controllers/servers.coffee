@@ -50,13 +50,35 @@ App.ServerController = Ember.Controller.extend(
 
     createConnection: (from, to) ->
         console.log "Create connection on server"
-        @setTopic(from, "Hello")
-        @setTopic(to, "Hello")
-        # @get('content.session').call("org.nrtkit.designer/post/connection",
-        #     from_moduid: from.get('module.moduid'),
-        #     from_portname: from.get('portname'),
-        #     to_moduid: to.get('module.moduid'),
-        #     to_portname: to.get('portname')
-        # ).then (res) =>
-        #     console.log res
+
+        newTopic = from.get('module.moduid') + ':' + from.get('portname')
+        newTopic = newTopic.replace(/\[|\]/g, '')
+
+        topicMerge = (oldtopic, appendedtopic) ->
+            base = ''
+
+            # Append if there was already a topic
+            if oldtopic
+                console.log "There was an old topic"
+                base += oldtopic
+
+                # Make sure we aren't duplicating an existing topic
+                isDuplicated = base.split('|').some (item) ->
+                    item == appendedtopic
+
+                if isDuplicated
+                    console.log "Duplicated"
+                else
+                    base += "|" + appendedtopic
+            else
+                console.log "There was no old topic"
+                base = appendedtopic
+
+            return base
+
+        fromNewTopic = topicMerge from.get('topic'), newTopic
+        toNewTopic = topicMerge to.get('topic'), newTopic
+
+        @setTopic(from, fromNewTopic)
+        @setTopic(to, toNewTopic)
 )
