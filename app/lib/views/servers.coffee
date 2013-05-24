@@ -7,8 +7,6 @@ UI_PORT_SPACING = 8
 UI_CANVAS_WIDTH = 2000
 UI_CANVAS_HEIGHT = 1000
 
-UI_MODULE_WIDTH = 100
-
 UI_CONNECTION_INACTIVE_COLOR = "#ccc"
 UI_CONNECTION_ACTIVE_COLOR = "#000"
 
@@ -427,6 +425,10 @@ App.ServerView = Ember.View.extend(
             {{#each view.module.posters}}
                 {{view view.Port portBinding="this"}}
             {{/each}}
+
+            {{#each view.module.checkers}}
+                {{view view.Port portBinding="this"}}
+            {{/each}}
             """)
 
             name: (->
@@ -443,7 +445,13 @@ App.ServerView = Ember.View.extend(
             ).property().volatile()
 
             width: (->
-                UI_MODULE_WIDTH
+                min_width = 100
+
+                number_of_ports = @get('module.checkers.length')
+                port_width = 2*UI_PORT_RADIUS + UI_PORT_SPACING
+                computed_width = port_width * number_of_ports + UI_PORT_INITIAL_OFFSET
+
+                return Math.max(computed_width, min_width)
             ).property()
 
             height: (->
@@ -476,7 +484,7 @@ App.ServerView = Ember.View.extend(
             ).property()
 
             text: (->
-                @get('paper').text(50, 50, @get('name'))
+                @get('paper').text(@get('width')/2, 50, @get('name'))
             ).property('name')
 
             container: (->
@@ -522,7 +530,7 @@ App.ServerView = Ember.View.extend(
                         nexty = Math.round(module.get('start_y') + dy)
 
                         # Check bounds
-                        if (nextx + UI_MODULE_WIDTH) > UI_CANVAS_WIDTH/2
+                        if (nextx + module.get('width')) > UI_CANVAS_WIDTH/2
                             nextx = UI_CANVAS_WIDTH/2 - module.get('width')
                         else if nextx < -UI_CANVAS_WIDTH/2
                             nextx = -UI_CANVAS_WIDTH/2
@@ -656,24 +664,52 @@ App.ServerView = Ember.View.extend(
                 ).property().volatile()
 
                 circle: (->
-                    xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
-                    ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
-                    circle = @get('paper').circle(xpos, ypos, @get('radius'))
-                    return circle
+                    if @get('port.orientation') == 'checker'
+                        total_width = @get('port.module.checkers.length') * ( @get('radius') * 2 + @get('spacing') ) - @get('spacing') # Last one doesn't get extra space
+                        midpoint = @get('parentView.width')/2
+                        x_start = midpoint - total_width/2
+
+                        xpos = x_start + @get('radius') + @get('port.index') * (@get('radius') * 2 + @get('spacing'))
+                        ypos = @get('parentView.height')
+
+                        circle = @get('paper').circle(xpos, ypos, @get('radius'))
+                    else
+                        xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
+                        ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
+                        circle = @get('paper').circle(xpos, ypos, @get('radius'))
+                        return circle
                 ).property()
 
                 hitbox: (->
-                    xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
-                    ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
-                    w = @get('radius') * 2 + 16
-                    h = @get('radius') * 2 + 4 * 2
-                    box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
-                    box.attr(
-                        'fill': 'green'
-                        opacity: 0
-                        stroke: 'none'
-                    )
-                    return box
+                    if @get('port.orientation') == 'checker'
+                        total_width = @get('port.module.checkers.length') * ( @get('radius') * 2 + @get('spacing') ) - @get('spacing') # Last one doesn't get extra space
+                        midpoint = @get('parentView.width')/2
+                        x_start = midpoint - total_width/2
+
+                        xpos = x_start + @get('radius') + @get('port.index') * (@get('radius') * 2 + @get('spacing'))
+                        ypos = @get('parentView.height')
+
+                        w = @get('radius') * 2 + 8
+                        h = @get('radius') * 2 + 4 * 2 + 8 # Extra 8
+                        box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
+                        box.attr(
+                            'fill': 'green'
+                            opacity: 0
+                            stroke: 'none'
+                        )
+                        return box
+                    else
+                        xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
+                        ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
+                        w = @get('radius') * 2 + 16
+                        h = @get('radius') * 2 + 4 * 2
+                        box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
+                        box.attr(
+                            'fill': 'green'
+                            opacity: 0
+                            stroke: 'none'
+                        )
+                        return box
                 ).property()
 
                 showLabel: ->

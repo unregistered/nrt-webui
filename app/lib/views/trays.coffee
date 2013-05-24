@@ -174,7 +174,7 @@ App.CurrentSelectionTrayView = Ember.View.extend(
         portBinding: 'parentView.port'
         tagName: 'tbody'
         template: Ember.Handlebars.compile """
-        <tr><td class="h2">Port</td></tr>
+        <tr><td class="h2">Port ({{view.port.orientation}})</td></tr>
 
         <tr>
             <td class="background">
@@ -229,6 +229,12 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                     {{/each}}
                     {{#each view.module.subscribers}}
                         <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
+                        <dd>
+                            {{this.description}}
+                        </dd>
+                    {{/each}}
+                    {{#each view.module.checkers}}
+                        <dt>[checker] {{this.portname}} ({{this.msgtype}})</dt>
                         <dd>
                             {{this.description}}
                         </dd>

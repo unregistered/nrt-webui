@@ -69,6 +69,15 @@ App.Module = Ember.Object.extend(
                 orientation: 'input'
                 module: this
             )
+
+        @set 'checkers', @get('from.checkers').map (item, idx) =>
+            p = App.Port.create(from: item)
+            p.reopen(
+                index: idx
+                orientation: 'checker'
+                module: this
+            )
+
 )
 
 App.Port = Ember.Object.extend(
