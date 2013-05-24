@@ -17,12 +17,32 @@ App.ServerView = Ember.View.extend(
             {{view App.TrayView}}
         </div>
         <div class="span8">
+            {{view view.AlertView}}
             {{view view.ToolbarView}}
             {{view view.NamespaceView}}
             {{view view.WorkspaceView}}
         </div>
     </div>
     """)
+
+    AlertView: Ember.View.extend(
+        classNames: ["alert"]
+        classNameBindings: ['alertType', 'isHidden:hidden']
+        alertType: (->
+            return 'alert-error'
+        ).property()
+
+        isHidden: (->
+            return @get('controller.content.connected')
+        ).property("controller.content.connected")
+
+        template: Ember.Handlebars.compile """
+        <strong>Error</strong>
+        <p>NRT Designer has lost its connection to the master loader.</p>
+        <p>Reason: {{controller.content.disconnection_reason}}</p>
+        <p>Reload the page to try again.</p>
+        """
+    )
 
     ToolbarView: Ember.View.extend(
         template: Ember.Handlebars.compile """
@@ -299,7 +319,7 @@ App.ServerView = Ember.View.extend(
                 x2 = bb2.x + bb2.width/2
                 y2 = bb2.y + bb2.height/2
 
-                ["M", x1.toFixed(3), y1.toFixed(3), "L", x2.toFixed(3), y2.toFixed(3)].join(",")
+                return "M," + x1.toFixed(3) + "," + y1.toFixed(3) + ",L," + x2.toFixed(3) + "," + y2.toFixed(3)
             ).property('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
 
             ###

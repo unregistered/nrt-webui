@@ -5,6 +5,8 @@ App.Server = Ember.Object.extend(
     host: ''
     port: 0
 
+    connected: false
+
     modulesBinding: "App.router.modulesController.content"
     blackboardsBinding: "App.router.blackboardsController.content"
     connectionsBinding: "App.router.connectionsController.content"
@@ -18,6 +20,7 @@ App.Server = Ember.Object.extend(
         # ab.debug(true, true)
         ab.connect @get('wsuri'), ((session) =>
             @set 'session', session
+            @set 'connected', true
 
             # Get state
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then (res) =>
@@ -44,15 +47,16 @@ App.Server = Ember.Object.extend(
 
             # on event publication callback
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, event) =>
-                console.log "got event1: ", event
                 @deserialize_bbfs(event)
 
             session.subscribe "org.nrtkit.designer/event/gui_data_update", (topic, event) =>
-                console.log "Module position updated", event
                 @deserialize_gui_data(event)
 
         # WAMP session is gone
-        ), (code, reason) ->
+        ), (code, reason) =>
+            console.log "WAMP Session ended"
+            @set 'connected', false
+            @set 'disconnection_reason', reason
             console.log reason
 
     deserialize_gui_data: (res) ->
