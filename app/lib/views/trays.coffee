@@ -3,6 +3,45 @@ Contains tray views used in the main designer interface.
 ###
 require "nrt-webui/core"
 
+App.EditableText = Ember.View.extend(
+    value: undefined
+    temp: undefined
+    is_editing: false
+    template: Ember.Handlebars.compile """
+    {{#if view.is_editing}}
+        <div class="pull-left" style="margin-right: 10px">
+            {{view Ember.TextField valueBinding="view.temp"}}
+        </div>
+        <div class="btn-group pull-left">
+            <button class="btn btn-success" {{action finishEdit target="view"}}>Save</button>
+            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a {{action revertEdit target="view"}}>Cancel</a></li>
+            </ul>
+        </div>
+        <div class="clearfix"></div>
+    {{else}}
+        {{#if view.value}}
+            {{view.value}} <a {{action edit target="view"}}>Edit</a>
+        {{else}}
+            <a {{action edit target="view"}}>Set Value</a>
+        {{/if}}
+    {{/if}}
+    """
+
+    edit: (evt) ->
+        @set 'temp', @get('value')
+        @set 'is_editing', true
+
+    finishEdit: (evt) ->
+        @set 'value', @get('temp')
+        @set 'is_editing', false
+
+    revertEdit: (evt) ->
+        @set 'is_editing', false
+
+)
+
 # Shows a list of instantiatable modules
 App.ModuleTrayView = Ember.View.extend(
     controllerBinding: "App.router.prototypesController"
@@ -144,14 +183,17 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                     <dt>Return Type</dt>
                     <dd>{{view.port.rettype}}</dd>
                     <dt>Topic</dt>
-                    <dd>{{view.port.topi}}</dd>
-                    <dd>{{view Ember.TextField valueBinding="view.port.topi"}}</dd>
+                    <dd>{{view App.EditableText valueBinding="view.port.topic"}}</dd>
                     <dt>Description</dt>
                     <dd>{{view.port.description}}</dd>
                 </dl>
             </td>
         </tr>
         """
+
+        portTopicUpdater: (->
+            App.router.serverController.setTopic @get('port'), @get('port.topic')
+        ).observes('port.topic')
     )
 
     ModuleView: Ember.View.extend(

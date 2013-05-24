@@ -55,7 +55,7 @@ App.Module = Ember.Object.extend(
             @set 'y', 0
 
         @set 'posters', @get('from.posters').map (item, idx) =>
-            p = App.Port.create(item)
+            p = App.Port.create(from: item)
             p.reopen(
                 index: idx
                 orientation: 'output'
@@ -63,7 +63,7 @@ App.Module = Ember.Object.extend(
             )
 
         @set 'subscribers', @get('from.subscribers').map (item, idx) =>
-            p = App.Port.create(item)
+            p = App.Port.create(from: item)
             p.reopen(
                 index: idx
                 orientation: 'input'
@@ -80,10 +80,17 @@ App.Port = Ember.Object.extend(
     msgtype: null
     portname: null
     rettype: null
-    topi: null
+    topic: null
 
     id: (->
         @get('module.id') + "->" + @get('portname')
     ).property('module.id', 'portname')
+
+    init: ->
+        @set 'description', @get('from.description')
+        @set 'msgtype', @get('from.msgtype')
+        @set 'portname', @get('from.portname')
+        @set 'rettype', @get('from.rettype')
+        @set 'topic', @get('from.topi')
 
 )

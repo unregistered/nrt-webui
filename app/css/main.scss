@@ -2,6 +2,12 @@ body {
   padding: 20px 10px;
 }
 
+a {
+    &:hover {
+        cursor: pointer;
+    }
+}
+
 .ui-widget-helper {
     z-index: 100;
 }

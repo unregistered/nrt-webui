@@ -163,6 +163,11 @@ App.ServerView = Ember.View.extend(
 
                 p = @transformedPoint(event)
 
+                if @get('selbox')
+                    # It's possible for the user to release the mouse outside of the window, so
+                    # we need to clean up any orphaned select boxes
+                    @get('selbox').remove()
+
                 @set 'selbox', @get('paper').rect(p.x, p.y, 0, 0).attr(
                     'stroke': "#9999FF"
                     "fill-opacity": 0.2
