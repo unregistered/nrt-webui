@@ -68,11 +68,11 @@ App.ServerView = Ember.View.extend(
             template: Ember.Handlebars.compile """<i class="icon-move"></i>"""
 
             active: (->
-                App.router.settingsController.get('content.canvas_mousemode') == 'drag'
+                App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_DRAG
             ).property('App.router.settingsController.content.canvas_mousemode')
 
             click: ->
-                App.router.settingsController.set('content.canvas_mousemode', 'drag')
+                App.router.settingsController.set('content.canvas_mousemode', App.SETTING_CANVAS_MOUSEMODE_DRAG)
         )
 
         SelectButton: Ember.View.extend(
@@ -84,11 +84,11 @@ App.ServerView = Ember.View.extend(
             template: Ember.Handlebars.compile """<i class="icon-check-empty"></i>"""
 
             active: (->
-                App.router.settingsController.get('content.canvas_mousemode') == 'select'
+                App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_SELECT
             ).property('App.router.settingsController.content.canvas_mousemode')
 
             click: ->
-                App.router.settingsController.set('content.canvas_mousemode', 'select')
+                App.router.settingsController.set('content.canvas_mousemode', App.SETTING_CANVAS_MOUSEMODE_SELECT)
         )
     )
 
@@ -108,20 +108,20 @@ App.ServerView = Ember.View.extend(
         # Panning setting
         classNameBindings: ['moveClass:canvas-drag-mode']
         moveClass: (->
-            App.router.settingsController.get('content.canvas_mousemode') == 'drag'
+            App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_DRAG
         ).property("App.router.settingsController.content.canvas_mousemode")
         mouseModeChanged: (->
             mode = App.router.settingsController.get('content.canvas_mousemode')
 
             # We can pan around in drag mode
-            @get('zpd').opts.pan = (mode == 'drag')
+            @get('zpd').opts.pan = (mode == App.SETTING_CANVAS_MOUSEMODE_DRAG)
 
             # We can drag around on the mat when we're in select mode
-            @get('mat').node.draggable = (mode == 'select')
+            @get('mat').node.draggable = (mode == App.SETTING_CANVAS_MOUSEMODE_SELECT)
         ).observes('App.router.settingsController.content.canvas_mousemode')
 
         template: Ember.Handlebars.compile("""
-        <div class="hidden">
+        <div>
             {{#each App.router.modulesController.content}}
                 {{view view.Module moduleBinding="this"}}
             {{/each}}
@@ -167,7 +167,7 @@ App.ServerView = Ember.View.extend(
             @set 'paper', new Raphael(el, "100%", "100%")
             @set 'zpd', new RaphaelZPD(@get('paper'), {
                 zoom: true
-                pan: (App.router.settingsController.get('content.canvas_mousemode') == 'drag')
+                pan: (App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_DRAG)
                 drag: true
                 zoomThreshold: [0.3, 2]
             })
@@ -180,7 +180,7 @@ App.ServerView = Ember.View.extend(
                 App.router.selectionController.clearSelection()
 
             # Allow dragging of the canvas to multiply select things
-            @get('mat').node.draggable = false
+            @get('mat').node.draggable = (App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_SELECT)
             @get('mat').node.onDragStart = (event) =>
                 App.router.selectionController.clearSelection()
 

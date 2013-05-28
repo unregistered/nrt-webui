@@ -3,23 +3,23 @@
  * ==================================================
  *
  * This code is licensed under the following BSD license:
- * 
+ *
  * Copyright 2012 Chris Li <licy@usc.edu> (Callbacks)
  * Copyright 2012 Jameson Quave <jquave@gmail.com> (iOS compatibility). All right reserved.
  * Copyright 2010 Gabriel Zabusek <gabriel.zabusek@gmail.com> (Interface and feature extensions and modifications). All rights reserved.
  * Copyright 2010 Daniel Assange <somnidea@lemma.org> (Raphaël integration and extensions). All rights reserved.
  * Copyright 2009-2010 Andrea Leofreddi <a.leofreddi@itcharm.com> (original author). All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  *    1. Redistributions of source code must retain the above copyright notice, this list of
  *       conditions and the following disclaimer.
- * 
+ *
  *    2. Redistributions in binary form must reproduce the above copyright notice, this list
  *       of conditions and the following disclaimer in the documentation and/or other materials
  *       provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY Andrea Leofreddi ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Andrea Leofreddi OR
@@ -29,13 +29,13 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Andrea Leofreddi.
  */
 
-var raphaelZPDId = 0;
+window.raphaelZPDId = 0;
 
 RaphaelZPD = function(raphaelPaper, o) {
     function supportsSVG() {
@@ -49,12 +49,12 @@ RaphaelZPD = function(raphaelPaper, o) {
     var me = this;
 
 	me.initialized = false;
-	me.opts = { 
+	me.opts = {
 		zoom: true, pan: true, drag: true, // Enable/disable core functionalities.
 		zoomThreshold: null // Zoom [out, in] boundaries by ratio. E.g [0.1, 2] means they can shrink to 10% of size, or increase to 200%.
 	};
 
-    me.id   = ++raphaelZPDId;
+    me.id   = window.raphaelZPDId;
     me.root = raphaelPaper.canvas;
 
     me.gelem = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -68,7 +68,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 		}
 	}
 
-	function overrideElementFunc(paper, elementType) {    
+	function overrideElementFunc(paper, elementType) {
 		paper[elementType] = function(oldFunc) {
 		  return function() {
 			var element = oldFunc.apply(paper, arguments);
@@ -110,10 +110,10 @@ RaphaelZPD = function(raphaelPaper, o) {
 			return oldFunc.apply(this, [wrap, scope]);
 		}
 	});
-	
+
 	//raphaelPaper.canvas = me.gelem;
 
-    me.state = 'none'; 
+    me.state = 'none';
     me.stateTarget = null;
     me.stateOrigin = null;
     me.stateTf = null;
@@ -133,15 +133,15 @@ RaphaelZPD = function(raphaelPaper, o) {
 		me.root.onmousedown = me.handleMouseDown;
 		me.root.onmousemove = me.handleMouseMove;
 		me.root.onmouseup   = me.handleMouseUp;
-		
-		
+
+
 		me.root.ontouchstart = me.handleTouchStart;
 		me.root.ontouchmove = me.handleTouchMove;
 		me.root.ontouchend   = me.handleTouchEnd;
-		
+
 		me.root.ongesturestart = me.handleGestureStart;
 		me.root.ongesturechange = me.handleGestureChange;
-		
+
 
 		//me.root.onmouseout = me.handleMouseUp; // Decomment me to stop the pan functionality when dragging out of the SVG element
 		// The above messes with pan if you are on top of an svg element
@@ -172,7 +172,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 
 		element.setAttribute("transform", s);
 	};
-	
+
 	/**
 	 * Dumps a matrix to a string (useful for debug).
 	 */
@@ -189,7 +189,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 		for (i in attributes)
 			element.setAttributeNS(null, i, attributes[i]);
 	};
-	
+
 	var getKeys = function(obj){
    var keys = [];
    for(var key in obj){
@@ -202,7 +202,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 /**
 	 * Handle touch start event.
 	 */
-	 
+
 	me.handleTouchStart = function(evt) {
 	//	if (evt.preventDefault)
 	//		evt.preventDefault();
@@ -242,7 +242,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 			me.stateOrigin = p;
 		}
 	};
-	
+
 	/**
 	 * Handle touch end event.
 	 */
@@ -260,7 +260,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 	 * Handle touch move event.
 	 */
 	me.handleTouchMove = function(evt) {
-	
+
 		if (evt.preventDefault)
 			evt.preventDefault();
 
@@ -269,13 +269,13 @@ RaphaelZPD = function(raphaelPaper, o) {
 		var svgDoc = evt.target.ownerDocument;
 
 		var g = svgDoc.getElementById("viewport"+me.id);
-		
+
 		var p = {};
 		p.x = evt.pageX;
 		p.y = evt.pageY;
-		
+
 		var delta = {};
-		
+
 		delta.x = p.x - me.stateOrigin.x;
 		delta.y = p.y - me.stateOrigin.y;
 
@@ -289,32 +289,32 @@ RaphaelZPD = function(raphaelPaper, o) {
 			var gTransform = g.getCTM();
 //			var currentScale = gTransform.a;
 var currentScale = gTransform.a;
-			
+
 			delta.x /= currentScale;
 			delta.y /= currentScale;
-			
+
 			me.setCTM(g, me.stateTf.inverse().translate(delta.x, delta.y));
 		} else if (me.state == 'move') {
 			// Move mode
 			if (!me.opts.drag) return;
 
-			
+
 
 			me.setCTM(me.stateTarget, me.root.createSVGMatrix().translate(delta.x, delta.y).multiply(g.getCTM().inverse()).multiply(me.stateTarget.getCTM()));
 
 			me.stateOrigin = p;
 		}
 	};
-	
+
 	/**
 	 * Handle zooming from the two different events that try to zoom
 	 */
 	me.zoomWithDeltaAndPosOnSvgDoc = function(delta, p, svgDoc) {
 		var g = svgDoc.getElementById("viewport"+me.id);
 		var gTransform = g.getCTM();
-		
+
 		if (delta > 0) {
-            if (me.opts.zoomThreshold) 
+            if (me.opts.zoomThreshold)
                 if (me.opts.zoomThreshold[1] <= gTransform.a) return;
         } else {
             if (me.opts.zoomThreshold)
@@ -323,9 +323,9 @@ var currentScale = gTransform.a;
 	                return;
                 }
         }
-        
+
 		var z = 1 + delta; // Zoom factor: 0.9/1.1
-		
+
 		// Compute new scale matrix in current mouse/gesture position
 		var k = me.root.createSVGMatrix().translate(p.x, p.y).scale(z).translate(-p.x, -p.y);
 		me.setCTM(g, gTransform.multiply(k));
@@ -354,9 +354,9 @@ var currentScale = gTransform.a;
 			lastScale = evt.scale;
 			return;
 		}
-		
+
 		var scaleDelta = evt.scale-lastScale;
-		
+
 		if (!me.opts.zoom) return;
 
 		if (evt.preventDefault)
@@ -372,11 +372,11 @@ var currentScale = gTransform.a;
 			delta = scaleDelta / 10; // Chrome/Safari
 		else
 			delta = evt.detail / -90; // Mozilla
-		
+
 		var p = {};
 		p.x = evt.pageX;
 		p.y = evt.pageY;
-		
+
 		var g = svgDoc.getElementById("viewport"+me.id);
 
 		me.zoomWithDeltaAndPosOnSvgDoc(delta, p, svgDoc);
@@ -407,11 +407,11 @@ var currentScale = gTransform.a;
 		if(delta==0) return;
 		else if(delta>0) delta = 0.1;
 		else delta = -0.1;
-		
+
 		var p = me.getEventPoint(evt);
-		
+
 		var g = svgDoc.getElementById("viewport"+me.id);
-		
+
 		if( g == null ) { // if the paper.clear() was called and zpd was re-created, remove previous listener
 			me.root.removeEventListener('mousewheel', me.handleMouseWheel, false);
 			me.root.removeEventListener('DOMMouseScroll', me.handleMouseWheel, false);
@@ -419,7 +419,7 @@ var currentScale = gTransform.a;
 		}
 
         p = p.matrixTransform(g.getCTM().inverse());
-		
+
         me.zoomWithDeltaAndPosOnSvgDoc(delta, p, svgDoc);
 	};
 
@@ -448,7 +448,7 @@ var currentScale = gTransform.a;
 			if (!me.opts.drag) return;
 
 			var p = me.getEventPoint(evt).matrixTransform(g.getCTM().inverse());
-            
+
             if(typeof me.stateTarget.onDrag == 'function')
                 me.stateTarget.onDrag({
                     fromX: me.stateOrigin.x,
@@ -462,7 +462,7 @@ var currentScale = gTransform.a;
             // me.stateOrigin = p;
 		}
 	};
-	
+
 	/**
 	 * Handle click event.
 	 */
@@ -496,12 +496,12 @@ var currentScale = gTransform.a;
 			me.stateTf = g.getCTM().inverse();
 
 			me.stateOrigin = me.getEventPoint(evt).matrixTransform(me.stateTf);
-            
-            if(typeof evt.target.onDragStart == 'function') 
+
+            if(typeof evt.target.onDragStart == 'function')
                 evt.target.onDragStart(evt);
 		}
 	};
-	
+
 	/**
 	 * Handle mouse button release event.
 	 */
@@ -520,43 +520,43 @@ var currentScale = gTransform.a;
         if (me.state == 'move' && me.opts.drag) {
             // Quit drag
             me.state = '';
-            if(typeof me.stateTarget.onDragStop == 'function') 
+            if(typeof me.stateTarget.onDragStop == 'function')
                 me.stateTarget.onDragStop(evt);
         }
 	};
-	
+
 	/**
 	 * Pan to a location programmatically
 	 */
 	me.panTo = function(x, y) {
 		var me = this;
-	
+
 		if (me.gelem.getCTM() == null) {
 			alert('failed');
 			return null;
 		}
-	
+
 		var stateTf = me.gelem.getCTM().inverse();
-	
+
 		var svg = document.getElementsByTagName("svg")[0];
-	
-		if (!svg.createSVGPoint) alert("no svg");        
-	
+
+		if (!svg.createSVGPoint) alert("no svg");
+
 		var p = svg.createSVGPoint();
-	
-		p.x = x; 
+
+		p.x = x;
 		p.y = y;
-	
+
 		p = p.matrixTransform(stateTf);
-	
+
 		var element = me.gelem;
 		var matrix = stateTf.inverse().translate(p.x, p.y);
-	
+
 		var s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
-	
+
 		element.setAttribute("transform", s);
-	
-		return me;   
+
+		return me;
 	}
 
 
@@ -577,11 +577,11 @@ Raphael.fn.ZPDPanTo = function(x, y) {
 
 	var svg = document.getElementsByTagName("svg")[0];
 
-	if (!svg.createSVGPoint) alert("no svg");        
+	if (!svg.createSVGPoint) alert("no svg");
 
 	var p = svg.createSVGPoint();
 
-	p.x = x; 
+	p.x = x;
 	p.y = y;
 
 	p = p.matrixTransform(stateTf);
@@ -593,5 +593,5 @@ Raphael.fn.ZPDPanTo = function(x, y) {
 
 	element.setAttribute("transform", s);
 
-	return me;   
+	return me;
 };

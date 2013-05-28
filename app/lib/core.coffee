@@ -24,12 +24,12 @@ window.App = Ember.Application.create(
         App.Server.create(
             name: 'UbuntuVM'
             host: 'ubuntu1204.local'
-            port: 8080
+            port: '8080'
         ),
         App.Server.create(
             name: 'iLab'
             host: '55.221.13.240'
-            port: 9000
+            port: '9000'
         )
     ]
 )
