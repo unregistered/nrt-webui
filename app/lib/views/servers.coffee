@@ -10,6 +10,11 @@ UI_CANVAS_HEIGHT = 1000
 UI_CONNECTION_INACTIVE_COLOR = "#ccc"
 UI_CONNECTION_ACTIVE_COLOR = "#000"
 
+Ember.RaphaelView = Ember.View.extend(
+    tagName: 'li'
+    paperBinding: "parentView.paper"
+)
+
 App.ServerView = Ember.View.extend(
     template: Ember.Handlebars.compile("""
     <div class="row-fluid">

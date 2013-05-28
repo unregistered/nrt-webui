@@ -41,6 +41,7 @@ App.Server = Ember.Object.extend(
 
             # Get GUI coords
             session.call("org.nrtkit.designer/get/gui_data").then (res) =>
+                console.log "Got GUI Data"
                 @deserialize_gui_data(res)
             , (error, desc) =>
                 console.log "Not got", error, desc

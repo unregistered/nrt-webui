@@ -7,6 +7,13 @@ App.Router = Ember.Router.extend(
     root: Ember.Route.extend(
         index: Ember.Route.extend(
             route: "/"
+
+            connectOutlets: (router, context) ->
+                router.get('applicationController').connectOutlet('homepage')
+
+            quickConnect: (router, context) ->
+                # Connect to the server in context
+                router.transitionTo 'server', context
         )
 
         server: Ember.Route.extend(
@@ -24,6 +31,10 @@ App.Router = Ember.Router.extend(
                 router.get('applicationController').connectOutlet('server')
                 router.get('namespaceController').set 'content', "/"
                 context.connect()
+
+            exit: (router) ->
+                console.log "Exit"
+                router.get('serversController').set 'selected', null
 
         )
 
