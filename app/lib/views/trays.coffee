@@ -341,9 +341,10 @@ App.TrayView = Ember.View.extend(
         )
 
     ]
-    traysActive: []
+    activeTray: null
 
     variableHeightPaneObserver: (->
+        return unless @$()
         el = @$().find('.variable-height')
         return if Ember.empty el
 
@@ -366,11 +367,11 @@ App.TrayView = Ember.View.extend(
         Ember.run.later(@, (->
             @repeatingHeightPaneObserver()
         ), 100)
-    ).observes('traysActive.@each')
+    ).observes('activeTray')
 
     didInsertElement: ->
         @repeatingHeightPaneObserver()
-        @get('traysActive').pushObject @get('traysAvailable.firstObject')
+        @set 'activeTray', @get('traysAvailable.firstObject')
 
     template: Ember.Handlebars.compile("""
     <ul class="nav nav-pills">
@@ -399,8 +400,7 @@ App.TrayView = Ember.View.extend(
 
     toggleTray: (trayobj) ->
         # If allowing one
-        @traysActive.clear()
-        @traysActive.pushObject trayobj
+        @set 'activeTray', trayobj
 
         # If allowing multiple
         ###
@@ -425,11 +425,11 @@ App.TrayView = Ember.View.extend(
         classNameBindings: ['activeClass']
         classNames: ['pointable']
         activeClass: (->
-            if @get('parentView.traysActive').contains @get('content')
+            if @get('parentView.activeTray') == @get('content')
                 "active"
             else
                 ""
-        ).property('parentView.traysActive.[]')
+        ).property('parentView.activeTray')
 
         click: ->
             @get('parentView').toggleTray @get('content')
@@ -441,10 +441,9 @@ App.TrayView = Ember.View.extend(
 
         shouldRerender: (->
             @get('childViews').clear()
-            @get('parentView.traysActive').forEach (item) =>
-                vc = Ember.get(item.get('class')).create()
-                @get('childViews').pushObject vc
-        ).observes('parentView.traysActive.[]')
+            vc = Ember.get(@get('parentView.activeTray').get('class')).create()
+            @get('childViews').pushObject vc
+        ).observes('parentView.activeTray')
 
     )
 )
