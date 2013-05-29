@@ -235,14 +235,6 @@ App.ServerView = Ember.View.extend(
 
                 @get('selbox').remove()
 
-            selbox =  @get('paper').rect(0, 0, 0, 0);
-            color = Raphael.getColor()
-            selbox.attr
-                fill: color
-                stroke: color
-                "fill-opacity": 0
-                "stroke-width": 2
-
             # Mark the origin
             @get('paper').path("M25,0 L-25,0").attr("stroke", "#ccc")
             @get('paper').path("M0,-25 L0,25").attr("stroke", "#ccc")
@@ -497,7 +489,7 @@ App.ServerView = Ember.View.extend(
                 rect =  @get('paper').rect(0, 0, @get('width'), @get('height'), 7)
                 @set('module.width', @get('width'))
                 @set('module.height', @get('height'))
-                color = Raphael.getColor()
+                color = @get('color')
                 rect.attr
                     fill: color
                     stroke: color
@@ -507,6 +499,29 @@ App.ServerView = Ember.View.extend(
 
                 return rect
             ).property()
+
+            color: (->
+                seed = @get('module.moduid')
+                hashfunc = (str) ->
+                    hash = 0;
+                    i = 0;
+                    while i < str.length
+                        hash = str.charCodeAt(i) + ((hash << 5) - hash)
+                        i++
+                    return hash
+
+                rgbfunc = (i) ->
+                    r = ((i>>24)&0xFF).toString(16)
+                    r = '0' + r if r.length == 1
+                    g = ((i>>16)&0xFF).toString(16)
+                    g = '0' + g if g.length == 1
+                    b = ((i>>8)&0xFF).toString(16)
+                    b = '0' + b if b.length == 1
+                    return '#'+r+g+b;
+
+                color = rgbfunc(hashfunc(seed))
+                return color
+            ).property('module.moduid')
 
             text: (->
                 @get('paper').text(@get('width')/2, 50, @get('name'))
