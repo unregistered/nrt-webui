@@ -506,6 +506,15 @@ App.ServerView = Ember.View.extend(
                     stroke: color
                     "fill-opacity": 0
                     "stroke-width": 2
+
+                return rect
+            ).property()
+
+            hitbox: (->
+                rect = @get('paper').rect(0, 0, @get('width'), @get('height'))
+                rect.attr
+                    fill: 'black'
+                    opacity: 0
                     cursor: "move"
 
                 return rect
@@ -517,28 +526,34 @@ App.ServerView = Ember.View.extend(
             ).property('module.moduid')
 
             text: (->
-                @get('paper').text(@get('width')/2, 50, @get('name'))
+                @get('paper').text(@get('width')/2, 70, @get('name'))
             ).property('name')
 
             image: (->
+                x = @get('width')/2 - 25/2
+                y = 30
+                @get('paper').image('', x, y, 0, 0)
+            ).property()
+
+            imageUpdater: (->
                 proto = App.router.prototypesController.get('content').findProperty 'classname', @get('module.classname')
-                return null unless proto
-                @get('paper').image(proto.get('src'), 10, 10, 30, 30)
-            ).property('module.classname', 'App.router.prototypesController.content.@each')
+                return unless proto
 
-            imageInjector: (->
-                return unless @get('image')
-
-                @get('container').push @get('image')
-            ).observes('image')
+                @get('image').attr
+                    src: proto.get('src')
+                    width: 25
+                    height: 25
+            ).observes('module.classname', 'App.router.prototypesController.content.@each')
 
             container: (->
                 # All the objects that will be grouped into a Raphael set
                 c = @get('paper').set()
                 c.push @get('text')
                 c.push @get('box')
+                c.push @get('image')
+                c.push @get('hitbox')
                 return c
-            ).property('box', 'text')
+            ).property('box', 'text', 'image', 'hitbox')
 
             selectedModules: (->
                 selection = App.router.selectionController.get('content')
@@ -558,7 +573,7 @@ App.ServerView = Ember.View.extend(
                 module = @
                 container = @get('container')
 
-                box = @get('box')
+                box = @get('hitbox')
                 box.node.draggable = true
                 box.node.onDragStart = (event) =>
                     @get('selectedModules').forEach (module) =>

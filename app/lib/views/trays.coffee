@@ -358,7 +358,6 @@ App.TrayView = Ember.View.extend(
             newHeight = el.height() - idealSavings
             newHeight = 20 if newHeight < 20 # The min height
             el.height(newHeight)
-            console.log "Overflowing"
 
     ).observes('Window.height', 'Window.width')
 
