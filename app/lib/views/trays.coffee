@@ -366,7 +366,7 @@ App.TrayView = Ember.View.extend(
         @variableHeightPaneObserver()
         Ember.run.later(@, (->
             @repeatingHeightPaneObserver()
-        ), 100)
+        ), 1000)
     ).observes('activeTray')
 
     didInsertElement: ->

@@ -7,6 +7,8 @@ UI_PORT_SPACING = 8
 UI_CANVAS_WIDTH = 2000
 UI_CANVAS_HEIGHT = 1000
 
+UI_MODULE_IMAGE_WIDTH = 25
+
 UI_CONNECTION_INACTIVE_COLOR = "#ccc"
 UI_CONNECTION_ACTIVE_COLOR = "#000"
 
@@ -529,21 +531,35 @@ App.ServerView = Ember.View.extend(
                 @get('paper').text(@get('width')/2, 70, @get('name'))
             ).property('name')
 
+            imagesrc: (->
+                proto = App.router.prototypesController.get('content').findProperty 'classname', @get('module.classname')
+                return null unless proto
+
+                return proto.get('src')
+            ).property('App.router.prototypesController.content.@each', 'module.classname')
+
             image: (->
-                x = @get('width')/2 - 25/2
+                x = @get('width')/2 - UI_MODULE_IMAGE_WIDTH/2
                 y = 30
-                @get('paper').image('', x, y, 0, 0)
+
+                src = @get('imagesrc')
+                if src
+                    # If the user drags in a module, and we already have its prototype
+                    return @get('paper').image(src, x, y, UI_MODULE_IMAGE_WIDTH, UI_MODULE_IMAGE_WIDTH)
+                else
+                    # We don't know the prototypes yet, create a small blank image and we'll update it later
+                    @get('paper').image('', x, y, 0, 0)
             ).property()
 
             imageUpdater: (->
-                proto = App.router.prototypesController.get('content').findProperty 'classname', @get('module.classname')
-                return unless proto
+                src = @get('imagesrc')
+                return unless src
 
                 @get('image').attr
-                    src: proto.get('src')
-                    width: 25
-                    height: 25
-            ).observes('module.classname', 'App.router.prototypesController.content.@each')
+                    src: src
+                    width: UI_MODULE_IMAGE_WIDTH
+                    height: UI_MODULE_IMAGE_WIDTH
+            ).observes('imagesrc')
 
             container: (->
                 # All the objects that will be grouped into a Raphael set
