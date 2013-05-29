@@ -836,6 +836,17 @@ App.ServerView = Ember.View.extend(
                         App.router.connectionsController.completePairing()
                         App.router.selectionController.setSelection @get('port')
 
+                    # Double click
+                    b.dblclick(=>
+                        topic = @get('port.topic')
+                        Ember.run.next(@, (->
+                            resp = prompt("Enter a new topic name", topic);
+                            return if resp == null
+
+                            @set('port.topic', resp)
+                        ))
+                    )
+
                     @get('container').push c
                     @get('container').push b
 
