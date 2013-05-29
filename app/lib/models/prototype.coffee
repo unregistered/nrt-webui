@@ -25,6 +25,12 @@ App.Prototype = Ember.Object.extend(
 
     ).property('iconext')
 
+    src: (->
+        mime = @get('MIME')
+        data = @get('icondata')
+        return "data:#{mime};base64, #{data}"
+    ).property('MIME', 'icondata')
+
     init: ->
         logicalPath = @get 'from.logicalPath'
         @set 'logicalPath', logicalPath

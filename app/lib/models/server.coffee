@@ -87,8 +87,9 @@ App.Server = Ember.Object.extend(
                 from: item
             )
         ).filter( (item) =>
-            # Ignore bad connections
-            item.get('source_port') && item.get('destination_port')
+            # Ignore bad connections, shouldn't need it
+            keep = item.get('source_port') && item.get('destination_port')
+            return keep
         )
 
         # App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>

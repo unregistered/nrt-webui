@@ -14,4 +14,8 @@ App.Connection = Ember.Object.extend(
 
             @set 'source_port', source_mod.get('posters').findProperty('portname', @get('from.portname1'))
             @set 'destination_port', destination_mod.get('subscribers').findProperty('portname', @get('from.portname2'))
+
+            if !@get('destination_port')
+                # We're probably a checker
+                @set 'destination_port', destination_mod.get('checkers').findProperty('portname', @get('from.portname2'))
 )

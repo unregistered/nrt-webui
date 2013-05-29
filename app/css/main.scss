@@ -1,5 +1,11 @@
+html {
+    height: 100%;
+}
+
 body {
   padding: 20px 10px;
+  overflow: hidden;
+  height: 100%;
 }
 
 a {
@@ -13,7 +19,7 @@ a {
 }
 
 .workspace {
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     svg {
         background: #eee;
     }
@@ -62,6 +68,10 @@ a {
 
     td.background {
         background-color: #f0f0f0;
+    }
+
+    .variable-height {
+        overflow-y: auto;
     }
 }
 

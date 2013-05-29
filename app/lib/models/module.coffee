@@ -35,7 +35,7 @@ App.Module = Ember.Object.extend(
                 # This means the module update will be AT LEAST 100ms late
                 App.router.serverController.updateModulePosition(@, @get('x'), @get('y'))
                 @set 'position_update_cooling_down', false
-            , 100)
+            , 250)
     ).observes('x', 'y')
 
     init: ->

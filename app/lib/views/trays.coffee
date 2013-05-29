@@ -77,7 +77,9 @@ App.ModuleTrayView = Ember.View.extend(
         <tbody>
             <tr>
                 <td>
-                    {{view App.TreeView}}
+                    <div class="variable-height">
+                        {{view App.TreeView}}
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -170,6 +172,9 @@ App.CurrentSelectionTrayView = Ember.View.extend(
     </table>
     """
 
+    didInsertElement: ->
+
+
     PortView: Ember.View.extend(
         portBinding: 'parentView.port'
         tagName: 'tbody'
@@ -220,26 +225,28 @@ App.CurrentSelectionTrayView = Ember.View.extend(
         <tr><td class="h2">Ports</td></tr>
         <tr>
             <td class="background">
-                <dl>
-                    {{#each view.module.posters}}
-                        <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
-                        <dd>
-                            {{this.description}}
-                        </dd>
-                    {{/each}}
-                    {{#each view.module.subscribers}}
-                        <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
-                        <dd>
-                            {{this.description}}
-                        </dd>
-                    {{/each}}
-                    {{#each view.module.checkers}}
-                        <dt>[checker] {{this.portname}} ({{this.msgtype}})</dt>
-                        <dd>
-                            {{this.description}}
-                        </dd>
-                    {{/each}}
-                </dl>
+                <div class="variable-height">
+                    <dl>
+                        {{#each view.module.posters}}
+                            <dt>[poster] {{this.portname}} ({{this.msgtype}})</dt>
+                            <dd>
+                                {{this.description}}
+                            </dd>
+                        {{/each}}
+                        {{#each view.module.subscribers}}
+                            <dt>[subscriber] {{this.portname}} ({{this.msgtype}})</dt>
+                            <dd>
+                                {{this.description}}
+                            </dd>
+                        {{/each}}
+                        {{#each view.module.checkers}}
+                            <dt>[checker] {{this.portname}} ({{this.msgtype}})</dt>
+                            <dd>
+                                {{this.description}}
+                            </dd>
+                        {{/each}}
+                    </dl>
+                </div>
             </td>
         </tr>
 
@@ -334,13 +341,37 @@ App.TrayView = Ember.View.extend(
         )
 
     ]
-    traysActive: null
-    init: ->
-        @_super()
-        @set 'traysActive', Ember.Set.create()
+    traysActive: []
+
+    variableHeightPaneObserver: (->
+        el = @$().find('.variable-height')
+        return if Ember.empty el
+
+        parent = el.closest('.tray')
+
+        # Check if the tray is overflowing
+        totalHeight = parent.height() + parent.offset().top
+        if totalHeight > Window.get('height')
+            # We are over
+            # Find how much we should cut down
+            idealSavings = totalHeight - Window.get('height') + 20
+            newHeight = el.height() - idealSavings
+            newHeight = 20 if newHeight < 20 # The min height
+            el.height(newHeight)
+            console.log "Overflowing"
+
+    ).observes('Window.height', 'Window.width')
+
+    repeatingHeightPaneObserver: (->
+        @variableHeightPaneObserver()
+        Ember.run.later(@, (->
+            @repeatingHeightPaneObserver()
+        ), 100)
+    ).observes('traysActive.@each')
 
     didInsertElement: ->
-        @get('traysActive').add @get('traysAvailable.firstObject')
+        @repeatingHeightPaneObserver()
+        @get('traysActive').pushObject @get('traysAvailable.firstObject')
 
     template: Ember.Handlebars.compile("""
     <ul class="nav nav-pills">
@@ -370,7 +401,7 @@ App.TrayView = Ember.View.extend(
     toggleTray: (trayobj) ->
         # If allowing one
         @traysActive.clear()
-        @traysActive.add trayobj
+        @traysActive.pushObject trayobj
 
         # If allowing multiple
         ###

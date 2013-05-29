@@ -80,16 +80,11 @@ App.TreeNodeView = Ember.View.extend(
         prototype: null
         tagName: "img"
         classNames: ["prototype-icon"]
+        srcBinding: "prototype.src"
         attributeBindings: ["src", "width"]
 
         width: "20px"
 
-        src: (->
-            p = @get('prototype')
-            mime = p.get('MIME')
-            data = p.get('icondata')
-            return "data:#{mime};base64, #{data}"
-        ).property('prototype.MIME', 'prototype.icondata')
     )
 )
 

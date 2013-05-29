@@ -121,7 +121,7 @@ App.ServerView = Ember.View.extend(
         ).observes('App.router.settingsController.content.canvas_mousemode')
 
         template: Ember.Handlebars.compile("""
-        <div>
+        <div class="hidden">
             {{#each App.router.modulesController.content}}
                 {{view view.Module moduleBinding="this"}}
             {{/each}}
@@ -147,8 +147,19 @@ App.ServerView = Ember.View.extend(
             p = p.matrixTransform(g.getCTM().inverse());
             return p
 
+        workspaceResizeObserver: (->
+            newHeight = Window.get('height') - @$().offset().top - 20;
+            @$().height(newHeight)
+        ).observes('Window.height')
+
         didInsertElement: ->
             el = @$()[0]
+
+            Ember.run.later(@, (->
+                @workspaceResizeObserver()
+            ), 1000)
+
+            # Accept drops
             @$().droppable(
                 activeClass: "ui-state-active"
                 hoverClass: "ui-state-hover"
@@ -502,30 +513,24 @@ App.ServerView = Ember.View.extend(
 
             color: (->
                 seed = @get('module.moduid')
-                hashfunc = (str) ->
-                    hash = 0;
-                    i = 0;
-                    while i < str.length
-                        hash = str.charCodeAt(i) + ((hash << 5) - hash)
-                        i++
-                    return hash
-
-                rgbfunc = (i) ->
-                    r = ((i>>24)&0xFF).toString(16)
-                    r = '0' + r if r.length == 1
-                    g = ((i>>16)&0xFF).toString(16)
-                    g = '0' + g if g.length == 1
-                    b = ((i>>8)&0xFF).toString(16)
-                    b = '0' + b if b.length == 1
-                    return '#'+r+g+b;
-
-                color = rgbfunc(hashfunc(seed))
-                return color
+                App.str2color(seed)
             ).property('module.moduid')
 
             text: (->
                 @get('paper').text(@get('width')/2, 50, @get('name'))
             ).property('name')
+
+            image: (->
+                proto = App.router.prototypesController.get('content').findProperty 'classname', @get('module.classname')
+                return null unless proto
+                @get('paper').image(proto.get('src'), 10, 10, 30, 30)
+            ).property('module.classname', 'App.router.prototypesController.content.@each')
+
+            imageInjector: (->
+                return unless @get('image')
+
+                @get('container').push @get('image')
+            ).observes('image')
 
             container: (->
                 # All the objects that will be grouped into a Raphael set
@@ -648,6 +653,14 @@ App.ServerView = Ember.View.extend(
                     @hideLabel()
                     return true
 
+                fillColor: (->
+                    App.str2color(@get('port.msgtype'))
+                ).property('port.msgtype')
+
+                outlineColor: (->
+                    App.str2color(@get('port.rettype'))
+                ).property('port.rettype')
+
                 toggleLabel: (->
                     if @get('isHovered')
                         @showLabel()
@@ -663,8 +676,10 @@ App.ServerView = Ember.View.extend(
                         )
                     else
                         @get('circle').attr(
-                            fill: 'white'
+                            fill: @get('fillColor')
                             opacity: 1
+                            'stroke': @get('outlineColor')
+                            'stroke-width': 3
                         )
                 ).observes('isHovered')
 
@@ -713,10 +728,20 @@ App.ServerView = Ember.View.extend(
                         ypos = @get('parentView.height')
 
                         circle = @get('paper').circle(xpos, ypos, @get('radius'))
+                        circle.attr(
+                            'fill': @get('fillColor')
+                            'stroke': @get('outlineColor')
+                            'stroke-width': 3
+                        )
                     else
                         xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
                         ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
                         circle = @get('paper').circle(xpos, ypos, @get('radius'))
+                        circle.attr(
+                            'fill': @get('fillColor')
+                            'stroke': @get('outlineColor')
+                            'stroke-width': 3
+                        )
                         return circle
                 ).property()
 
