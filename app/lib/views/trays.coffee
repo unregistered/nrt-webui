@@ -216,6 +216,8 @@ App.CurrentSelectionTrayView = Ember.View.extend(
                 <dl>
                     <dt>moduid</dt>
                     <dd>{{view.module.moduid}}</dd>
+                    <dt>Blackboard</dt>
+                    <dd>{{view.module.blackboard.bbnick}}</dd>
                     <dt>coordinates</dt>
                     <dd>({{view.module.x}}, {{view.module.y}})</dd>
                 </dl>

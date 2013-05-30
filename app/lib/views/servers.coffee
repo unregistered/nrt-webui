@@ -6,8 +6,8 @@ UI_PORT_HEIGHT = 10
 UI_PORT_INITIAL_OFFSET = 20
 UI_PORT_SPACING = 8
 
-UI_CANVAS_WIDTH = 2000
-UI_CANVAS_HEIGHT = 1000
+UI_CANVAS_WIDTH = 100000
+UI_CANVAS_HEIGHT = 100000
 
 UI_MODULE_IMAGE_WIDTH = 25
 
@@ -57,11 +57,66 @@ App.ServerView = Ember.View.extend(
         template: Ember.Handlebars.compile """
             <div class="btn-toolbar">
                 <div class="btn-group">
+                    {{view view.RestoreViewButton}}
+                    {{view view.ZoomInButton}}
+                    {{view view.ZoomOutButton}}
+                </div>
+                <div class="btn-group">
                     {{view view.MoveButton}}
                     {{view view.SelectButton}}
                 </div>
+                {{view view.StartButton}}
             </div>
         """
+
+        RestoreViewButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small']
+            classNameBindings: ['active']
+            attributeBindings: ['title']
+            title: "Move"
+            template: Ember.Handlebars.compile """<i class="icon-home"></i>"""
+
+            click: ->
+                App.router.canvasController.panToCenter()
+        )
+
+        ZoomInButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small']
+            classNameBindings: ['active']
+            attributeBindings: ['title']
+            title: "Move"
+            template: Ember.Handlebars.compile """<i class="icon-zoom-in"></i>"""
+
+            click: ->
+                App.router.canvasController.zoomIn()
+        )
+
+        ZoomOutButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small']
+            classNameBindings: ['active']
+            attributeBindings: ['title']
+            title: "Move"
+            template: Ember.Handlebars.compile """<i class="icon-zoom-out"></i>"""
+
+            click: ->
+                App.router.canvasController.zoomOut()
+        )
+
+        StartButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small', 'pull-right']
+            classNameBindings: ['color']
+            attributeBindings: ['title']
+            title: "Start"
+            template: Ember.Handlebars.compile """Start"""
+
+            color: (->
+                return 'btn-success'
+            ).property()
+        )
 
         MoveButton: Ember.View.extend(
             tagName: 'a'
@@ -108,6 +163,7 @@ App.ServerView = Ember.View.extend(
 
     WorkspaceView: Ember.View.extend(
         classNames: ['workspace']
+        zpdBinding: "App.router.canvasController.zpd"
 
         # Panning setting
         classNameBindings: ['moveClass:canvas-drag-mode']
@@ -180,12 +236,13 @@ App.ServerView = Ember.View.extend(
                     @get('controller').createModule(prototype, point.x, point.y)
             )
             @set 'paper', new Raphael(el, "100%", "100%")
-            @set 'zpd', new RaphaelZPD(@get('paper'), {
+            App.router.canvasController.set 'zpd', new RaphaelZPD(@get('paper'), {
                 zoom: true
                 pan: (App.router.settingsController.get('content.canvas_mousemode') == App.SETTING_CANVAS_MOUSEMODE_DRAG)
                 drag: true
-                zoomThreshold: [0.3, 2]
+                zoomThreshold: [0.1, 2]
             })
+            App.router.canvasController.set 'svg', @$().find('svg')[0]
 
             # Draw a mat to intercept multiple selection, these are also the bounds of the program
             @set 'mat', @get('paper').rect(-UI_CANVAS_WIDTH/2, -UI_CANVAS_HEIGHT/2, UI_CANVAS_WIDTH, UI_CANVAS_HEIGHT).attr("fill", "#FFF")
@@ -528,6 +585,24 @@ App.ServerView = Ember.View.extend(
                 @get('paper').text(@get('width')/2, 70, @get('name'))
             ).property('name')
 
+            bbnick: (->
+                @get('paper').text( @get('width')/2, @get('height') - 20, @get('module.blackboard.bbnick') )
+            ).property()
+            bbnickBackground: (->
+                textbbox = @get('bbnick').getBBox()
+                w = textbbox.width + 10
+                h = textbbox.height + 6
+                x = @get('width')/2 - w/2
+                y = @get('height') - 20 - h/2
+
+                r = @get('paper').rect(x, y, w, h, 3)
+                r.attr(
+                    fill: App.str2color(@get('module.blackboard.bbnick'))
+                    opacity: 0.5
+                )
+                return r
+            ).property()
+
             imagesrc: (->
                 proto = App.router.prototypesController.get('content').findProperty 'classname', @get('module.classname')
                 return null unless proto
@@ -564,6 +639,8 @@ App.ServerView = Ember.View.extend(
                 c.push @get('text')
                 c.push @get('box')
                 c.push @get('image')
+                c.push @get('bbnickBackground')
+                c.push @get('bbnick')
                 c.push @get('hitbox')
                 return c
             ).property('box', 'text', 'image', 'hitbox')
