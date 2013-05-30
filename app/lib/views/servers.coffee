@@ -1,6 +1,8 @@
 require "nrt-webui/core"
 
-UI_PORT_RADIUS = 7
+UI_PORT_BORDER_RADIUS = 4
+UI_PORT_WIDTH = 20
+UI_PORT_HEIGHT = 10
 UI_PORT_INITIAL_OFFSET = 20
 UI_PORT_SPACING = 8
 
@@ -259,8 +261,8 @@ App.ServerView = Ember.View.extend(
             phantom: false # Phantom connections are not yet real
 
             curved_path_string: (->
-                bb1 = @get('start').getBBox()
-                bb2 = @get('end').getBBox()
+                bb1 = @get('start_view').get('bbox')
+                bb2 = @get('end_view').get('bbox')
 
                 p = [
                   x: bb1.x + bb1.width / 2
@@ -320,8 +322,8 @@ App.ServerView = Ember.View.extend(
             ).property('connection.source_module.x', 'connection.source_module.y', 'connection.destination_module.x', 'connection.destination_module.y')
 
             straight_path_string: (->
-                bb1 = @get('start').getBBox()
-                bb2 = @get('end').getBBox()
+                bb1 = @get('start_view').get('bbox')
+                bb2 = @get('end_view').get('bbox')
 
                 x1 = bb1.x + bb1.width/2
                 y1 = bb1.y + bb1.height/2
@@ -411,8 +413,8 @@ App.ServerView = Ember.View.extend(
                 source_view = Ember.View.views[source.get('id')]
                 destination_view = Ember.View.views[destination.get('id')]
 
-                @set 'start', source_view.get('circle')
-                @set 'end', destination_view.get('circle')
+                @set 'start_view', source_view
+                @set 'end_view', destination_view
 
                 # Draw the line
                 @get('line')
@@ -465,20 +467,15 @@ App.ServerView = Ember.View.extend(
                 @get('module.displayName')
             ).property('module.instance', 'module.classname')
 
-            coordx: (->
-                # try
-                @get('container').getBBox().x
-            ).property().volatile()
-
-            coordy: (->
-                @get('container').getBBox().y
-            ).property().volatile()
+            bbox: (->
+                @get('container').getBBox()
+            )
 
             width: (->
                 min_width = 100
 
                 number_of_ports = @get('module.checkers.length')
-                port_width = 2*UI_PORT_RADIUS + UI_PORT_SPACING
+                port_width = UI_PORT_WIDTH + UI_PORT_SPACING
                 computed_width = port_width * number_of_ports + UI_PORT_INITIAL_OFFSET
 
                 return Math.max(computed_width, min_width)
@@ -491,7 +488,7 @@ App.ServerView = Ember.View.extend(
                 subscribers = @get('module.subscribers').length
 
                 number_of_ports = Math.max(posters, subscribers)
-                port_height = 2*UI_PORT_RADIUS + UI_PORT_SPACING
+                port_height = UI_PORT_HEIGHT + UI_PORT_SPACING
                 computed_height = port_height * number_of_ports + UI_PORT_INITIAL_OFFSET
 
                 return Math.max(computed_height, min_height)
@@ -669,9 +666,7 @@ App.ServerView = Ember.View.extend(
                 template: Ember.Handlebars.compile("""
                 Port: {{view.port.id}}
                 """)
-                radius: UI_PORT_RADIUS # Radius of each bubble
-                initial_offset: UI_PORT_INITIAL_OFFSET # How many pixels to offset the first bubble
-                spacing: UI_PORT_SPACING # How many pixels to space each bubble after the first
+                paperBinding: 'parentView.paper'
                 containerBinding: 'parentView.container'
                 boxBinding: 'parentView.box'
                 elementIdBinding: "port.id"
@@ -684,11 +679,11 @@ App.ServerView = Ember.View.extend(
                     @hideLabel()
                     return true
 
-                fillColor: (->
+                msgColor: (->
                     App.str2color(@get('port.msgtype'))
                 ).property('port.msgtype')
 
-                outlineColor: (->
+                retColor: (->
                     App.str2color(@get('port.rettype'))
                 ).property('port.rettype')
 
@@ -699,29 +694,31 @@ App.ServerView = Ember.View.extend(
                         @hideLabel()
                 ).observes('isHovered')
 
-                toggleHover: (->
+                hoverObserver: (->
                     if @get('isHovered')
-                        @get('circle').attr(
-                            fill: 'green'
+                        @get('box').attr(
+                            opacity: 0.5
+                        )
+                        @get('rettype_box').attr(
                             opacity: 0.5
                         )
                     else
-                        @get('circle').attr(
-                            fill: @get('fillColor')
+                        @get('box').attr(
                             opacity: 1
-                            'stroke': @get('outlineColor')
-                            'stroke-width': 3
+                        )
+                        @get('rettype_box').attr(
+                            opacity: 1
                         )
                 ).observes('isHovered')
 
-                onSelect: (->
+                selectionObserver: (->
                     if App.router.selectionController.get('content').contains @get('port')
-                        @get('circle').attr(
+                        @get('box').attr(
                             'stroke': 'black'
                             'stroke-width': 2
                         )
                     else
-                        @get('circle').attr(
+                        @get('box').attr(
                             'stroke': 'black'
                             'stroke-width': 1
                         )
@@ -741,75 +738,108 @@ App.ServerView = Ember.View.extend(
                         )
                 ).observes('App.router.connectionsController.candidatePorts')
 
-                coordx: (->
-                    @get('circle').getBBox().x
+                bbox: (->
+                    @get('box').getBBox()
                 ).property().volatile()
 
-                coordy: (->
-                    @get('circle').getBBox().y
-                ).property().volatile()
+                ###
+                Returns object {x, y, w, h}
+                The position of the port when its module is at 0,0. This is used to draw the
+                position of the box, which will be different for checkers, posters, subscribers.
+                ###
+                initial_position: (->
+                    retval = {
+                        x: 0
+                        y: 0
+                        w: 0
+                        h: 0
+                    }
 
-                circle: (->
                     if @get('port.orientation') == 'checker'
-                        total_width = @get('port.module.checkers.length') * ( @get('radius') * 2 + @get('spacing') ) - @get('spacing') # Last one doesn't get extra space
+                        total_width = @get('port.module.checkers.length') * ( UI_PORT_HEIGHT + UI_PORT_SPACING ) - UI_PORT_SPACING # Last one doesn't get extra space
                         midpoint = @get('parentView.width')/2
-                        x_start = midpoint - total_width/2
+                        x_start = midpoint - total_width/2 - UI_PORT_HEIGHT
 
-                        xpos = x_start + @get('radius') + @get('port.index') * (@get('radius') * 2 + @get('spacing'))
-                        ypos = @get('parentView.height')
-
-                        circle = @get('paper').circle(xpos, ypos, @get('radius'))
-                        circle.attr(
-                            'fill': @get('fillColor')
-                            'stroke': @get('outlineColor')
-                            'stroke-width': 3
-                        )
+                        retval.x = x_start + UI_PORT_HEIGHT + @get('port.index') * (UI_PORT_HEIGHT + UI_PORT_SPACING)
+                        retval.y = @get('parentView.height') - UI_PORT_WIDTH/2
+                        retval.w = UI_PORT_HEIGHT # These are flipped for checkers
+                        retval.h = UI_PORT_WIDTH
                     else
-                        xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
-                        ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
-                        circle = @get('paper').circle(xpos, ypos, @get('radius'))
-                        circle.attr(
-                            'fill': @get('fillColor')
-                            'stroke': @get('outlineColor')
-                            'stroke-width': 3
-                        )
-                        return circle
+                        retval.x = @get('parentView.width') * (@get('port.orientation') is 'output') - UI_PORT_WIDTH/2
+                        retval.y = UI_PORT_INITIAL_OFFSET + @get('port.index') * UI_PORT_HEIGHT + UI_PORT_SPACING * @get('port.index')
+                        retval.w = UI_PORT_WIDTH
+                        retval.h = UI_PORT_HEIGHT
+
+                    return retval
+                ).property()
+
+                box: (->
+                    x = @get('initial_position').x
+                    y = @get('initial_position').y
+                    w = @get('initial_position').w
+                    h = @get('initial_position').h
+
+                    rect =  @get('paper').rect(x, y, w, h, UI_PORT_BORDER_RADIUS)
+                    rect.attr
+                        fill: @get('msgColor')
+
+                    return rect
+
+                ).property()
+
+                # UI element representing the return type
+                rettype_box: (->
+                    x = @get('initial_position').x
+                    y = @get('initial_position').y
+                    w = @get('initial_position').w
+                    h = @get('initial_position').h
+
+                    if @get('port.orientation') is 'checker'
+                        # Checkers have no return type
+                        w = 0
+                        h = 0
+                    if @get('port.orientation') is 'input'
+                        x += UI_PORT_WIDTH/2
+                        w = w/2
+                    if @get('port.orientation') is 'output'
+                        w = w/2
+
+                    rect =  @get('paper').rect(x, y, w, h, UI_PORT_BORDER_RADIUS)
+                    rect.attr
+                        fill: @get('retColor')
+
+                    return rect
                 ).property()
 
                 hitbox: (->
-                    if @get('port.orientation') == 'checker'
-                        total_width = @get('port.module.checkers.length') * ( @get('radius') * 2 + @get('spacing') ) - @get('spacing') # Last one doesn't get extra space
-                        midpoint = @get('parentView.width')/2
-                        x_start = midpoint - total_width/2
+                    x = @get('initial_position').x
+                    y = @get('initial_position').y
+                    w = @get('initial_position').w
+                    h = @get('initial_position').h
 
-                        xpos = x_start + @get('radius') + @get('port.index') * (@get('radius') * 2 + @get('spacing'))
-                        ypos = @get('parentView.height')
-
-                        w = @get('radius') * 2 + 8
-                        h = @get('radius') * 2 + 4 * 2 + 8 # Extra 8
-                        box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
-                        box.attr(
-                            'fill': 'green'
-                            opacity: 0
-                            stroke: 'none'
-                        )
-                        return box
+                    if @get('port.orientation') is 'checker'
+                        # Checker adjustments
+                        x -= UI_PORT_SPACING/2
+                        h *= 1.5
+                        w += UI_PORT_SPACING
                     else
-                        xpos = @get('parentView.width') * (@get('port.orientation') is 'output')
-                        ypos = @get('initial_offset') + @get('port.index') * (@get('radius') * 2) + @get('spacing') * @get('port.index')
-                        w = @get('radius') * 2 + 16
-                        h = @get('radius') * 2 + 4 * 2
-                        box = @get('paper').rect(xpos - w/2, ypos - h/2, w, h)
-                        box.attr(
-                            'fill': 'green'
-                            opacity: 0
-                            stroke: 'none'
-                        )
-                        return box
+                        # Port adjustments
+                        y -= UI_PORT_SPACING/2
+                        x -= 10 if @get('port.orientation') is 'input'
+                        w = w * 1.5
+                        h = h + UI_PORT_SPACING
+
+                    rect =  @get('paper').rect(x, y, w, h, 0)
+                    rect.attr(
+                        fill: 'green'
+                        opacity: 0
+                    )
                 ).property()
 
                 showLabel: ->
-                    t = @get('paper').text(@get('coordx')+20, @get('coordy'), @get('port.portname'))
+                    x = @get('bbox').x + 30
+                    y = @get('bbox').y
+                    t = @get('paper').text(x, y, @get('port.portname'))
                     t.attr (
                         'text-anchor': 'start'
                     )
@@ -821,39 +851,39 @@ App.ServerView = Ember.View.extend(
                         @notifyPropertyChange 'label'
 
                 beforeRender: ->
-                    c = @get('circle')
-                    b = @get('hitbox')
+                    box = @get('box')
+                    hitbox = @get('hitbox')
 
                     # Add a tag
                     module = @
-                    b.mouseover (arg) =>
+                    hitbox.mouseover (arg) =>
                         App.router.connectionsController.set 'hovered', @get('port')
 
-                    b.mouseout (arg) =>
+                    hitbox.mouseout (arg) =>
                         App.router.connectionsController.set 'hovered', null
 
-                    # Raphael does not support the contextmenu event, so we do it the jQuery way
-                    $(b.node).bind('contextmenu', (event) =>
-                        console.log "CTX", event
-                        return false
-                    )
+                    # # Raphael does not support the contextmenu event, so we do it the jQuery way
+                    # $(b.node).bind('contextmenu', (event) =>
+                    #     console.log "CTX", event
+                    #     return false
+                    # )
 
                     # Dragging
-                    b.node.draggable = true
-                    b.node.onDragStart = (event) =>
+                    hitbox.node.draggable = true
+                    hitbox.node.onDragStart = (event) =>
                         console.log "start"
                         App.router.connectionsController.startPairing @get('port')
 
-                    b.node.onDrag = (delta, event) =>
+                    hitbox.node.onDrag = (delta, event) =>
                         console.log "Move"
 
-                    b.node.onDragStop = =>
+                    hitbox.node.onDragStop = =>
                         console.log "Up", @
                         App.router.connectionsController.completePairing()
                         App.router.selectionController.setSelection @get('port')
 
                     # Double click
-                    b.dblclick(=>
+                    hitbox.dblclick(=>
                         topic = @get('port.topic')
                         Ember.run.next(@, (->
                             resp = prompt("Enter a new topic name", topic);
@@ -863,8 +893,9 @@ App.ServerView = Ember.View.extend(
                         ))
                     )
 
-                    @get('container').push c
-                    @get('container').push b
+                    @get('container').push box
+                    @get('container').push @get('rettype_box')
+                    @get('container').push hitbox
 
             )
 
