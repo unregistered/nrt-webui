@@ -65,6 +65,7 @@ App.ServerView = Ember.View.extend(
                     {{view view.MoveButton}}
                     {{view view.SelectButton}}
                 </div>
+                {{view view.StopButton}}
                 {{view view.StartButton}}
             </div>
         """
@@ -116,6 +117,27 @@ App.ServerView = Ember.View.extend(
             color: (->
                 return 'btn-success'
             ).property()
+
+            click: (->
+                App.router.serverController.start()
+            )
+        )
+
+        StopButton: Ember.View.extend(
+            tagName: 'a'
+            classNames: ['btn', 'btn-small', 'pull-right']
+            classNameBindings: ['color']
+            attributeBindings: ['title']
+            title: "Start"
+            template: Ember.Handlebars.compile """Stop"""
+
+            color: (->
+                return 'btn-danger'
+            ).property()
+
+            click: (->
+                App.router.serverController.stop()
+            )
         )
 
         MoveButton: Ember.View.extend(
@@ -709,6 +731,9 @@ App.ServerView = Ember.View.extend(
                         $.each module.get('container'), (idx, item) =>
                             item.toFront()
 
+                box.hover =>
+                    @get('container').toFront()
+
             move: (->
                 m = @get('module')
                 @moveTo(m.get('x'), m.get('y'))
@@ -914,17 +939,36 @@ App.ServerView = Ember.View.extend(
                 ).property()
 
                 showLabel: ->
+                    textmsg = "#{@get('port.portname')}\n    Msg: #{@get('port.msgtype')}\n    Ret: #{@get('port.rettype')}"
                     x = @get('bbox').x + 30
                     y = @get('bbox').y
-                    t = @get('paper').text(x, y, @get('port.portname'))
+                    t = @get('paper').text(x, y, textmsg)
                     t.attr (
                         'text-anchor': 'start'
+                        fill: 'white'
                     )
+
+                    w = t.getBBox().width + 10
+                    h = t.getBBox().height + 10
+                    x = x - 10/2
+                    y = y - h/2
+
+                    tb = @get('paper').rect(x, y, w, h, 3)
+                    tb.attr(
+                        fill: 'black'
+                    )
+
+                    t.toFront()
+
                     @set 'label', t
+                    @set 'labelBackground', tb
 
                 hideLabel: ->
                     try
                         @get('label').remove()
+                    try
+                        @get('labelBackground').remove()
+                    try
                         @notifyPropertyChange 'label'
 
                 beforeRender: ->

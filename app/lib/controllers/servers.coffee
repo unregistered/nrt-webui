@@ -8,6 +8,19 @@ App.ServersController = Ember.ArrayController.extend(
 App.ServerController = Ember.Controller.extend(
     contentBinding: "App.router.serversController.selected"
 
+    start: ->
+        @setStatus("start")
+
+    stop: ->
+        @setStatus("stop")
+
+    setStatus: (state) ->
+        @get('content.session').call("org.nrtkit.designer/edit/nrt", state).then( (res) =>
+            console.log "State sent", state
+        , (error, desc) =>
+            console.log error, desc
+        )
+
     createModule: (prototype, x, y, bbnick) ->
         console.log "Create module at xy", x, y
         @get('content.session').call("org.nrtkit.designer/post/module",
