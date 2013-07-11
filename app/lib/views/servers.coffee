@@ -65,8 +65,7 @@ App.ServerView = Ember.View.extend(
                     {{view view.MoveButton}}
                     {{view view.SelectButton}}
                 </div>
-                {{view view.StopButton}}
-                {{view view.StartButton}}
+                {{view view.StateButton}}
             </div>
         """
 
@@ -106,37 +105,23 @@ App.ServerView = Ember.View.extend(
                 App.router.canvasController.zoomOut()
         )
 
-        StartButton: Ember.View.extend(
+        StateButton: Ember.View.extend(
             tagName: 'a'
             classNames: ['btn', 'btn-small', 'pull-right']
-            classNameBindings: ['color']
+            classNameBindings: ['running:btn-danger:btn-success']
             attributeBindings: ['title']
-            title: "Start"
-            template: Ember.Handlebars.compile """Start"""
+            title: "StateButton"
+            template: Ember.Handlebars.compile """{{#if view.running}}Stop{{else}}Start{{/if}}"""
 
-            color: (->
-                return 'btn-success'
-            ).property()
+            running: (->
+              return @get('controller.content.running')
+            ).property('controller.content.running')
 
             click: (->
-                App.router.serverController.start()
-            )
-        )
-
-        StopButton: Ember.View.extend(
-            tagName: 'a'
-            classNames: ['btn', 'btn-small', 'pull-right']
-            classNameBindings: ['color']
-            attributeBindings: ['title']
-            title: "Start"
-            template: Ember.Handlebars.compile """Stop"""
-
-            color: (->
-                return 'btn-danger'
-            ).property()
-
-            click: (->
+              if(@get('running'))
                 App.router.serverController.stop()
+              else
+                App.router.serverController.start()
             )
         )
 

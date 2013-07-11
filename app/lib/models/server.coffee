@@ -6,6 +6,7 @@ App.Server = Ember.Object.extend(
     port: 0
 
     connected: false
+    running: false
 
     modulesBinding: "App.router.modulesController.content"
     blackboardsBinding: "App.router.blackboardsController.content"
@@ -72,6 +73,8 @@ App.Server = Ember.Object.extend(
                     console.log "Not found:", item
 
     deserialize_bbfs: (res) ->
+        console.log "Got BlackboardFederationSummary: ", res
+
         App.router.blackboardsController.set 'content', res.message.bbnicks.map (item) =>
             App.Blackboard.create(
                 from: item
@@ -91,6 +94,10 @@ App.Server = Ember.Object.extend(
             keep = item.get('source_port') && item.get('destination_port')
             return keep
         )
+
+        @set 'running', res.message.running
+
+        #App.router.running.set res.message.running
 
         # App.router.prototypesController.set 'content', res.message.namespaces[0].prototypes.map (item) =>
         #     App.Prototype.create(
