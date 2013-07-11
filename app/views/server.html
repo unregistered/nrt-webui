@@ -1,0 +1,32 @@
+<div class="row-fluid">
+    <div class="span4">
+        <tray name="Modules">
+            Modules go here
+        </tray>
+        <div ng-controller="ModulesCtrl">
+            <div ng-repeat="(moduid, module) in modules">{{moduid}}</div>
+        </div>
+    </div>
+    <div class="span8">
+        <!-- Alert view -->
+
+        <!-- Toolbar -->
+
+        <!-- Namespaces -->
+        <ul class="breadcrumb">
+          <li><a href="#">root</a> <span class="divider">/</span></li>
+          <li><a href="#">to</a> <span class="divider">/</span></li>
+          <li class="active">do</li>
+        </ul>
+
+        <!-- Workspace -->
+        <raphael>
+            <div ng-controller="ModulesCtrl">
+                <module ng-repeat="(moduid, module) in modules" model="{{module}}">
+
+                </module>
+            </div>
+        </raphael>
+
+    </div>
+</div>
