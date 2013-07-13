@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, ColorizerService, SelectionService) ->
     self = {
         scope: {
             model: "=model"
@@ -48,7 +48,6 @@ angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
                     "fill-opacity": 0
                     "stroke-width": 2
 
-                scope.raphael_drawings.box = rect
                 return rect
 
             scope.drawHitbox = ->
@@ -58,14 +57,14 @@ angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
                     opacity: 0
                     cursor: "move"
 
-                scope.raphael_drawings.hitbox = rect
                 return rect
 
             scope.drawText = ->
-                scope.raphael_drawings.text = controller.paper.text(scope.getWidth()/2, 70, scope.model.classname)
+                controller.paper.text(scope.getWidth()/2, 70, scope.model.classname)
 
             scope.drawBBNick = ->
-                scope.raphael_drawings.bbnick = controller.paper.text( scope.getWidth()/2, scope.getHeight() - 20, scope.model.bbuid )
+                nick = BlackboardParserService.content[scope.model.bbuid].nick
+                controller.paper.text( scope.getWidth()/2, scope.getHeight() - 20, nick )
 
             scope.drawBBNickBackground = ->
                 textbbox = scope.raphael_drawings.bbnick.getBBox()
@@ -79,8 +78,11 @@ angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
                     fill: ColorizerService.str2color(scope.model.bbuid)
                     opacity: 0.5
                 )
-                scope.raphael_drawings.bbnickBackground = r
                 return r
+
+            scope.toFront = ->
+                _.each scope.container, (it) =>
+                    it.toFront()
 
             scope.moveTo = (x, y) ->
                 return unless scope.container
@@ -93,35 +95,38 @@ angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
                 # Draw
                 scope.raphael_drawings = {}
                 scope.raphael_drawings.box = scope.drawBox()
-                scope.drawText()
-                scope.drawBBNick()
-                scope.drawBBNickBackground()
-                scope.drawHitbox()
+                scope.raphael_drawings.text = scope.drawText()
+                scope.raphael_drawings.bbnick = scope.drawBBNick()
+                scope.raphael_drawings.bbnick_background = scope.drawBBNickBackground()
+                scope.raphael_drawings.hitbox = scope.drawHitbox()
 
                 # All the objects that will be grouped into a Raphael set
                 c = controller.paper.set()
                 c.push scope.raphael_drawings.text
                 c.push scope.raphael_drawings.box
                 # c.push scope.raphael_drawings.image
-                c.push scope.raphael_drawings.bbnickBackground
+                c.push scope.raphael_drawings.bbnick_background
                 c.push scope.raphael_drawings.bbnick
                 c.push scope.raphael_drawings.hitbox
                 scope.container = c
 
                 # Attach dragging event handles
-                scope.selectedModules = [scope.model]
                 box = scope.raphael_drawings.hitbox
                 box.node.draggable = true
                 box.node.onDragStart = (event) =>
+                    # Add to selection
+                    SelectionService.set 'module', scope.model
                     console.log "Drag start"
-                    _.each scope.selectedModules, (module) =>
-                        module.dragging = true
+                    _.each SelectionService.get('module'), (module) =>
+                        module._dragging = true
                         module.start_x = module.x
                         module.start_y = module.y
 
+                    scope.$apply()
+                    console.log "Selected?", scope.model
+
                 box.node.onDrag = (delta, event) =>
-                    console.log "On drag"
-                    _.each scope.selectedModules, (module) =>
+                    _.each SelectionService.get('module'), (module) =>
                         dx = delta.toX - delta.fromX
                         dy = delta.toY - delta.fromY
 
@@ -146,14 +151,36 @@ angular.module("nrtWebuiApp").directive 'module', (ColorizerService) ->
 
                 box.node.onDragStop = =>
                     console.log "Drag stop"
-                    scope.$apply()
-                    console.log scope
                     _.each scope.selectedModules, (module) =>
-                        module.dragging = false
+                        module._dragging = false
+                    scope.$apply()
+
+                scope.container.mousedown = =>
+                    console.log "MD"
+                    # isPartOfMultipleSelection = ->
+                    #     modules = SelectionService.get('module')
+                    #     modules.length > 1
+
+                    # if isPartOfMultipleSelection()
+                    #     # The user in dragging a group of modules
+                    # else
+                    #     # Then we can become active
+                    #     SelectionService.set 'module', scope.model
+                    #     scope.toFront()
+
             )
 
             scope.$watch("[model.x, model.y]", (newValue, oldValue, scope) ->
-                console.log "Position moved", scope.model.x, scope.model.y
                 scope.moveTo(scope.model.x, scope.model.y)
             , true)
+
+            scope.$watch("model._selected", (newValue, oldValue, scope) ->
+                console.log "Selection CHANGED"
+                window.w =  scope.raphael_drawings.box
+                scope.raphael_drawings.box.animate {"fill-opacity": .2}, 500
+                if _.contains SelectionService.get('module'), scope.model
+                    scope.raphael_drawings.box.animate "fill-opacity": .2, 500
+                else
+                    scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+            )
     }
