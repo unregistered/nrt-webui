@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('ColorizerService', ->
+angular.module('nrtWebuiApp').factory('UtilityService', ->
     self = {};
 
     self.str2color = (str) ->
@@ -22,6 +22,20 @@ angular.module('nrtWebuiApp').factory('ColorizerService', ->
             return '#'+r+g+b;
 
         return rgbfunc(hashfunc(str))
+
+    ###
+    Generates a GUID string, according to RFC4122 standards.
+    @returns {String} The generated GUID.
+    @example af8a8416-6e18-a307-bd9c-f2c947bbb3aa
+    @author Slavik Meltser (slavik@meltser.info).
+    @link http://slavik.meltser.info/?p=142
+    ###
+    self.guid = ->
+      _p8 = (s) ->
+        p = (Math.random().toString(16) + "000000000").substr(2, 8)
+        (if s then "-" + p.substr(0, 4) + "-" + p.substr(4, 4) else p)
+      _p8() + _p8(true) + _p8(true) + _p8()
+
 
     return self
 )

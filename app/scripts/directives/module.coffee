@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, ColorizerService, SelectionService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService) ->
     self = {
         scope: {
             model: "=model"
@@ -36,7 +36,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Colo
 
             scope.getColor = ->
                 seed = scope.model.moduid
-                return ColorizerService.str2color(seed)
+                return UtilityService.str2color(seed)
 
             scope.drawBox = ->
                 # The base box
@@ -75,7 +75,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Colo
 
                 r = controller.paper.rect(x, y, w, h, 3)
                 r.attr(
-                    fill: ColorizerService.str2color(scope.model.bbuid)
+                    fill: UtilityService.str2color(scope.model.bbuid)
                     opacity: 0.5
                 )
                 return r

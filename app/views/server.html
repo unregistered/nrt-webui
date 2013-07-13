@@ -9,8 +9,20 @@
     </div>
     <div class="span8">
         <!-- Alert view -->
+        <div ng-controller="AlertsCtrl">
+            <div ng-repeat="alert in alerts">
+                <div class="alert" ng-class="{'alert-error': alert.level == 'error', 'alert-success': alert.level == 'success'}">
+                    <button type="button" class="close" ng-click="dismiss(alert)">&times;</button>
+                    <strong>{{alert.title}}</strong>
+                    <p>{{alert.desc}}</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Toolbar -->
+        <div class="btn-toolbar">
+
+        </div>
 
         <!-- Namespaces -->
         <ul class="breadcrumb">

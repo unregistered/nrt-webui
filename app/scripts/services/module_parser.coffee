@@ -13,7 +13,16 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
             it.x = 0
             it.y = 0
             self.modules[it.moduid] = it
+    )
 
+    $rootScope.$watch('ServerService.last_guidata_time', ->
+        _.each ServerService.guidata.message, (it) ->
+            if it.id[0] == "m"
+                # Modules
+                moduid = it.id.substring(2)
+                module = self.modules[moduid]
+                module.x = it.x
+                module.y = it.y
     )
 
     return self
