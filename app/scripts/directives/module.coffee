@@ -7,6 +7,15 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
         controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
             @getContainer = ->
                 $scope.container
+
+            @getWidth = ->
+                $scope.getWidth()
+
+            @getHeight = ->
+                $scope.getHeight()
+
+            @getModel = ->
+                $scope.model
         ]
 
         require: ["^raphael", "module"] # Get controller from parent directive, and our own controller

@@ -32,9 +32,9 @@
         <raphael>
             <div ng-controller="ModulesCtrl">
                 <module ng-repeat="(moduid, module) in modules" model="module">
-                    <port ng-repeat="port in module.checkers"></port>
-                    <port ng-repeat="port in module.posters"></port>
-                    <port ng-repeat="port in module.subscribers"></port>
+                    <port ng-repeat="port in module.checkers" model="port" index="{{$index}}" orientation="checker"></port>
+                    <port ng-repeat="port in module.posters" model="port" index="{{$index}}" orientation="output"></port>
+                    <port ng-repeat="port in module.subscribers" model="port" index="{{$index}}" orientation="input"></port>
                 </module>
             </div>
         </raphael>
