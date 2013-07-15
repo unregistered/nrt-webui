@@ -8,14 +8,15 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
     ###
     self.modules = {}
 
-    $rootScope.$watch('ServerService.last_update_time', ->
+    $rootScope.$watch('last_update_time', ->
         _.each ServerService.federation_summary.message.namespaces[0].modules, (it) ->
             it.x = 0
             it.y = 0
             self.modules[it.moduid] = it
     )
 
-    $rootScope.$watch('ServerService.last_guidata_time', ->
+    $rootScope.$watch('last_guidata_time', ->
+        return unless ServerService.guidata
         _.each ServerService.guidata.message, (it) ->
             if it.id[0] == "m"
                 # Modules

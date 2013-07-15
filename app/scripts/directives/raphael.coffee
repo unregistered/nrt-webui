@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'raphael', (ConfigService) ->
+angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService) ->
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
         @zpd = undefined
@@ -26,6 +26,10 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService) ->
 
         # Draw a mat to intercept multiple selection, these are also the bounds of the program
         mat = controller.paper.rect(-ConfigService.UI_CANVAS_WIDTH/2, -ConfigService.UI_CANVAS_HEIGHT/2, ConfigService.UI_CANVAS_WIDTH, ConfigService.UI_CANVAS_HEIGHT).attr("fill", "#FFF")
+
+        mat.mousedown (event) =>
+            SelectionService.clear()
+            scope.$apply()
 
         # Mark the origin
         controller.paper.path("M25,0 L-25,0").attr("stroke", "#ccc")

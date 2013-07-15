@@ -101,7 +101,7 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
             b.attr(
                 stroke: ConfigService.UI_CONNECTION_ACTIVE_COLOR
                 'stroke-width': 10
-                'stroke-opacity': 0.1
+                'stroke-opacity': 0
             )
             return b
 
@@ -133,7 +133,10 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
         , true)
 
         # Observe module selection
-        scope.$watch("[from_module._selected, to_module._selected]", ->
+        scope.all_selections = ->
+            _.pluck SelectionService.get('module'), '$$hashKey'
+
+        scope.$watch("all_selections()", ->
             color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
             if scope.from_module._selected || scope.to_module._selected
                 color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
