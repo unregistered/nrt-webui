@@ -1,11 +1,8 @@
-<div class="row-fluid">
+<div class="row-fluid" ng-controller="WorkspaceCtrl">
     <div class="span4">
         <tray name="Modules">
             Modules go here
         </tray>
-        <div ng-controller="ModulesCtrl">
-            <div ng-repeat="(moduid, module) in modules">{{moduid}}</div>
-        </div>
     </div>
     <div class="span8">
         <!-- Alert view -->
@@ -35,7 +32,9 @@
         <raphael>
             <div ng-controller="ModulesCtrl">
                 <module ng-repeat="(moduid, module) in modules" model="module">
-
+                    <port ng-repeat="port in module.checkers"></port>
+                    <port ng-repeat="port in module.posters"></port>
+                    <port ng-repeat="port in module.subscribers"></port>
                 </module>
             </div>
         </raphael>

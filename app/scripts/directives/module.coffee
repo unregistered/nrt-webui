@@ -1,13 +1,21 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService) ->
-    self = {
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService) ->
+    {
         scope: {
             model: "=model"
         }
 
-        require: "^raphael" # Get controller from parent directive
+        controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
+            @getContainer = ->
+                $scope.container
+        ]
+
+        require: ["^raphael", "module"] # Get controller from parent directive, and our own controller
         restrict: "E"
         template: """
-        <div>{{model}}</div>
+        <div>
+            Model
+            <div ng-transclude></div>
+        </div>
         """
         replace: true
         transclude: true
@@ -17,8 +25,8 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 min_width = 100
 
                 number_of_ports = scope.model.checkers.length
-                port_width = controller.UI_PORT_WIDTH + controller.UI_PORT_SPACING
-                computed_width = port_width * number_of_ports + controller.UI_PORT_INITIAL_OFFSET
+                port_width = ConfigService.UI_PORT_WIDTH + ConfigService.UI_PORT_SPACING
+                computed_width = port_width * number_of_ports + ConfigService.UI_PORT_INITIAL_OFFSET
 
                 return Math.max(computed_width, min_width)
 
@@ -29,8 +37,8 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 subscribers = scope.model.subscribers.length
 
                 number_of_ports = Math.max(posters, subscribers)
-                port_height = controller.UI_PORT_HEIGHT + controller.UI_PORT_SPACING
-                computed_height = port_height * number_of_ports + controller.UI_PORT_INITIAL_OFFSET
+                port_height = ConfigService.UI_PORT_HEIGHT + ConfigService.UI_PORT_SPACING
+                computed_height = port_height * number_of_ports + ConfigService.UI_PORT_INITIAL_OFFSET
 
                 return Math.max(computed_height, min_height)
 
@@ -40,7 +48,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
 
             scope.drawBox = ->
                 # The base box
-                rect =  controller.paper.rect(0, 0, scope.getWidth(), scope.getHeight(), 7)
+                rect =  controller[0].paper.rect(0, 0, scope.getWidth(), scope.getHeight(), 7)
                 color = scope.getColor()
                 rect.attr
                     fill: color
@@ -51,7 +59,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 return rect
 
             scope.drawHitbox = ->
-                rect = controller.paper.rect(0, 0, scope.getWidth(), scope.getHeight())
+                rect = controller[0].paper.rect(0, 0, scope.getWidth(), scope.getHeight())
                 rect.attr
                     fill: 'black'
                     opacity: 0
@@ -60,11 +68,11 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 return rect
 
             scope.drawText = ->
-                controller.paper.text(scope.getWidth()/2, 70, scope.model.classname)
+                controller[0].paper.text(scope.getWidth()/2, 70, scope.model.classname)
 
             scope.drawBBNick = ->
                 nick = BlackboardParserService.content[scope.model.bbuid].nick
-                controller.paper.text( scope.getWidth()/2, scope.getHeight() - 20, nick )
+                controller[0].paper.text( scope.getWidth()/2, scope.getHeight() - 20, nick )
 
             scope.drawBBNickBackground = ->
                 textbbox = scope.raphael_drawings.bbnick.getBBox()
@@ -73,7 +81,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 x = scope.getWidth()/2 - w/2
                 y = scope.getHeight() - 20 - h/2
 
-                r = controller.paper.rect(x, y, w, h, 3)
+                r = controller[0].paper.rect(x, y, w, h, 3)
                 r.attr(
                     fill: UtilityService.str2color(scope.model.bbuid)
                     opacity: 0.5
@@ -90,7 +98,6 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
 
             scope.$watch("model", ->
                 console.log "Data changed"
-                console.log "Width", scope.getWidth(), scope.getHeight()
 
                 # Draw
                 scope.raphael_drawings = {}
@@ -101,7 +108,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 scope.raphael_drawings.hitbox = scope.drawHitbox()
 
                 # All the objects that will be grouped into a Raphael set
-                c = controller.paper.set()
+                c = controller[0].paper.set()
                 c.push scope.raphael_drawings.text
                 c.push scope.raphael_drawings.box
                 # c.push scope.raphael_drawings.image
@@ -134,15 +141,15 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                         nexty = Math.round(module.start_y + dy)
 
                         # Check bounds
-                        if (nextx + module.width) > controller.UI_CANVAS_WIDTH/2
-                            nextx = controller.UI_CANVAS_WIDTH/2 - module.width
-                        else if nextx < -controller.UI_CANVAS_WIDTH/2
-                            nextx = -controller.UI_CANVAS_WIDTH/2
+                        if (nextx + module.width) > ConfigService.UI_CANVAS_WIDTH/2
+                            nextx = ConfigService.UI_CANVAS_WIDTH/2 - module.width
+                        else if nextx < -ConfigService.UI_CANVAS_WIDTH/2
+                            nextx = -ConfigService.UI_CANVAS_WIDTH/2
 
-                        if (nexty + module.height) > controller.UI_CANVAS_HEIGHT/2
-                            nexty = controller.UI_CANVAS_HEIGHT/2 - module.height
-                        else if nexty < -controller.UI_CANVAS_HEIGHT/2
-                            nexty = -controller.UI_CANVAS_HEIGHT/2
+                        if (nexty + module.height) > ConfigService.UI_CANVAS_HEIGHT/2
+                            nexty = ConfigService.UI_CANVAS_HEIGHT/2 - module.height
+                        else if nexty < -ConfigService.UI_CANVAS_HEIGHT/2
+                            nexty = -ConfigService.UI_CANVAS_HEIGHT/2
 
                         scope.model.y = nexty
                         scope.model.x = nextx
@@ -176,6 +183,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
 
             scope.$watch("model._selected", (newValue, oldValue, scope) ->
                 console.log "Selection CHANGED"
+                console.log scope.model
                 window.w =  scope.raphael_drawings.box
                 scope.raphael_drawings.box.animate {"fill-opacity": .2}, 500
                 if _.contains SelectionService.get('module'), scope.model

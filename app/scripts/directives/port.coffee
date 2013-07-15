@@ -1,11 +1,11 @@
 angular.module("nrtWebuiApp").directive 'port', ->
-    controller: 'raphael'
+    require: ['^raphael', '^module']
     restrict: "E"
     template: """
-    <div></div>
+    <div>Port</div>
     """
     replace: true
-    transclude: true
 
     link: (scope, iElement, iAttrs, controller) ->
-        console.log "Port directive"
+        console.log "Port directive", controller[1].getContainer()
+
