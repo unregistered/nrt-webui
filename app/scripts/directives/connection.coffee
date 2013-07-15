@@ -138,14 +138,17 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
 
         scope.$watch("all_selections()", ->
             color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
-            if scope.from_module._selected || scope.to_module._selected
-                color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
-            else
-                if SelectionService.get('module').length
-                    # There's a selected module
-                    color = ConfigService.UI_CONNECTION_INACTIVE_COLOR
-                else
+
+            if SelectionService.get('module').length
+                # If modules are selected, color the active ones and gray the inactive ones
+                if scope.from_module._selected || scope.to_module._selected
+                    # We're active
                     color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
+                else
+                    color = ConfigService.UI_CONNECTION_INACTIVE_COLOR
+            else
+                # Be gray
+                color = ConfigService.UI_CONNECTION_INACTIVE_COLOR
 
             scope.raphael_drawings.line.attr
                 stroke: color

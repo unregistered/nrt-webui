@@ -145,10 +145,35 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 HoverService.clear()
                 scope.$apply()
 
+            # Register drag for creating connections
+            scope.raphael_drawings.hitbox.node.draggable = true
+            scope.raphael_drawings.hitbox.node.onDragStart = (event) =>
+                console.log "start connection"
+                # App.router.connectionsController.startPairing @get('port')
+
+            scope.raphael_drawings.hitbox.node.onDrag = (delta, event) =>
+                console.log "Move"
+
+            scope.raphael_drawings.hitbox.node.onDragStop = =>
+                console.log "Up", @
+                # App.router.connectionsController.completePairing()
+                # Set selection to register a single click
+                SelectionService.set 'port', scope.model
+                scope.$apply()
+
         )
 
         scope.$watch("model._selected", ->
-            console.log "Selected port"
+            if scope.model._selected
+                scope.raphael_drawings.box.attr(
+                    'stroke': 'black'
+                    'stroke-width': 2
+                )
+            else
+                scope.raphael_drawings.box.attr(
+                    'stroke': 'black'
+                    'stroke-width': 1
+                )
         )
 
         # Change opacity on hover
