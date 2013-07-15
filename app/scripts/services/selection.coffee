@@ -9,7 +9,9 @@ angular.module('nrtWebuiApp').factory('SelectionService', ->
     Get selected objects of type
     ###
     self.get = (type) ->
-        return self.content[type]
+        ret = self.content[type]
+        return [] unless ret
+        return ret
 
     ###
     Append obj of string type "type" into the selection database.

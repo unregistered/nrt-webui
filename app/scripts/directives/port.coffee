@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, HoverService, SelectionService) ->
+angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, HoverService, SelectionService, ConnectorService) ->
     require: ['^raphael', '^module']
     restrict: "E"
     template: """
@@ -9,6 +9,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
     scope: {
         model: "=model"
         index: "@index"
+        module: "=module"
     }
     link: (scope, iElement, iAttrs, controller) ->
         scope.getMsgColor = ->
@@ -176,3 +177,8 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             else
                 scope.raphael_drawings.label.remove() if scope.raphael_drawings.label
         )
+
+        scope.$watch("[module.x, module.y]", ->
+            bbox = scope.raphael_drawings.box.getBBox()
+            ConnectorService.registerPortBBox(scope.module, scope.model, bbox)
+        , true)
