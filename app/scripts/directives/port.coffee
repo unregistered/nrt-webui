@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService) ->
+angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, HoverService, SelectionService) ->
     require: ['^raphael', '^module']
     restrict: "E"
     template: """
@@ -96,6 +96,35 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService) 
                 opacity: 0
             )
 
+        scope.drawLabel = (x, y) ->
+            textmsg = "#{scope.model.portname}\n    Msg: #{scope.model.msgtype}\n    Ret: #{scope.model.rettype}"
+
+            # Draw text
+            t = controller[0].paper.text(x, y, textmsg)
+            t.attr (
+                'text-anchor': 'start'
+                fill: 'white'
+            )
+
+            # Draw background
+            w = t.getBBox().width + 10
+            h = t.getBBox().height + 10
+            x = x - 10/2
+            y = y - h/2
+
+            tb = controller[0].paper.rect(x, y, w, h, 3)
+            tb.attr(
+                fill: 'black'
+            )
+
+            t.toFront()
+
+            c = controller[0].paper.set()
+            c.push t
+            c.push tb
+
+            return c
+
 
         scope.$watch("model", ->
             scope.raphael_drawings = {}
@@ -106,5 +135,44 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService) 
             c = controller[1].getContainer()
             _.each scope.raphael_drawings, (v, k) ->
                 c.push v
+
+            scope.raphael_drawings.hitbox.mouseover (arg) =>
+                HoverService.set(scope.model)
+                scope.$apply()
+
+            scope.raphael_drawings.hitbox.mouseout (arg) =>
+                HoverService.clear()
+                scope.$apply()
+
         )
 
+        scope.$watch("model._selected", ->
+            console.log "Selected port"
+        )
+
+        # Change opacity on hover
+        scope.$watch("model._hovered", ->
+            if scope.model._hovered
+                scope.raphael_drawings.box.attr(
+                    opacity: 0.5
+                )
+                scope.raphael_drawings.rettype_box.attr(
+                    opacity: 0.5
+                )
+            else
+                scope.raphael_drawings.box.attr(
+                    opacity: 1
+                )
+                scope.raphael_drawings.rettype_box.attr(
+                    opacity: 1
+                )
+        )
+
+        # Show label on hover
+        scope.$watch("model._hovered", ->
+            if scope.model._hovered
+                bbox = scope.raphael_drawings.box.getBBox()
+                scope.raphael_drawings.label = scope.drawLabel(bbox.x + 30, bbox.y)
+            else
+                scope.raphael_drawings.label.remove() if scope.raphael_drawings.label
+        )
