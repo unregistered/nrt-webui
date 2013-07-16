@@ -6,54 +6,31 @@ Interface to the Neuromorphic Robotics Toolkit. [nrtkit.org](http://nrtkit.org/)
 Running
 -------
 
-    $ bundle install
-    $ python fake.py
-    $ rake server
+Install dependencies (requires node)
+
+    $ npm install
+    $ bower install
+
+Run the server
+
+    $ grunt server
 
 App Structure
 -------------
 
     nrt-webui
-    ├── Assetfile - App build file
-    ├── Gemfile - Package dependencies for rakep/rack
-    ├── Gemfile.lock - Here be dragons: don't touch, always include
+    ├── Gruntfile.js - App build file
+    ├── package.json - Node package dependencies
+    ├── bower.json - Client-side javascript dependencies, like jquery
     ├── app - App specific code
-    │   ├── css - App CSS or SCSS (.scss)
-    │   ├── lib - App code, *modularized during build*
-    │   ├── modules - Module code, *already modularized*
-    │   ├── plugins - Plugins (e.g. jquery.jsonrpc.js)
-    │   │   └── loader.js - JS module loader
-    │   ├── static - Static files, never touched, copied over during build
-    │   ├── templates - Handlebars templates, *modularized during build*
-    │   ├── tests - QUnit application tests
-    │   └── vendor - Vendor code, *modularized during build*
-    ├── assets - Built out asset files, minified in production
-    │   ├── app.css - Built out app CSS/SCSS
-    │   ├── app.js - Built out app JS
-    │   └── loader.js - Built out JS module loader
+    │   ├── bower_components - Bower libraries are installed here
+    │   ├── styles - App CSS or SCSS (.scss)
+    │   ├── views - html templates
+    │   ├── scripts - Plugins (e.g. jquery.jsonrpc.js)
+    │   │   └── controllers - Angular controllers
+    │   │   └── directives - Angular directives modify the DOM
+    │   │   └── services - Angular services
+    │   │   └── vendor - non-angular js files
     ├── config.ru - Rack development web server configuration
     ├── index.html - The app entry point
-    ├── tests - QUnit testing files
-    │   ├── index.html - The testing entry point
-    │   ├── qunit - Testing support files
-    │   └── run-tests.js - The PhantomJS QUnit test runner
-    └── tmp - Temporary build files used by rakep
-
-Testing TODO
--------
-
-You can test the app by invoking:
-
-    $ bundle exec rake test
-
-This executes the tests by using [PhantomJS](http://www.phantomjs.org/),
-which you need to have installed.
-
-Or you can run the tests via:
-
-    $ bundle exec rackup
-    $ open http://localhost:9292/tests/index.html
-
-If you want to continuously run the tests every time a file changes, invoke:
-
-    $ bundle exec guard
+    ├── test - Test files
