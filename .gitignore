@@ -1,5 +1,6 @@
-.DS_Store
-tmp/
-assets/
+node_modules
+dist
+.tmp
 .sass-cache
-*.pyc
+app/bower_components
+.DS_Store

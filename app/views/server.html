@@ -1,0 +1,46 @@
+<div class="row-fluid" ng-controller="WorkspaceCtrl">
+    <div class="span4">
+        <tray name="Modules">
+            Modules go here
+        </tray>
+    </div>
+    <div class="span8">
+        <!-- Alert view -->
+        <div ng-controller="AlertsCtrl">
+            <div ng-repeat="alert in alerts">
+                <div class="alert" ng-class="{'alert-error': alert.level == 'error', 'alert-success': alert.level == 'success'}">
+                    <button type="button" class="close" ng-click="dismiss(alert)">&times;</button>
+                    <strong>{{alert.title}}</strong>
+                    <p>{{alert.desc}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="btn-toolbar">
+
+        </div>
+
+        <!-- Namespaces -->
+        <ul class="breadcrumb">
+          <li><a href="#">root</a> <span class="divider">/</span></li>
+          <li><a href="#">to</a> <span class="divider">/</span></li>
+          <li class="active">do</li>
+        </ul>
+
+        <!-- Workspace -->
+        <raphael>
+            <div ng-controller="ModulesCtrl">
+                <module ng-repeat="(moduid, module) in modules" model="module">
+                    <port ng-repeat="port in module.checkers" model="port" module="module" index="{{$index}}" orientation="checker"></port>
+                    <port ng-repeat="port in module.posters" model="port" module="module" index="{{$index}}" orientation="output"></port>
+                    <port ng-repeat="port in module.subscribers" model="port" module="module" index="{{$index}}" orientation="input"></port>
+                </module>
+            </div>
+            <div ng-controller="ConnectionsCtrl">
+                <connection ng-repeat="connection in connections" model="connection"></connection>
+            </div>
+        </raphael>
+
+    </div>
+</div>

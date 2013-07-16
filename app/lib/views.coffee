@@ -1,5 +1,0 @@
-require "nrt-webui/views/application"
-require "nrt-webui/views/tree"
-require "nrt-webui/views/trays"
-require "nrt-webui/views/servers"
-require "nrt-webui/views/static"

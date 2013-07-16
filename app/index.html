@@ -1,0 +1,127 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <!-- build:css({.tmp,app}) styles/main.css -->
+        <link rel="stylesheet" href="styles/bootstrap.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+</head>
+  <body ng-app="nrtWebuiApp">
+    <!--[if lt IE 7]>
+      <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+      <script src="bower_components/es5-shim/es5-shim.js"></script>
+      <script src="bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div class="container" ng-controller="ServersCtrl">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <a class="brand" href="#">NRT::Designer v{{App.VERSION}}</a>
+
+            <ul class="nav pull-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span ng-show="name">{{name}}</span>
+                    <span ng-hide="name">Disconnected</span>
+                  <b class="caret"></b>
+                </a>
+
+                <ul class="dropdown-menu" role="menu">
+
+                        <li ng-repeat="server in servers">
+                            <a tabindex="-1" ng-click="viewServer(server)">{{server.name}}</a>
+                        </li>
+
+                    <li class="divider"></li>
+                    <li>
+                        <a ng-click="goToQuickConnect()">Quick Connect</a>
+                    </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="main" role="main" class="container-fluid" ng-view="">
+        </div>
+
+    </div>
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src='//www.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+
+    <script src="bower_components/angular/angular.js"></script>
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/servers.js"></script>
+    <script src="scripts/controllers/modules.js"></script>
+    <script src="scripts/controllers/connections.js"></script>
+    <script src="scripts/controllers/canvas.js"></script>
+    <script src="scripts/controllers/alerts.js"></script>
+    <script src="scripts/controllers/workspace.js"></script>
+
+    <script src="scripts/services/server.js"></script>
+    <script src="scripts/services/module_parser.js"></script>
+    <script src="scripts/services/blackboard_parser.js"></script>
+    <script src="scripts/services/connection_parser.js"></script>
+    <script src="scripts/services/utilities.js"></script>
+    <script src="scripts/services/selection.js"></script>
+    <script src="scripts/services/hover.js"></script>
+    <script src="scripts/services/alert_registry.js"></script>
+    <script src="scripts/services/config.js"></script>
+    <script src="scripts/services/connector.js"></script>
+
+    <script src="scripts/directives/tray.js"></script>
+    <script src="scripts/directives/raphael.js"></script>
+    <script src="scripts/directives/module.js"></script>
+    <script src="scripts/directives/connection.js"></script>
+    <script src="scripts/directives/port.js"></script>
+    <!-- endbuild -->
+
+        <!-- build:js scripts/plugins.js -->
+        <script src="bower_components/jquery/jquery.js"></script>
+        <script src="bower_components/underscore/underscore.js"></script>
+        <script src="bower_components/raphael/raphael.js"></script>
+        <script src="scripts/vendor/raphael-zpd.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-affix.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-alert.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-dropdown.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-tooltip.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-modal.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-transition.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-button.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-popover.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-typeahead.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-carousel.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-scrollspy.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-collapse.js"></script>
+        <script src="bower_components/bootstrap-sass/js/bootstrap-tab.js"></script>
+        <!-- endbuild -->
+
+        <!-- build:js scripts/modules.js -->
+        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <!-- endbuild -->
+</body>
+</html>
