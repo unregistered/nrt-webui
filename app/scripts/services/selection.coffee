@@ -18,7 +18,6 @@ angular.module('nrtWebuiApp').factory('SelectionService', ->
     obj can be an array of objs to append
     ###
     self.append = (type, obj) ->
-        console.log "Append selection", type, obj
         self.content[type] = [] unless self.content[type]
 
         if obj instanceof Array
@@ -46,9 +45,7 @@ angular.module('nrtWebuiApp').factory('SelectionService', ->
     ###
     self.clear = ->
         _.each self.content, (it, key) ->
-            console.log "Clear", key
             _.each it, (obj) ->
-                console.log "->", obj
                 obj._selected = false
 
         self.content = {}

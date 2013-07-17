@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService) ->
     {
         scope: {
             model: "=model"
@@ -97,6 +97,22 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 )
                 return r
 
+            scope.drawImage = ->
+                x = scope.getWidth()/2 - ConfigService.UI_MODULE_IMAGE_WIDTH/2
+                y = 30
+
+                # Find the prototype
+                proto = LoaderParserService.getPrototype(scope.model.bbuid, scope.model.classname)
+                if proto
+                    # If the user drags in a module, and we already have its prototype
+                    src = "data:#{proto.icontype};base64,#{proto.icondata}"
+
+                    return controller[0].paper.image(src, x, y, ConfigService.UI_MODULE_IMAGE_WIDTH, ConfigService.UI_MODULE_IMAGE_WIDTH)
+                else
+                    # We don't know the prototypes yet, create a small blank image and we'll update it later
+                    controller[0].paper.image('', x, y, 0, 0)
+
+
             scope.toFront = ->
                 _.each scope.container, (it) =>
                     it.toFront()
@@ -106,21 +122,20 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 scope.container.transform("T#{x},#{y}")
 
             scope.$watch("model", ->
-                console.log "Data changed"
-
                 # Draw
                 scope.raphael_drawings = {}
                 scope.raphael_drawings.box = scope.drawBox()
                 scope.raphael_drawings.text = scope.drawText()
                 scope.raphael_drawings.bbnick = scope.drawBBNick()
                 scope.raphael_drawings.bbnick_background = scope.drawBBNickBackground()
+                scope.raphael_drawings.image = scope.drawImage()
                 scope.raphael_drawings.hitbox = scope.drawHitbox()
 
                 # All the objects that will be grouped into a Raphael set
                 c = controller[0].paper.set()
                 c.push scope.raphael_drawings.text
                 c.push scope.raphael_drawings.box
-                # c.push scope.raphael_drawings.image
+                c.push scope.raphael_drawings.image
                 c.push scope.raphael_drawings.bbnick_background
                 c.push scope.raphael_drawings.bbnick
                 c.push scope.raphael_drawings.hitbox
@@ -191,8 +206,6 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
             , true)
 
             scope.$watch("model._selected", (newValue, oldValue, scope) ->
-                console.log "Selection CHANGED"
-                console.log scope.model
                 window.w =  scope.raphael_drawings.box
                 scope.raphael_drawings.box.animate {"fill-opacity": .2}, 500
                 if _.contains SelectionService.get('module'), scope.model

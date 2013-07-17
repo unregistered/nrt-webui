@@ -8,8 +8,29 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
     #   prototypes: A hierarchy or module prototypes
     self.loaders = {}
 
+    # Returns prototype for bbuid and classname. Classnames are unique
+    self.getPrototype = (bbuid, classname) ->
+        branch = self.loaders[bbuid]
+
+        return null unless branch
+
+        _traverse = (tree, searchterm) ->
+            if !tree.children
+                # We've hit a root node
+                if searchterm == tree.name
+                    return tree
+                else
+                    return null
+            else
+                for child in tree.children
+                    res = _traverse(child, searchterm)
+                    return res if res
+
+        return _traverse(branch.prototypes, classname)
+
+
     # Treeify a flat list of modules, inserting them into a hierarchy based on their categories
-    self.treeify = (modules, bbnick) ->
+    self._treeify = (modules, bbnick) ->
         tree = {name: "Modules", expanded: true, children: []}
         for module in modules
 
@@ -21,20 +42,20 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
                 result = currCategory['children'].filter (x) -> x['name'] == category
                 if result.length == 0
                     currCategory['children'].push
-                      name: category
-                      expanded: true
-                      children: []
+                        name: category
+                        expanded: true
+                        children: []
                     currCategory = currCategory['children'][currCategory['children'].length-1]
                 else
                     result = currCategory['children'].filter (x) -> x['name'] == category
                     currCategory = result[0]
 
             currCategory['children'].push
-              name: categories[categories.length-1]
-              icondata: module.icondata
-              icontype: 'image/' + module.iconext[1..]
-              logicalPath: module.logicalPath # consumed during module creation
-              bbnick: bbnick # consumed during module creation
+                name: categories[categories.length-1]
+                icondata: module.icondata
+                icontype: 'image/' + module.iconext[1..]
+                logicalPath: module.logicalPath # consumed during module creation
+                bbnick: bbnick # consumed during module creation
 
         return tree
 
@@ -50,7 +71,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
                     bbnick = BlackboardParserService.content[bbuid]['nick']
                     self.loaders[bbuid] =
                         bbnick: bbnick
-                        prototypes: self.treeify loaderSummaryMessage.message.modules, bbnick
+                        prototypes: self._treeify loaderSummaryMessage.message.modules, bbnick
     )
 
     return self
