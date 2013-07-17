@@ -9,7 +9,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
     self.loaders = {}
 
     # Treeify a flat list of modules, inserting them into a hierarchy based on their categories
-    self.treeify = (modules) ->
+    self.treeify = (modules, bbnick) ->
         tree = {name: "Modules", expanded: true, children: []}
         for module in modules
 
@@ -33,6 +33,8 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
               name: categories[categories.length-1]
               icondata: module.icondata
               icontype: 'image/' + module.iconext[1..]
+              logicalPath: module.logicalPath # consumed during module creation
+              bbnick: bbnick # consumed during module creation
 
         return tree
 
@@ -45,9 +47,10 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
             unless _.has self.loaders, bbuid
                 loaderSummaryMessage = ServerService.requestLoaderSummary bbuid
                 if _.has loaderSummaryMessage.message, 'modules'
+                    bbnick = BlackboardParserService.content[bbuid]['nick']
                     self.loaders[bbuid] =
-                        bbnick: BlackboardParserService.content[bbuid]['nick']
-                        prototypes: self.treeify loaderSummaryMessage.message.modules
+                        bbnick: bbnick
+                        prototypes: self.treeify loaderSummaryMessage.message.modules, bbnick
     )
 
     return self

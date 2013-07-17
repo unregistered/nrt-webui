@@ -26,5 +26,8 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope) ->
     self.requestLoaderSummary = ->
         return self.prototypes
 
+    self.createModule = (prototype, x, y, bbuid) ->
+        console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.bbnick
+
     return self
 )
