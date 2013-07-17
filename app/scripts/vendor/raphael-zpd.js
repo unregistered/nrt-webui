@@ -51,7 +51,18 @@ RaphaelZPD = function(raphaelPaper, o) {
     me.initialized = false;
     me.opts = {
         zoom: true, pan: true, drag: true, // Enable/disable core functionalities.
-        zoomThreshold: null // Zoom [out, in] boundaries by ratio. E.g [0.1, 2] means they can shrink to 10% of size, or increase to 200%.
+        zoomThreshold: null, // Zoom [out, in] boundaries by ratio. E.g [0.1, 2] means they can shrink to 10% of size, or increase to 200%.
+
+        // Callbacks with 1 argument: event
+        onmousedown: null,
+        onmousemove: null,
+        onmouseup: null,
+        onmousewheel: null,
+
+        // Callback with 2 arguments: xdiff, ydiff
+        onzoom: null,
+        // Callback with 1 argument: zoom_factor
+        onpan: null
     };
 
     me.id   = window.raphaelZPDId;
@@ -334,6 +345,11 @@ var currentScale = gTransform.a;
             me.stateTf = g.getCTM().inverse();
 
         me.stateTf = me.stateTf.multiply(k.inverse());
+
+        if(me.opts.onzoom) {
+            var m = g.getCTM();
+            me.opts.onzoom(m.d); // Pass in zoom factor
+        }
     }
 
     /**
@@ -421,6 +437,8 @@ var currentScale = gTransform.a;
         p = p.matrixTransform(g.getCTM().inverse());
 
         me.zoomWithDeltaAndPosOnSvgDoc(delta, p, svgDoc);
+
+        if(me.opts.onmousewheel) me.opts.onmousewheel(evt)
     };
 
     /**
@@ -443,6 +461,13 @@ var currentScale = gTransform.a;
             var p = me.getEventPoint(evt).matrixTransform(me.stateTf);
 
             me.setCTM(g, me.stateTf.inverse().translate(p.x - me.stateOrigin.x, p.y - me.stateOrigin.y));
+
+            if(me.opts.onpan) {
+                var m = g.getCTM();
+
+                me.opts.onpan(m.e, m.f);
+            }
+
         } else if (me.state == 'move') {
             // Move mode
             if (!me.opts.drag) return;
@@ -461,6 +486,8 @@ var currentScale = gTransform.a;
 
             // me.stateOrigin = p;
         }
+
+        if(me.opts.onmousemove) me.opts.onmousemove(evt);
     };
 
     /**
@@ -500,6 +527,8 @@ var currentScale = gTransform.a;
             if(typeof evt.target.onDragStart == 'function')
                 evt.target.onDragStart(evt);
         }
+
+        if(me.opts.onmousedown) me.opts.onmousedown(evt)
     };
 
     /**
@@ -523,6 +552,8 @@ var currentScale = gTransform.a;
             if(typeof me.stateTarget.onDragStop == 'function')
                 me.stateTarget.onDragStop(evt);
         }
+
+        if(me.opts.onmouseup) me.opts.onmouseup(evt)
     };
 
     /**
@@ -557,6 +588,36 @@ var currentScale = gTransform.a;
         element.setAttribute("transform", s);
 
         return me;
+    }
+
+    /*
+    * Zoom programatically
+    */
+    me.zoomTo = function(zoomLevel) {
+        var me = this;
+
+        var matrix = me.gelem.getCTM();
+        var s = "matrix(" + zoomLevel + "," + matrix.b + "," + matrix.c + "," + zoomLevel + "," + matrix.e + "," + matrix.f + ")";
+        me.gelem.setAttribute("transform", s);
+
+        return me;
+    }
+
+    /*
+    * Get current zoom level
+    */
+    me.getZoomLevel = function() {
+        var m = me.gelem.getCTM();
+        return m.d; // Either m.d or m.a will work
+    }
+
+    /*
+    * Get center point
+    */
+    me.getCenterPoint = function() {
+        var me = this;
+
+        console.log(me.gelem)
     }
 
 

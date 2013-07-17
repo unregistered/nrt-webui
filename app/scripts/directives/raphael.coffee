@@ -35,3 +35,19 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         controller.paper.path("M25,0 L-25,0").attr("stroke", "#ccc")
         controller.paper.path("M0,-25 L0,25").attr("stroke", "#ccc")
 
+        # Watch for changes in zoom and pan
+        scope.$on("RequestZoomIn", (arg) ->
+            zoom = controller.zpd.getZoomLevel()
+            zoom *= 1.1
+            controller.zpd.zoomTo(zoom);
+        )
+
+        scope.$on("RequestZoomOut", (arg) ->
+            zoom = controller.zpd.getZoomLevel()
+            zoom *= 0.9
+            controller.zpd.zoomTo(zoom);
+        )
+
+        scope.$on("RequestPanHome", (arg) ->
+            controller.zpd.panTo(0, 0)
+        )
