@@ -1,7 +1,14 @@
 <div class="row-fluid" ng-controller="WorkspaceCtrl">
     <div class="span4">
         <tray name="Modules">
-            Modules go here
+
+        <div ng-controller="PrototypesCtrl">
+          <tree model="prototypes"> </tree>
+
+
+
+        </div>
+        
         </tray>
     </div>
     <div class="span8">

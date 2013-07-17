@@ -15,7 +15,8 @@
     "autobahnjs": "~0.7.5",
     "when": "~1.8.1",
     "jquery-ui": "~1.10.3",
-    "font-awesome": "~3.2.1"
+    "font-awesome": "~3.2.1",
+    "angular-treeview": "https://github.com/sqwerty/angular-treeview.git"
   },
   "devDependencies": {
     "angular-mocks": "~1.0.7",
