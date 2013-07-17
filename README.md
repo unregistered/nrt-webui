@@ -8,7 +8,12 @@ Running
 
 Install dependencies (requires node)
 
+    $ npm install -g bower
+    $ npm install -g grunt-cli
     $ npm install
+
+Install client js libraries
+
     $ bower install
 
 Run the server
