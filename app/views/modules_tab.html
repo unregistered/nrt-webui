@@ -1,0 +1,17 @@
+<!-- Modules tree view -->
+<tray name="Modules">
+  <div ng-controller="PrototypesCtrl">
+    <tree model="prototypes"> </tree>
+  </div>
+</tray>
+
+<!-- Loaders list -->
+<tray name="Loaders">
+  <div ng-controller="LoadersCtrl">
+    <ul class="nav nav-list">
+      <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}" >
+      <a href="" ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
+      </li>
+    </ul>
+  </div>
+</tray>

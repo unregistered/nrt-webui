@@ -1,25 +1,25 @@
-<div class="row-fluid" ng-controller="WorkspaceCtrl">
+<div class="row-fluid">
+
     <div class="span4">
 
-        <!-- Modules tree view -->
-        <tray name="Modules">
-          <div ng-controller="PrototypesCtrl">
-            <tree model="prototypes"> </tree>
-          </div>
-        </tray>
+      <div ng-controller="LeftPaneCtrl">
+        <ul class="nav nav-tabs">
+          <li ng-class="{'active': selected_pane==0}"><a href="" ng-click="selected_pane=0">Modules</a></li>
+          <li ng-class="{'active': selected_pane==1}"><a href="" ng-click="selected_pane=1">Inspect</a></li>
+          <li ng-class="{'active': selected_pane==2}"><a href="" ng-click="selected_pane=2">Loaders</a></li>
+        </ul>
 
-        <!-- Loaders list -->
-        <tray name="Loaders">
-          <div ng-controller="LoadersCtrl">
-            <ul class="nav nav-list">
-              <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}" >
-              <a href="" ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
-              </li>
-            </ul>
-          </div>
-        </tray>
+        <span ng-switch on="selected_pane">
+          <div ng-switch-when="0" ng-include src="'views/modules_tab.html'"></div>
+          <div ng-switch-when="1" ng-include src="'views/inspect_tab.html'"></div>
+          <div ng-switch-when="2" ng-include src="'views/loaders_tab.html'"></div>
+        </span>
+
+      </div>
+
 
     </div>
+
     <div class="span8">
         <!-- Alert view -->
         <div ng-controller="AlertsCtrl">
