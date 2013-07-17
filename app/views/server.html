@@ -1,15 +1,22 @@
 <div class="row-fluid" ng-controller="WorkspaceCtrl">
     <div class="span4">
+
+        <!-- Modules tree view -->
         <tray name="Modules">
-
-        <div ng-controller="PrototypesCtrl">
-          <tree model="prototypes"> </tree>
-
-
-
-        </div>
-        
+          <div ng-controller="PrototypesCtrl">
+            <tree model="prototypes"> </tree>
+          </div>
         </tray>
+
+        <!-- Loaders list -->
+        <tray name="Loaders">
+          <div ng-controller="LoadersCtrl">
+            <ul class="nav nav-list">
+              <li ng-repeat="loader in loaders"><a href="">{{loader.bbnick}}</a></li>
+            </ul>
+          </div>
+        </tray>
+
     </div>
     <div class="span8">
         <!-- Alert view -->

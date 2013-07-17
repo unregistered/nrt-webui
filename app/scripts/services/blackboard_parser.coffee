@@ -12,6 +12,7 @@ angular.module('nrtWebuiApp').factory('BlackboardParserService', ($rootScope, Se
         _.each ServerService.federation_summary.message.bbnicks, (it) ->
             self.content[it.uid] = it
 
+        $rootScope.$broadcast('BlackboardParserService.content_changed')
     )
 
     return self
