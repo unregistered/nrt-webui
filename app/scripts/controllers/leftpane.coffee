@@ -2,4 +2,8 @@
 
 angular.module("nrtWebuiApp").controller "LeftPaneCtrl", ($scope, LoaderParserService) ->
 
-    $scope.selected_pane = 0
+    $scope.MODULES_TAB = 0
+    $scope.INSPECT_TAB = 1
+    $scope.LOADERS_TAB = 2
+
+    $scope.selected_pane = $scope.MODULES_TAB

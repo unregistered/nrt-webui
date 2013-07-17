@@ -1,23 +1,16 @@
 <div class="row-fluid">
 
-    <div class="span4">
+  <!-- Left pane tabs -->
+    <div class="span4" ng-controller="LeftPaneCtrl">
+      <ul class="nav nav-tabs">
+        <li ng-class="{'active': selected_pane==MODULES_TAB}"><a href="" ng-click="selected_pane=MODULES_TAB">Modules</a></li>
+        <li ng-class="{'active': selected_pane==INSPECT_TAB}"><a href="" ng-click="selected_pane=INSPECT_TAB">Inspect</a></li>
+        <li ng-class="{'active': selected_pane==LOADERS_TAB}"><a href="" ng-click="selected_pane=LOADERS_TAB">Loaders</a></li>
+      </ul>
 
-      <div ng-controller="LeftPaneCtrl">
-        <ul class="nav nav-tabs">
-          <li ng-class="{'active': selected_pane==0}"><a href="" ng-click="selected_pane=0">Modules</a></li>
-          <li ng-class="{'active': selected_pane==1}"><a href="" ng-click="selected_pane=1">Inspect</a></li>
-          <li ng-class="{'active': selected_pane==2}"><a href="" ng-click="selected_pane=2">Loaders</a></li>
-        </ul>
-
-        <span ng-switch on="selected_pane">
-          <div ng-switch-when="0" ng-include src="'views/modules_tab.html'"></div>
-          <div ng-switch-when="1" ng-include src="'views/inspect_tab.html'"></div>
-          <div ng-switch-when="2" ng-include src="'views/loaders_tab.html'"></div>
-        </span>
-
-      </div>
-
-
+      <div ng-show="selected_pane==MODULES_TAB" ng-include="'views/modules_tab.html'"></div>
+      <div ng-show="selected_pane==INSPECT_TAB" ng-include="'views/inspect_tab.html'"></div>
+      <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
     </div>
 
     <div class="span8">
