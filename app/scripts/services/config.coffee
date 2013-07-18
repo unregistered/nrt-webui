@@ -40,6 +40,7 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.settings = {
         'version': 0.1
         'canvas_mousemode': self.SETTING_CANVAS_MOUSEMODE_DRAG
+        'module_visibility': self.SETTING_SHOW_INTERNAL_MODULES
     }
 
     return self

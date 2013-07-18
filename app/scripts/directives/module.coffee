@@ -213,4 +213,22 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 else
                     scope.raphael_drawings.box.animate "fill-opacity": 0, 500
             )
+
+            scope.$on("SelectDragEnded", (scopes, message) ->
+                # A multiple-select drag ended, check to see if we should be included
+                mybbox = scope.raphael_drawings.box.getBBox()
+                dragbbox = message
+
+                # We will be selected if the boxes intersect at all
+                intersection = ->
+                    return false if mybbox.x2 < dragbbox.xlow
+                    return false if mybbox.x > dragbbox.xhigh
+                    return false if mybbox.y2 < dragbbox.ylow
+                    return false if mybbox.y > dragbbox.yhigh
+                    return true
+
+                if intersection()
+                    SelectionService.append 'module', scope.model
+                    scope.$apply()
+            )
     }
