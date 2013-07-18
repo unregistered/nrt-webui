@@ -13,7 +13,7 @@
       <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
     </div>
 
-    <div class="span8">
+    <div class="span8" ng-controller="WorkspaceCtrl">
         <!-- Alert view -->
         <div ng-controller="AlertsCtrl">
             <div ng-repeat="alert in alerts">

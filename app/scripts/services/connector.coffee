@@ -2,7 +2,7 @@
 
 ###
 Responsible for a couple things relating to connections:
-* Registers the x,y coordinates of ports to allow connectors to latch
+* Registers the bounding box of ports to allow connectors to latch
 * Assists active connections by providing a list of matching ports
 ###
 angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerService) ->
