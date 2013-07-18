@@ -10,6 +10,7 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
     Modules are stored in an object, keyed by moduid
     ###
     self.modules = {}
+    self.ports = []
 
     $rootScope.$watch('last_update_time', ->
         _.each ServerService.federation_summary.message.namespaces[0].modules, (it) ->
@@ -21,14 +22,17 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
             _.each it.posters, (poster) ->
                 poster.module = it
                 poster.orientation = 'poster'
+                self.ports.push poster
 
             _.each it.subscribers, (subscriber) ->
                 subscriber.module = it
                 subscriber.orientation = 'subscriber'
+                self.ports.push subscriber
 
             _.each it.checkers, (checker) ->
                 checker.module = it
                 checker.orientation = 'checker'
+                self.ports.push checker
     )
 
     $rootScope.$watch('last_guidata_time', ->

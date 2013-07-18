@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, SelectionService, ConfigService, ModuleParserService) ->
+angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, SelectionService, ConfigService, ModuleParserService, HoverService) ->
     require: '^raphael'
     restrict: "E"
     template: """
@@ -90,9 +90,8 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
                 'stroke-width': 1
                 fill: "none"
             )
-
-            # if @get('phantom')
-            #     l.attr('stroke-dasharray': '--')
+            if iAttrs.phantom
+                l.attr('stroke-dasharray': '--')
 
             return l
 
@@ -105,7 +104,6 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
             )
             return b
 
-
         scope.$watch("connection", ->
             scope.raphael_drawings = {}
             scope.raphael_drawings.line = scope.drawLine()
@@ -115,13 +113,29 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
                 SelectionService.set 'connection', scope.connection
                 scope.$apply()
 
+            scope.raphael_drawings.hitbox.mouseover =>
+                HoverService.set 'connection', scope.connection
+                scope.$apply()
+
         )
 
+        updateWidth = ->
+            w = 1
+            w = 3 if scope.connection._hovered || scope.connection._selected
+            scope.raphael_drawings.line.attr('stroke-width': w)
+
         scope.$watch("connection._selected", ->
-            w = if scope.connection._selected then 3 else 1
-            scope.raphael_drawings.line.attr(
-                'stroke-width': w
-            )
+            updateWidth()
+        )
+
+        scope.$watch("connection._hovered", ->
+            if iAttrs.phantom
+                # We are a fake connection
+                color = if scope.connection._hovered then ConfigService.UI_CONNECTION_ACTIVE_COLOR else ConfigService.UI_CONNECTION_INACTIVE_COLOR
+
+                scope.raphael_drawings.line.attr('stroke': color)
+            else
+                updateWidth()
         )
 
         # Observe module coordinates
@@ -153,3 +167,9 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
             scope.raphael_drawings.line.attr
                 stroke: color
         , true)
+
+        # When we're being removed
+        iElement.bind('$destroy', ->
+            _.each scope.raphael_drawings, (obj, key) ->
+                obj.remove()
+        )

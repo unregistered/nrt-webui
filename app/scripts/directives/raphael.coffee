@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService) ->
+angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService) ->
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
         @zpd = undefined
@@ -50,6 +50,11 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         # Clear on click
         mat.mousedown (event) =>
             SelectionService.clear()
+            scope.$apply()
+
+        # Hover
+        mat.node.onmouseover = ->
+            HoverService.clear()
             scope.$apply()
 
         #
