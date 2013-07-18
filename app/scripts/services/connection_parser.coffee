@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('ConnectionParserService', ($rootScope, ServerService) ->
+angular.module('nrtWebuiApp').factory('ConnectionParserService', ($rootScope, ServerService, ModuleParserService) ->
     self = {};
 
     ###
@@ -10,6 +10,8 @@ angular.module('nrtWebuiApp').factory('ConnectionParserService', ($rootScope, Se
 
     $rootScope.$watch('ServerService.last_update_time', ->
         _.each ServerService.federation_summary.message.namespaces[0].connections, (it) ->
+            it.from_module = ModuleParserService.modules[it.module1]
+            it.to_module = ModuleParserService.modules[it.module2]
             self.connections.push it
     )
 

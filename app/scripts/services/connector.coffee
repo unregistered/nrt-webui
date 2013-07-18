@@ -20,10 +20,15 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
     #
     self.pairFrom = null
     self.pairingState = 'IDLE'
+    self.isPairing = ->
+        self.pairingState == 'PAIRING'
+
     self.startPairing = (port) ->
         console.log "Begin pairing"
         self.pairFrom = port
         self.pairingState = 'PAIRING'
+
+        $rootScope.$broadcast("ConnectorService.pairing_state_changed")
 
     self.completePairing = ->
         # Get the hovered object
@@ -34,6 +39,8 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
 
         self.pairFrom = null
         self.pairingState = 'IDLE'
+
+        $rootScope.$broadcast("ConnectorService.pairing_state_changed")
 
     self.isViableCandidate = (port) ->
         return undefined unless self.pairFrom
@@ -67,6 +74,9 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
                         bbuid2: self.pairFrom.module.bbuid
                         module2: self.pairFrom.module.moduid
                         portname2: self.pairFrom.portname
+
+                        from_module: self.pairFrom
+                        to_module: module
                     }
 
         return connections

@@ -23,10 +23,14 @@ angular.module('nrtWebuiApp').factory('HoverService', ($rootScope) ->
         self.hovered = obj
         self.hovered_type = type
 
+        $rootScope.$broadcast("HoverService.hover_changed")
+
     self.clear = ->
         self.hovered._hovered = false if self.hovered
         self.hovered = null
         self.hovered_type = null
+
+        $rootScope.$broadcast("HoverService.hover_changed")
 
     return self
 )

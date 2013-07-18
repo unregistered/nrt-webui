@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService, $filter) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService, $filter, HoverService) ->
     {
         scope: {
             model: "=model"
@@ -186,7 +186,11 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                         module._dragging = false
                     scope.$apply()
 
-                scope.container.mousedown = =>
+                box.mouseover ->
+                    HoverService.set 'module', scope.model
+                    scope.$apply()
+
+                scope.container.mousedown ->
                     console.log "MD"
                     # isPartOfMultipleSelection = ->
                     #     modules = SelectionService.get('module')

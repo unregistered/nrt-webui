@@ -119,43 +119,12 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
 
         )
 
-        updateWidth = ->
-            w = 1
-            w = 3 if scope.connection._hovered || scope.connection._selected
-            scope.raphael_drawings.line.attr('stroke-width': w)
-
-        scope.$watch("connection._selected", ->
-            updateWidth()
-        )
-
-        scope.$watch("connection._hovered", ->
-            if iAttrs.phantom
-                # We are a fake connection
-                color = if scope.connection._hovered then ConfigService.UI_CONNECTION_ACTIVE_COLOR else ConfigService.UI_CONNECTION_INACTIVE_COLOR
-
-                scope.raphael_drawings.line.attr('stroke': color)
-            else
-                updateWidth()
-        )
-
-        # Observe module coordinates
-        scope.from_module = ModuleParserService.modules[scope.connection.module1]
-        scope.to_module = ModuleParserService.modules[scope.connection.module2]
-        scope.$watch("[from_module.x, from_module.y, to_module.x, to_module.y]", ->
-            scope.raphael_drawings.line.attr(path: scope.getPathString())
-            scope.raphael_drawings.hitbox.attr(path: scope.getPathString())
-        , true)
-
-        # Observe module selection
-        scope.all_selections = ->
-            _.pluck SelectionService.get('module'), '$$hashKey'
-
-        scope.$watch("all_selections()", ->
+        scope.updateColor = ->
             color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
 
             if SelectionService.get('module').length
                 # If modules are selected, color the active ones and gray the inactive ones
-                if scope.from_module._selected || scope.to_module._selected
+                if scope.connection.from_module._selected || scope.connection.to_module._selected
                     # We're active
                     color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
                 else
@@ -166,7 +135,52 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
 
             scope.raphael_drawings.line.attr
                 stroke: color
+
+        scope.updateWidth = ->
+            w = 1
+            w = 3 if scope.connection._hovered || scope.connection._selected
+
+            w = 1 if ConnectorService.isPairing() && !iAttrs.phantom
+            scope.raphael_drawings.line.attr('stroke-width': w)
+
+        scope.updateOpacity = ->
+            o = 1
+            o = 0.2 if ConnectorService.isPairing()
+            scope.raphael_drawings.line.attr(opacity: o)
+
+
+        # When we are selected
+        scope.$watch("connection._selected", ->
+            scope.updateWidth()
+        )
+
+        # When we are hovered
+        scope.$watch("connection._hovered", ->
+            scope.updateWidth()
+            scope.updateColor()
+        )
+
+        # Observe module coordinates
+        scope.$watch("[connection.from_module.x, connection.from_module.y, connection.to_module.x, connection.to_module.y]", ->
+            scope.raphael_drawings.line.attr(path: scope.getPathString())
+            scope.raphael_drawings.hitbox.attr(path: scope.getPathString())
         , true)
+
+        # Observe module selection
+        scope.$on("SelectionService.selection_changed", ->
+            scope.updateColor()
+        )
+
+        # Observe module hover
+        scope.$on("HoverService.hover_changed", ->
+            hovered_module = HoverService.getHovered 'module'
+            return unless hovered_module
+        )
+
+        # Observe pairing state
+        scope.$on("ConnectorService.pairing_state_changed", ->
+            scope.updateOpacity()
+        )
 
         # When we're being removed
         iElement.bind('$destroy', ->
