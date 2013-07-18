@@ -7,7 +7,7 @@ angular.module("nrtWebuiApp").directive "prototype", ($compile) ->
 
     template: """
     <span>
-        <img width="20px" ng-show="!model.children" src="data:{{model.icontype}};base64,{{model.icondata}}">
+        <img width="20px" ng-show="!model.children" src="data:{{model.iconext | ext2mime}};base64,{{model.icondata}}">
         {{ model.name }}
     </span>
     """

@@ -3,12 +3,14 @@
 
   <!-- Module inspector -->
   <div ng-show="module">
+
     <h3>{{module.classname}}</h3>
     <h4>({{module.instance}})</h4>
 
     <p>bbuid: {{module.bbuid}}</p>
     <p>moduid: {{module.moduid}}</p>
 
+    <!-- Parameters -->
     <div class="accordion" id="parameters_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
@@ -17,15 +19,20 @@
           </a>
         </div>
         <div id="collapse_parameters" class="accordion-body collapse in">
-          <div class="accordion-inner"> Parameter...  <input type="text"></div>
-          <div class="accordion-inner"> Parameter...  <input type="text"></div>
-          <div class="accordion-inner"> Parameter...  <input type="text"></div>
-          <div class="accordion-inner"> Parameter...  <input type="text"></div>
+          <div class="accordion-inner"> 
+
+            <div ng-repeat="parameter in module.parameters">
+              <label class="control-label" for="{{parameter.name}}">{{parameter.name}}</label>
+              <input type="text" id="{{parameter.name}}">
+              <i class="icon-comment" data-toggle="tooltip" title="{{parameter.description}}"></i>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
 
-
+    <!-- Ports -->
     <div class="accordion" id="ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
@@ -52,6 +59,6 @@
       </div>
     </div>
 
-  </div>
+  </div> <!-- End module inspector -->
 
 </div>
