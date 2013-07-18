@@ -25,8 +25,10 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
 
             bbnick = blackboard.nick
 
+            # If we already know about the loader, don't request a new loaderSummary
             continue if _.has self.loaders, bbuid
 
+            # Request the loaderSummary from the loader with the given nickname
             loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
 
             loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
@@ -42,6 +44,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
                             it.name = it.logicalPath.split('/').pop()
                             return it
 
+                    # Let everyone know that the list of loaders has changed
                     $rootScope.$broadcast("LoaderParserService.loaders_changed", self.loaders)
                 else
                     console.error 'Got loader summary from ', bbnick, ' with no modules'

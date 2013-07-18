@@ -8,9 +8,8 @@ angular.module('nrtWebuiApp').factory('ConnectionParserService', ($rootScope, Se
     ###
     self.connections = []
 
-    $rootScope.$watch('ServerService.last_update_time', ->
-        return unless ServerService.federation_summary
-        _.each ServerService.federation_summary.message.namespaces[0].connections, (it) ->
+    $rootScope.$on('ServerService.new_blackboard_federation_summary', (event, federation_summary) ->
+        _.each federation_summary.message.namespaces[0].connections, (it) ->
             self.connections.push it
     )
 
