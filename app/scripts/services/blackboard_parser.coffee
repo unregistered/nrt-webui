@@ -8,11 +8,15 @@ angular.module('nrtWebuiApp').factory('BlackboardParserService', ($rootScope, Se
     ###
     self.content = {}
 
-    $rootScope.$watch('ServerService.last_update_time', ->
-        _.each ServerService.federation_summary.message.bbnicks, (it) ->
+    self.getBlackboardFromUID = (bbuid) ->
+        return self.content[bbuid]
+
+    $rootScope.$on('ServerService.new_blackboard_federation_summary', (event, federation_summary)->
+        console.log "Got blackboard_federation_summary", federation_summary
+        _.each federation_summary.message.bbnicks, (it) ->
             self.content[it.uid] = it
 
-        $rootScope.$broadcast('BlackboardParserService.content_changed')
+        $rootScope.$broadcast('BlackboardParserService.content_changed', self.content)
     )
 
     return self

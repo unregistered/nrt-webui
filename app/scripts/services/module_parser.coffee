@@ -12,8 +12,8 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
     self.modules = {}
     self.ports = []
 
-    $rootScope.$watch('last_update_time', ->
-        _.each ServerService.federation_summary.message.namespaces[0].modules, (it) ->
+    $rootScope.$on('ServerService.new_blackboard_federation_summary', (event, federation_summary) ->
+        _.each federation_summary.message.namespaces[0].modules, (it) ->
             it.x = 0
             it.y = 0
             self.modules[it.moduid] = it

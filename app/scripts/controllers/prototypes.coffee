@@ -2,8 +2,9 @@
 
 angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerService, LoaderParserService) ->
 
-    $scope.lastSearch = ''
-    $scope.lastTree = null
+    $scope.lastSearch = null
+    $scope.emptyTree = {name: "Modules", expanded: true, children: []}
+    $scope.lastTree = $scope.emptyTree
 
     # Treeify a flat list of modules, inserting them into a hierarchy based on their categories
     $scope._treeify = (modules) ->
@@ -28,23 +29,21 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
             currCategory['children'].push module
             
-            #name: categories[categories.length-1]
-            #icondata: module.icondata
-            #icontype: 'image/' + module.iconext[1..]
-            #logicalPath: module.logicalPath # consumed during module creation
-
         return tree
 
-    $scope.currentLoader = 'ubuntu1204[7f0101]:4470:8bcdc0'
+    $scope.currentLoaderUID = ''
     $scope.search = ''
 
     # Get the filtered prototype tree
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
+
+        return $scope.emptyTree unless LoaderParserService.loaders[$scope.currentLoaderUID]
+
         if $scope.search == $scope.lastSearch && $scope.lastTree
             return $scope.lastTree
 
-        filteredPrototypes = _.filter LoaderParserService.loaders[$scope.currentLoader]['prototypes'], (it) ->
+        filteredPrototypes = _.filter LoaderParserService.loaders[$scope.currentLoaderUID]['prototypes'], (it) ->
             return ~it.name.toLowerCase().indexOf($scope.search.toLowerCase())
 
         $scope.lastTree = $scope._treeify filteredPrototypes
@@ -53,12 +52,13 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
         return $scope.lastTree
 
-    $scope.LoaderParserService = LoaderParserService
-    $scope.$watch "LoaderParserService", ->
-        d = new Date()
 
+    # When the list of known loaders has changed, treeify the currently selected loader
+    $scope.$on("LoaderParserService.loaders_changed", (event, loaders) ->
 
-        start = window.performance.now()
-        $scope.prototypes = $scope._treeify LoaderParserService.loaders[$scope.currentLoader]['prototypes']
-        end = window.performance.now()
-        console.log "TREEIFY TOOK: " + (end - start) + "ms"
+        if $scope.currentLoaderUID == ''
+            return if loaders.length == 0
+            $scope.currentLoaderUID = (_.keys loaders)[0]
+
+        $scope.prototypes = $scope._treeify loaders[$scope.currentLoaderUID]['prototypes']
+    )
