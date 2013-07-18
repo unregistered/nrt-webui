@@ -7,6 +7,6 @@ angular.module("nrtWebuiApp", []).config ($routeProvider) ->
     )
     .when("/server/:host_and_port",
         templateUrl: "views/server.html"
-        controller: "ServersCtrl"
+        controller: "ServerCtrl"
     )
     .otherwise redirectTo: "/"
