@@ -15,34 +15,40 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
             return name == classname
 
     # Watch to see when the list of known blackboards changes
-    $rootScope.$on('BlackboardParserService.content_changed', ->
+    $rootScope.$on('BlackboardParserService.content_changed', (event, blackboardFederationSummary) ->
 
         # If a new loader pops up that we haven't seen before, request a loader summary
         # from it, and add blackboard reference to each element
-        for bbuid in _.keys BlackboardParserService.content
-            unless _.has self.loaders, bbuid
-                blackboard = BlackboardParserService.getBlackboardFromUID(bbuid)
-                bbnick = blackboard.nick
+        for bbuid in _.keys blackboardFederationSummary
 
-                loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
+            blackboard = BlackboardParserService.getBlackboardFromUID(bbuid)
 
-                loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
-                    console.log 'Got loaderSummaryMessage', loaderSummaryMessage
+            bbnick = blackboard.nick
 
-                    if _.has loaderSummaryMessage.message, 'modules'
-                        self.loaders[bbuid] =
-                            bbnick: BlackboardParserService.content[bbuid]['nick']
-                            prototypes: _.map loaderSummaryMessage.message.modules, (it) ->
-                                it.blackboard = BlackboardParserService.content[bbuid]
-                                it.name = it.logicalPath.split('/').pop()
-                                return it
+            continue if _.has self.loaders, bbuid
 
-                        $rootScope.$broadcast("LoaderParserService.loaders_changed", self.loaders)
-                    else
-                        console.error 'Got loader summary from ', bbnick, ' with no modules'
-                , (reason) ->
-                    console.error('Failed to get loader summary from ', bbuid, ' because ', reason)
-                )
+            loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
+
+            loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
+
+                bbuid  = loaderSummaryMessage.message.bbUID
+                bbnick = loaderSummaryMessage.message.bbNick
+                
+                if _.has loaderSummaryMessage.message, 'modules'
+                    self.loaders[bbuid] =
+                        bbnick: bbnick
+                        prototypes: _.map loaderSummaryMessage.message.modules, (it) ->
+                            it.blackboard = blackboardFederationSummary[bbuid]
+                            it.name = it.logicalPath.split('/').pop()
+                            return it
+
+                    $rootScope.$broadcast("LoaderParserService.loaders_changed", self.loaders)
+                else
+                    console.error 'Got loader summary from ', bbnick, ' with no modules'
+            , (reason) ->
+                console.error('Failed to get loader summary from ', bbuid, ' because ', reason)
+
+            )
     )
 
     return self
