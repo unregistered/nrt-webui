@@ -1,23 +1,7 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "ServersCtrl", ($scope, $routeParams, ServerService, $location) ->
-    $scope.$on('$routeChangeSuccess', (next, current) ->
-        ServerService.host = $routeParams.host_and_port.split(':')[0]
-        ServerService.port = $routeParams.host_and_port.split(':')[1]
-
-        ServerService.name = 'QuickConnect'
-
-        ServerService.connect()
-
-        $scope.active.name = ServerService.name
-        console.log "Change server", ServerService.name
-    )
-
-    $scope.active = {
-        name: 'Uninitialized'
-        host: 'Uninitialized'
-        port: '0'
-    }
+angular.module("nrtWebuiApp").controller "ServersCtrl", ($scope, ServerService, $location) ->
+    $scope.active = ServerService
     $scope.servers = [
         {
             name: 'localhost'
