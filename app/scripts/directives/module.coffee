@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService, $filter) ->
     {
         scope: {
             model: "=model"
@@ -105,7 +105,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 proto = LoaderParserService.getPrototype(scope.model.bbuid, scope.model.classname)
                 if proto
                     # If the user drags in a module, and we already have its prototype
-                    src = "data:#{proto.icontype};base64,#{proto.icondata}"
+                    src = "data:#{$filter('ext2mime')(proto.iconext)};base64,#{proto.icondata}"
 
                     return controller[0].paper.image(src, x, y, ConfigService.UI_MODULE_IMAGE_WIDTH, ConfigService.UI_MODULE_IMAGE_WIDTH)
                 else

@@ -1,7 +1,9 @@
 <!-- Modules tree view -->
 <tray name="Modules">
   <div ng-controller="PrototypesCtrl">
-    <tree model="prototypes"> </tree>
+    <div> <input type="text" class="search-query" placeholder="Search" ng-model="search"> </div>
+    <hr>
+    <tree model="getFilterPrototypes()"> </tree>
   </div>
 </tray>
 
