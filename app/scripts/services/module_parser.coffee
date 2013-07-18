@@ -13,6 +13,8 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
     self.ports = []
 
     $rootScope.$watch('last_update_time', ->
+        return unless ServerService.federation_summary
+
         _.each ServerService.federation_summary.message.namespaces[0].modules, (it) ->
             it.x = 0
             it.y = 0

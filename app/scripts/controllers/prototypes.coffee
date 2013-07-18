@@ -3,7 +3,8 @@
 angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerService, LoaderParserService) ->
 
     $scope.lastSearch = ''
-    $scope.lastTree = null
+    $scope.emptyTree = {name: "Modules", expanded: true, children: []}
+    $scope.lastTree = $scope.emptyTree
 
     # Treeify a flat list of modules, inserting them into a hierarchy based on their categories
     $scope._treeify = (modules) ->
@@ -35,12 +36,14 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
         return tree
 
-    $scope.currentLoader = 'ubuntu1204[7f0101]:4470:8bcdc0'
+    $scope.currentLoader = ''
     $scope.search = ''
 
     # Get the filtered prototype tree
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
+        return $scope.emptyTree unless LoaderParserService.loaders[$scope.currentLoader]
+
         if $scope.search == $scope.lastSearch && $scope.lastTree
             return $scope.lastTree
 
@@ -55,10 +58,14 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
     $scope.LoaderParserService = LoaderParserService
     $scope.$watch "LoaderParserService", ->
-        d = new Date()
+        return unless LoaderParserService.loaders.length > 0
 
+        console.log "LOADERPARSERSERVICE.LOADERS", LoaderParserService.loaders
 
-        start = window.performance.now()
+        if $scope.currentLoader == ''
+            return if LoaderParserService.loaders.length == 0
+            $scope.currentLoader = LoaderParserService.loaders[0]
+
+        console.log "CURRENT LOADER: ", $scope.currentLoader
+
         $scope.prototypes = $scope._treeify LoaderParserService.loaders[$scope.currentLoader]['prototypes']
-        end = window.performance.now()
-        console.log "TREEIFY TOOK: " + (end - start) + "ms"

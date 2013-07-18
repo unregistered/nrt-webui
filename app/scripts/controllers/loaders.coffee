@@ -2,10 +2,10 @@
 
 angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderParserService) ->
 
+    $scope.loaders = []
     $scope.selected_bbnick = ""
 
-
-    $scope.$watch "PrototypeParserService", ->
+    $scope.$on("LoaderParserService.loaders_changed", (event, loaders) ->
         $scope.loaders = []
         for bbuid in _.keys LoaderParserService.loaders
             $scope.loaders.push
@@ -14,3 +14,4 @@ angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderParserSer
 
          if $scope.selected_bbnick == ""
              $scope.selected_bbnick = $scope.loaders[0].bbnick
+    )

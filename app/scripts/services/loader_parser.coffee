@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, ServerService, BlackboardParserService) ->
+angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, ServerService, BlackboardParserService) ->
     self = {}
 
     # All known module loaders summaries, indexed by their bbuid with the following fields
@@ -21,14 +21,26 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, Server
         # from it, and add blackboard reference to each element
         for bbuid in _.keys BlackboardParserService.content
             unless _.has self.loaders, bbuid
-                loaderSummaryMessage = ServerService.requestLoaderSummary bbuid
-                if _.has loaderSummaryMessage.message, 'modules'
-                    self.loaders[bbuid] =
-                        bbnick: BlackboardParserService.content[bbuid]['nick']
-                        prototypes: _.map loaderSummaryMessage.message.modules, (it) ->
-                            it.blackboard = BlackboardParserService.content[bbuid]
-                            it.name = it.logicalPath.split('/').pop()
-                            return it
+                blackboard = BlackboardParserService.getBlackboardFromUID(bbuid)
+                bbnick = blackboard.nick
+
+                loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
+
+                loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
+                    if _.has loaderSummaryMessage.message, 'modules'
+                        self.loaders[bbuid] =
+                            bbnick: BlackboardParserService.content[bbuid]['nick']
+                            prototypes: _.map loaderSummaryMessage.message.modules, (it) ->
+                                it.blackboard = BlackboardParserService.content[bbuid]
+                                it.name = it.logicalPath.split('/').pop()
+                                return it
+
+                        $rootScope.$broadcast("LoaderParserService.loaders_changed", self.loaders)
+                    else
+                        console.error 'Got loader summary from ', bbnick, ' with no modules'
+                , (reason) ->
+                    console.error('Failed to get loader summary from ', bbuid, ' because ', reason)
+                )
     )
 
     return self
