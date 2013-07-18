@@ -47,13 +47,83 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         # Draw a mat to intercept multiple selection, these are also the bounds of the program
         mat = controller.paper.rect(-ConfigService.UI_CANVAS_WIDTH/2, -ConfigService.UI_CANVAS_HEIGHT/2, ConfigService.UI_CANVAS_WIDTH, ConfigService.UI_CANVAS_HEIGHT).attr("fill", "#FFF")
 
+        # Clear on click
         mat.mousedown (event) =>
             SelectionService.clear()
             scope.$apply()
 
+        #
+        # Drag to multiply select
+        #
+
+        # Initial draggable setting
+        mat.node.draggable = (ConfigService.settings.canvas_mousemode == ConfigService.SETTING_CANVAS_MOUSEMODE_SELECT)
+        mat.node.onDragStart = (event) =>
+            SelectionService.clear()
+            scope.$apply()
+
+            p = controller.zpd.getTransformedPoint(event)
+
+            if scope.selbox
+                # It's possible for the user to release the mouse outside of the window, so
+                # we need to clean up any orphaned select boxes
+                scope.selbox.remove()
+
+            scope.selbox = controller.paper.rect(p.x, p.y, 0, 0).attr(
+                'stroke': "#9999FF"
+                "fill-opacity": 0.2
+                'fill': '#9999FF'
+            )
+
+        mat.node.onDrag = (delta, event) =>
+            box = scope.selbox
+            dx = delta.toX - delta.fromX
+            dy = delta.toY - delta.fromY
+            xoffset = 0
+            yoffset = 0
+
+            # If we have negative diff, we need to translate the box, since
+            # the rect won't accept a negative width/height
+            if dx < 0
+                xoffset = dx
+                dx = -dx
+
+            if dy < 0
+                yoffset = dy
+                dy = -dy
+
+            box.transform("T" + xoffset + "," + yoffset)
+            box.attr('width', dx)
+            box.attr('height', dy)
+
+        mat.node.onDragStop = (event) =>
+            # Remove the box, and broadcast the bounds of the box
+            box = scope.selbox.getBBox()
+
+            scope.$broadcast("SelectDragEnded", {
+                xlow: box.x
+                xhigh: box.x + box.width
+                ylow: box.y
+                yhigh: box.y + box.height
+            })
+
+            scope.selbox.remove()
+
         # Mark the origin
         controller.paper.path("M25,0 L-25,0").attr("stroke", "#ccc")
         controller.paper.path("M0,-25 L0,25").attr("stroke", "#ccc")
+
+        # Watch for settings changes
+        scope.ConfigService = ConfigService
+        scope.$watch("ConfigService.settings.canvas_mousemode", ->
+            mode = ConfigService.settings.canvas_mousemode
+
+            # We can pan around in drag mode
+            controller.zpd.opts.pan = (mode == ConfigService.SETTING_CANVAS_MOUSEMODE_DRAG)
+
+            # We can drag around on the mat when we're in select mode
+            mat.node.draggable = (mode == ConfigService.SETTING_CANVAS_MOUSEMODE_SELECT)
+        )
 
         # Watch for changes in zoom and pan
         scope.$on("RequestZoomIn", (arg) ->

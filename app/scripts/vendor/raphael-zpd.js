@@ -620,6 +620,13 @@ var currentScale = gTransform.a;
         console.log(me.gelem)
     }
 
+    /*
+    * Get scaled point
+    */
+    me.getTransformedPoint = function(event) {
+        var p = me.getEventPoint(event);
+        return p.matrixTransform(me.gelem.getCTM().inverse());
+    }
 
     // end of constructor
     me.setupHandlers(me.root);
