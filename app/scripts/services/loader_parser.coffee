@@ -27,6 +27,8 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
                 loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
 
                 loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
+                    console.log 'Got loaderSummaryMessage', loaderSummaryMessage
+
                     if _.has loaderSummaryMessage.message, 'modules'
                         self.loaders[bbuid] =
                             bbnick: BlackboardParserService.content[bbuid]['nick']

@@ -21,7 +21,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then((res) ->
                 self.federation_summary = res
-                $rootScope.$broadcast("ServerService.new_blackboard_federation_summary_event", res)
+                $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
             , (error, desc) ->
                 console.error "Failed to get blackboard_federation_summary", error, desc
             )
@@ -33,13 +33,11 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         prototypesPromise = $q.defer()
 
         self.session.call("org.nrtkit.designer/get/prototypes", bbuid).then((res) ->
-            prototypesPromise.resolve(res)
+            $rootScope.$apply -> prototypesPromise.resolve(res)
         , (error, desc) ->
-            prototypesPromise.reject(desc))
+            $rootScope.$apply -> prototypesPromise.reject(desc))
 
         return prototypesPromise.promise
-
-
 
 
     self.createModule = (prototype, x, y, bbuid) ->
