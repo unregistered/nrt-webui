@@ -1,11 +1,57 @@
 <div ng-controller="InspectCtrl">
-  <div ng-show="module != null">
+
+
+  <!-- Module inspector -->
+  <div ng-show="module">
     <h3>{{module.classname}}</h3>
     <h4>({{module.instance}})</h4>
 
     <p>bbuid: {{module.bbuid}}</p>
-
     <p>moduid: {{module.moduid}}</p>
 
+    <div class="accordion" id="parameters_accordion">
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#parameters_accordion" href="#collapse_parameters">
+            Parameters
+          </a>
+        </div>
+        <div id="collapse_parameters" class="accordion-body collapse in">
+          <div class="accordion-inner"> Parameter...  <input type="text"></div>
+          <div class="accordion-inner"> Parameter...  <input type="text"></div>
+          <div class="accordion-inner"> Parameter...  <input type="text"></div>
+          <div class="accordion-inner"> Parameter...  <input type="text"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="accordion" id="ports_accordion">
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
+            Ports
+          </a>
+        </div>
+        <div id="collapse_ports" class="accordion-body collapse in">
+          <div ng-show="module.subscribers">
+            <hr> <b>Subscriber Ports ({{module.subscribers.length}})</b>
+            <div class="accordion-inner" ng-repeat="port in module.subscribers"> {{port.portname}}  </div>
+          </div>
+
+          <div ng-show="module.checkers">
+            <hr> <b>Checker Ports ({{module.checkers.length}})</b>
+            <div class="accordion-inner" ng-repeat="port in module.checkers"> {{port.portname}}  </div>
+          </div>
+
+          <div ng-show="module.posters">
+            <hr> <b>Poster Ports ({{module.posters.length}})</b>
+            <div class="accordion-inner" ng-repeat="port in module.posters"> {{port.portname}}  </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
 </div>
