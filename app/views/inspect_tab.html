@@ -1,1 +1,11 @@
-<h3>Inspector!</h3>
+<div ng-controller="InspectCtrl">
+  <div ng-show="module != null">
+    <h3>{{module.classname}}</h3>
+    <h4>({{module.instance}})</h4>
+
+    <p>bbuid: {{module.bbuid}}</p>
+
+    <p>moduid: {{module.moduid}}</p>
+
+  </div>
+</div>
