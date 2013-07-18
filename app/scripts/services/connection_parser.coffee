@@ -13,5 +13,8 @@ angular.module('nrtWebuiApp').factory('ConnectionParserService', ($rootScope, Se
             self.connections.push it
     )
 
+    self.isConnected = (port1, port2) ->
+        return false
+
     return self
 )

@@ -1,5 +1,8 @@
 "use strict"
 
+###
+Parses and processes modules and ports
+###
 angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, ServerService) ->
     self = {};
 
@@ -13,6 +16,19 @@ angular.module('nrtWebuiApp').factory('ModuleParserService', ($rootScope, Server
             it.x = 0
             it.y = 0
             self.modules[it.moduid] = it
+
+            # Add details to ports
+            _.each it.posters, (poster) ->
+                poster.module = it
+                poster.orientation = 'poster'
+
+            _.each it.subscribers, (subscriber) ->
+                subscriber.module = it
+                subscriber.orientation = 'subscriber'
+
+            _.each it.checkers, (checker) ->
+                checker.module = it
+                checker.orientation = 'checker'
     )
 
     $rootScope.$watch('last_guidata_time', ->

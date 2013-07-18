@@ -9,7 +9,6 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
     scope: {
         model: "=model"
         index: "@index"
-        module: "=module"
     }
     link: (scope, iElement, iAttrs, controller) ->
         scope.getMsgColor = ->
@@ -31,7 +30,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 h: 0
             }
 
-            if iAttrs.orientation == 'checker'
+            if scope.model.orientation == 'checker'
                 total_width = controller[1].getModel().checkers.length * ( ConfigService.UI_PORT_HEIGHT + ConfigService.UI_PORT_SPACING ) - ConfigService.UI_PORT_SPACING # Last one doesn't get extra space
                 midpoint = controller[1].getWidth()/2
                 x_start = midpoint - total_width/2 - ConfigService.UI_PORT_HEIGHT
@@ -41,7 +40,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 retval.w = ConfigService.UI_PORT_HEIGHT # These are flipped for checkers
                 retval.h = ConfigService.UI_PORT_WIDTH
             else
-                retval.x = controller[1].getWidth() * (iAttrs.orientation is 'output') - ConfigService.UI_PORT_WIDTH/2
+                retval.x = controller[1].getWidth() * (scope.model.orientation is 'poster') - ConfigService.UI_PORT_WIDTH/2
                 retval.y = ConfigService.UI_PORT_INITIAL_OFFSET + scope.index * ConfigService.UI_PORT_HEIGHT + ConfigService.UI_PORT_SPACING * scope.index
                 retval.w = ConfigService.UI_PORT_WIDTH
                 retval.h = ConfigService.UI_PORT_HEIGHT
@@ -60,14 +59,14 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         scope.drawRettypeBox = ->
             ip = scope.getInitialPosition()
 
-            if iAttrs.orientation is 'checker'
+            if scope.model.orientation is 'checker'
                 # Checkers have no return type
                 ip.w = 0
                 ip.h = 0
-            if iAttrs.orientation is 'input'
+            if scope.model.orientation is 'subscriber'
                 ip.x += ConfigService.UI_PORT_WIDTH/2
                 ip.w = ip.w/2
-            if iAttrs.orientation is 'output'
+            if scope.model.orientation is 'poster'
                 ip.w = ip.w/2
 
             rect =  controller[0].paper.rect(ip.x, ip.y, ip.w, ip.h, ConfigService.UI_PORT_BORDER_RADIUS)
@@ -79,7 +78,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         scope.drawHitbox = ->
             ip = scope.getInitialPosition()
 
-            if iAttrs.orientation is 'checker'
+            if scope.model.orientation is 'checker'
                 # Checker adjustments
                 ip.x -= ConfigService.UI_PORT_SPACING/2
                 ip.h *= 1.5
@@ -87,7 +86,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             else
                 # Port adjustments
                 ip.y -= ConfigService.UI_PORT_SPACING/2
-                ip.x -= 10 if iAttrs.orientation is 'input'
+                ip.x -= 10 if scope.model.orientation is 'subscriber'
                 ip.w = ip.w * 1.5
                 ip.h = ip.h + ConfigService.UI_PORT_SPACING
 
@@ -138,7 +137,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 c.push v
 
             scope.raphael_drawings.hitbox.mouseover (arg) =>
-                HoverService.set(scope.model)
+                HoverService.set('port', scope.model)
                 scope.$apply()
 
             scope.raphael_drawings.hitbox.mouseout (arg) =>
@@ -148,15 +147,15 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             # Register drag for creating connections
             scope.raphael_drawings.hitbox.node.draggable = true
             scope.raphael_drawings.hitbox.node.onDragStart = (event) =>
-                console.log "start connection"
-                # App.router.connectionsController.startPairing @get('port')
+                ConnectorService.startPairing scope.model
+                scope.$apply()
 
             scope.raphael_drawings.hitbox.node.onDrag = (delta, event) =>
                 console.log "Move"
 
             scope.raphael_drawings.hitbox.node.onDragStop = =>
-                console.log "Up", @
-                # App.router.connectionsController.completePairing()
+                ConnectorService.completePairing()
+
                 # Set selection to register a single click
                 SelectionService.set 'port', scope.model
                 scope.$apply()
@@ -178,6 +177,9 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
 
         # Change opacity on hover
         scope.$watch("model._hovered", ->
+            # Don't respond during pairing if we aren't a viable port
+            return if ConnectorService.pairingState == 'PAIRING' && !ConnectorService.isViableCandidate(scope.model)
+
             if scope.model._hovered
                 scope.raphael_drawings.box.attr(
                     opacity: 0.5
@@ -203,7 +205,31 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 scope.raphael_drawings.label.remove() if scope.raphael_drawings.label
         )
 
-        scope.$watch("[module.x, module.y]", ->
+        # Register our location for connectors
+        scope.$watch("[model.module.x, model.module.y]", ->
             bbox = scope.raphael_drawings.box.getBBox()
-            ConnectorService.registerPortBBox(scope.module, scope.model, bbox)
+            ConnectorService.registerPortBBox(scope.model.module, scope.model, bbox)
         , true)
+
+        # During pairing, dim ourselves if we aren't a valid option
+        scope.ConnectorService = ConnectorService
+        scope.$watch("ConnectorService.pairingState", ->
+            if ConnectorService.pairingState == 'PAIRING'
+                if ConnectorService.isViableCandidate(scope.model) || ConnectorService.pairFrom == scope.model
+                    # Stay as we are
+                else
+                    scope.raphael_drawings.box.attr(
+                        opacity: 0.1
+                    )
+                    scope.raphael_drawings.rettype_box.attr(
+                        opacity: 0.1
+                    )
+            else
+                # Change colors back to normal
+                scope.raphael_drawings.box.attr(
+                    opacity: 1
+                )
+                scope.raphael_drawings.rettype_box.attr(
+                    opacity: 1
+                )
+        )

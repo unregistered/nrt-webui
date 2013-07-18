@@ -50,13 +50,14 @@
         <raphael>
             <div ng-controller="ModulesCtrl">
                 <module ng-repeat="(moduid, module) in modules" model="module">
-                    <port ng-repeat="port in module.checkers" model="port" module="module" index="{{$index}}" orientation="checker"></port>
-                    <port ng-repeat="port in module.posters" model="port" module="module" index="{{$index}}" orientation="output"></port>
-                    <port ng-repeat="port in module.subscribers" model="port" module="module" index="{{$index}}" orientation="input"></port>
+                    <port ng-repeat="port in module.checkers" model="port" index="{{$index}}"></port>
+                    <port ng-repeat="port in module.posters" model="port" index="{{$index}}"></port>
+                    <port ng-repeat="port in module.subscribers" model="port" index="{{$index}}"></port>
                 </module>
             </div>
             <div ng-controller="ConnectionsCtrl">
                 <connection ng-repeat="connection in connections" model="connection"></connection>
+                <connection ng-repeat="connection in phantom_connections" model="connection" phantom="true"></connection>
             </div>
         </raphael>
 
