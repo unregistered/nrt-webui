@@ -10,6 +10,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
 
     # Returns prototype for bbuid and classname. Classnames are unique
     self.getPrototype = (bbuid, classname) ->
+        return null unless self.loaders[bbuid]
         _.find self.loaders[bbuid].prototypes, (it) ->
             name = _.last it.logicalPath.split('/')
             return name == classname

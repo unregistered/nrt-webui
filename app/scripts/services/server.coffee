@@ -7,6 +7,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
     self.host = ''
     self.port = ''
     self.connected = false
+    self.federation_summary = null
 
     self.last_update_time = NaN
 
