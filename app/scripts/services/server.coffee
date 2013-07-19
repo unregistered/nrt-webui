@@ -52,7 +52,8 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
-            AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc}"
+            AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc} Dismiss to retry.", false, ->
+                self.connect()
 
         )
 
