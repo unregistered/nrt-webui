@@ -1,4 +1,8 @@
-angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, SelectionService, ConfigService, ModuleParserService, HoverService) ->
+###
+Draws a raphael connection
+@broadcasts Connection.last_connection_rendered signifies that all connections have rendered
+###
+angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorService, SelectionService, ConfigService, ModuleParserService, HoverService) ->
     require: '^raphael'
     restrict: "E"
     template: """
@@ -8,6 +12,7 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
 
     scope: {
         connection: "=model"
+        last: "=last"
     }
 
     link: (scope, iElement, iAttrs, controller) ->
@@ -117,6 +122,8 @@ angular.module("nrtWebuiApp").directive 'connection', (ConnectorService, Selecti
                 HoverService.set 'connection', scope.connection
                 scope.$apply()
 
+            if scope.last
+                $rootScope.$broadcast("Connection.last_connection_rendered")
         )
 
         scope.updateColor = ->

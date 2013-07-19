@@ -227,4 +227,8 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                     SelectionService.append 'module', scope.model
                     scope.$apply()
             )
+
+            scope.$on("Connection.last_connection_rendered", ->
+                scope.toFront()
+            )
     }

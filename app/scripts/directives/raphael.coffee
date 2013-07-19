@@ -7,8 +7,6 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
         @zpd = undefined
-
-        $scope.ivar = "Value"
     ]
     restrict: "E"
     template: """

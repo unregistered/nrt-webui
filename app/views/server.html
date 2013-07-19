@@ -56,7 +56,7 @@
                 </module>
             </div>
             <div ng-controller="ConnectionsCtrl">
-                <connection ng-repeat="connection in connections" model="connection"></connection>
+                <connection ng-repeat="connection in connections" model="connection" last="$last"></connection>
                 <connection ng-repeat="connection in phantom_connections" model="connection" phantom="true"></connection>
             </div>
         </raphael>
