@@ -29,7 +29,8 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
 
             ServerService.requestLoaderSummary(blackboard.nick).then (loader_summary) ->
 
-                return unless _(loader_summary.message).has 'modules'
+                # The blackboard is not actually a loader
+                return unless loader_summary
 
                 bbuid  = loader_summary.message.bbUID
                 bbnick = loader_summary.message.bbNick

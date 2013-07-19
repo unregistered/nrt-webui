@@ -45,7 +45,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
                 try
-                    FederationSummaryParserService.updateFederationSummary message
+                    FederationSummaryParserService.parseFederationSummary message
                 catch error
                     console.error error.message
                     console.error error.stack
