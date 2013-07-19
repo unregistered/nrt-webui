@@ -21,26 +21,8 @@
         <div id="collapse_parameters" class="accordion-body collapse in">
           <div class="accordion-inner"> 
 
-            <div ng-repeat="parameter in module.parameters">
-
-              <span ng-switch="parameter.valuetype">
-
-                <!-- bool parameter -->
-                <span ng-switch-when="bool">
-                  <label class="control-label" for="{{parameter.name}}">{{parameter.name}}</label>
-                  <input type="checkbox" id="{{parameter.name}}" ng-checked="parameter.value == 'true'">
-                  {{parameter.value}}
-                </span>
-
-                <!-- default parameter -->
-                <span ng-switch-default>
-                  <label class="control-label" for="{{parameter.name}}">{{parameter.name}}</label>
-                  <input type="text" id="{{parameter.name}}" value="{{parameter.value}}">
-                </span>
-
-              </span>
-
-              <i class="icon-comment" data-toggle="tooltip" title="{{parameter.description}}"></i>
+            <div style="display:table">
+                <parameter ng-repeat="parameter in module.parameters" model="parameter">
             </div>
 
           </div>
