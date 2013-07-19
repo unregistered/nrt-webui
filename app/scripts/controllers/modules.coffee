@@ -4,4 +4,5 @@ angular.module("nrtWebuiApp").controller "ModulesCtrl", ($scope, ModuleManagerSe
     ###
     Modules are stored in an object, keyed by moduid
     ###
-    $scope.modules = ModuleManagerService.modules
+    $scope.getModules = ->
+        return ModuleManagerService.modules
