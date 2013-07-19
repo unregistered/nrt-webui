@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('AlertRegistryService', ->
+angular.module('nrtWebuiApp').factory('AlertRegistryService', ($rootScope) ->
     self = {};
 
     ### Alert Levels ###
@@ -8,18 +8,16 @@ angular.module('nrtWebuiApp').factory('AlertRegistryService', ->
     self.ALERTLEVEL_WARN = 'warn'
     self.ALERTLEVEL_SUCCESS = 'success'
 
-    self.alerts = [
-        {
-            level: self.ALERTLEVEL_ERROR
-            title: 'Disconnected'
-            desc: 'NRT Webui has been disconnected from the server'
-        },
-        {
-            level: self.ALERTLEVEL_WARN
-            title: 'Uh oh'
-            desc: "Something looks fishy"
-        }
-    ]
+    self.alerts = []
+
+    self.registerError = (title, desc) ->
+        self.registerAlert self.ALERTLEVEL_ERROR, title, desc
+
+    self.registerWarning = (title, desc) ->
+        self.registerAlert self.ALERTLEVEL_WARNING, title, desc
+
+    self.registerSuccess = (title, desc) ->
+        self.registerAlert self.ALERTLEVEL_SUCCESS, title, desc
 
     self.registerAlert = (alertlevel, title, desc) ->
         self.alerts.push {
@@ -27,6 +25,7 @@ angular.module('nrtWebuiApp').factory('AlertRegistryService', ->
             title: title
             desc: desc
         }
+        $rootScope.$apply()
 
     self.dismissAlert = (alert) ->
         idx = self.alerts.indexOf(alert)

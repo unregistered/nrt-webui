@@ -16,7 +16,7 @@
     <div class="span8" ng-controller="WorkspaceCtrl">
         <!-- Alert view -->
         <div ng-controller="AlertsCtrl">
-            <div ng-repeat="alert in alerts">
+            <div ng-repeat="alert in getAlerts()">
                 <div class="alert" ng-class="{'alert-error': alert.level == 'error', 'alert-success': alert.level == 'success'}">
                     <button type="button" class="close" ng-click="dismiss(alert)">&times;</button>
                     <strong>{{alert.title}}</strong>
