@@ -18,48 +18,30 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
     # Watch to see when the list of known blackboards changes
     $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation) ->
 
-        console.log 'SUMMARY: ', blackboardFederationSummary
-        new_bbuids = _.keys blackboardFederationSummary
-
-        console.log 'FILTERING: ', new_bbuids, self.loaders
-
         # Filter out any loaders that have disappeared
-        self.loaders = _.pick self.loaders, new_bbuids
-
-        console.log 'Filtered: ', self.loaders
+        self.loaders = _(self.loaders).pick _(federation.blackboards).keys
 
         # If a new loader pops up that we haven't seen before, request a loader summary
         # from it, and add blackboard reference to each element
-        for bbuid in new_bbuids
+        for blackboard in _(federation.blackboards).values()
 
-            blackboard = BlackboardManagerService.getBlackboardFromUID(bbuid)
+            continue if _(self.loaders).has blackboard.bbuid
 
-            bbnick = blackboard.nick
+            ServerService.requestLoaderSummary(blackboard.nick).then (loader_summary) ->
 
-            # If we already know about the loader, don't request a new loaderSummary
-            continue if _.has self.loaders, bbuid
+                return unless _(loader_summary.message).has 'modules'
 
-            # Request the loaderSummary from the loader with the given nickname
-            loaderSummaryMessagePromise = ServerService.requestLoaderSummary bbnick
+                bbuid  = loader_summary.message.bbUID
+                bbnick = loader_summary.message.bbNick
 
-            loaderSummaryMessagePromise.then((loaderSummaryMessage) ->
+                self.loaders[bbuid] =
+                    bbnick: bbnick
+                    prototypes: _.map loader_summary.message.modules, (it) ->
+                        it.blackboard = blackboard
+                        it.name = it.logicalPath.split('/').pop()
+                        return it
 
-                bbuid  = loaderSummaryMessage.message.bbUID
-                bbnick = loaderSummaryMessage.message.bbNick
-
-                if _.has loaderSummaryMessage.message, 'modules'
-                    self.loaders[bbuid] =
-                        bbnick: bbnick
-                        prototypes: _.map loaderSummaryMessage.message.modules, (it) ->
-                            it.blackboard = blackboardFederationSummary[bbuid]
-                            it.name = it.logicalPath.split('/').pop()
-                            return it
-                else
-                    console.error 'Got loader summary from ', bbnick, ' with no modules'
-            , (reason) ->
-                console.error('Failed to get loader summary from ', bbuid, ' because ', reason)
-
-            )
+            , (reason) -> console.error "Failed to get loader summary from #{blackboard.bbnick}", reason
 
     )
 

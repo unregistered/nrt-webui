@@ -33,7 +33,11 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
-                $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", message)
+                try
+                    FederationSummaryParserService.updateFederationSummary message
+                catch error
+                    console.error error.message
+                    console.error error.stack
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
@@ -41,6 +45,10 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
     self.requestLoaderSummary = (bbuid) ->
         prototypesPromise = $q.defer()
+
+        unless bbuid
+            console.error 'Cannot request loader summary from', bbuid
+            return null
 
         self.session.call("org.nrtkit.designer/get/prototypes", bbuid).then((res) ->
             $rootScope.$apply -> prototypesPromise.resolve(res)
