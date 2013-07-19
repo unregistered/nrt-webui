@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q) ->
+angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService) ->
     self = {}
 
     self.name = ''
@@ -21,7 +21,8 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
             # Get the latest blackboard federation summary
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then((res) ->
-                $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
+                FederationSummaryParserService.updateFederationSummary res
+                # $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
             , (error, desc) ->
                 console.error "Failed to get blackboard_federation_summary", error, desc
             )
