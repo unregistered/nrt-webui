@@ -49,14 +49,14 @@
         <!-- Workspace -->
         <raphael>
             <div ng-controller="ModulesCtrl">
-                <module ng-repeat="(moduid, module) in modules" model="module">
+                <module ng-repeat="(moduid, module) in getModules()" model="module">
                     <port ng-repeat="port in module.checkers" model="port" index="{{$index}}"></port>
                     <port ng-repeat="port in module.posters" model="port" index="{{$index}}"></port>
                     <port ng-repeat="port in module.subscribers" model="port" index="{{$index}}"></port>
                 </module>
             </div>
             <div ng-controller="ConnectionsCtrl">
-                <connection ng-repeat="connection in connections" model="connection" last="$last"></connection>
+                <connection ng-repeat="connection in getConnections()" model="connection" last="$last"></connection>
                 <connection ng-repeat="connection in phantom_connections" model="connection" phantom="true"></connection>
             </div>
         </raphael>
