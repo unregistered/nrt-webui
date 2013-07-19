@@ -11,13 +11,8 @@ angular.module('nrtWebuiApp').factory('BlackboardManagerService', ($rootScope, S
     self.getBlackboardFromUID = (bbuid) ->
         return self.content[bbuid]
 
-    $rootScope.$on('ServerService.new_blackboard_federation_summary', (event, federation_summary)->
-        console.log "Got blackboard_federation_summary", federation_summary
-        self.content = {}
-        _.each federation_summary.message.bbnicks, (it) ->
-            self.content[it.uid] = it
-
-        $rootScope.$broadcast('BlackboardManagerService.content_changed', self.content)
+    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation)->
+        self.content = federation.blackboards
     )
 
     return self

@@ -15,7 +15,6 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation_summary) ->
         self.modules = federation_summary.modules
         self.ports = federation_summary.ports
-        console.log "Got stuff"
     )
 
     $rootScope.$watch('last_guidata_time', ->

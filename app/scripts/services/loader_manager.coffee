@@ -16,7 +16,7 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
             return name == classname
 
     # Watch to see when the list of known blackboards changes
-    $rootScope.$on('BlackboardManagerService.content_changed', (event, blackboardFederationSummary) ->
+    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation) ->
 
         console.log 'SUMMARY: ', blackboardFederationSummary
         new_bbuids = _.keys blackboardFederationSummary

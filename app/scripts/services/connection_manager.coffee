@@ -8,14 +8,8 @@ angular.module('nrtWebuiApp').factory('ConnectionManagerService', ($rootScope, S
     ###
     self.connections = []
 
-    $rootScope.$on('ServerService.new_blackboard_federation_summary', (event, federation_summary) ->
-        self.connections.length = 0 # Clear array
-        _.each federation_summary.message.namespaces[0].connections, (it) ->
-            self.connections.push _.extend {}, it, {
-                from_module: ModuleManagerService.modules[it.module1]
-                to_module: ModuleManagerService.modules[it.module2]
-            }
-
+    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation) ->
+        self.connections = federation.connections
     )
 
     self.isConnected = (port1, port2) ->
