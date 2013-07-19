@@ -1,5 +1,10 @@
 "use strict"
 
+###
+Interacts with the server
+@broadcasts ServerService.federation_update containing the parsed federation
+@broadcasts ServerService.module_position_update containing array of moduids and positions
+###
 angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService) ->
     self = {}
 
@@ -22,14 +27,20 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             # Get the latest blackboard federation summary
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then((res) ->
                 try
-                    FederationSummaryParserService.updateFederationSummary res
+                    federation = FederationSummaryParserService.parseFederationSummary res
+                    $rootScope.$broadcast("ServerService.federation_update", federation)
                 catch error
                     console.error error.message
                     console.error error.stack
-                # $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
             , (error, desc) ->
                 console.error "Failed to get blackboard_federation_summary", error, desc
             )
+
+            # Get the latest gui coords
+            session.call("org.nrtkit.designer/get/gui_data").then (res) =>
+                $rootScope.$broadcast("ServerService.module_position_update", res.message)
+            , (error, desc) =>
+                console.log "Not got", error, desc
 
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->

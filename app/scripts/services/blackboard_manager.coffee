@@ -11,7 +11,7 @@ angular.module('nrtWebuiApp').factory('BlackboardManagerService', ($rootScope, S
     self.getBlackboardFromUID = (bbuid) ->
         return self.content[bbuid]
 
-    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation)->
+    $rootScope.$on('ServerService.federation_update', (event, federation)->
         self.content = federation.blackboards
     )
 

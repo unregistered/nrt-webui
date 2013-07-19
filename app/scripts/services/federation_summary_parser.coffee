@@ -1,5 +1,12 @@
 "use strict"
 
+###
+Parses a raw federation summary to produce an object containing:
+    blackboards: {} # keyed by uid
+    modules: {} # keyed by uid
+    ports: []
+    connections: []
+###
 angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootScope) ->
     self = {}
 
@@ -76,11 +83,11 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
         return federation
 
     # Takes in a raw blackboardFederationSummary message, parses it, and broadcasts the results
-    self.updateFederationSummary = (raw_federation_summary) ->
+    self.parseFederationSummary = (raw_federation_summary) ->
         console.log "raw_federation_summary", raw_federation_summary
 
         federation = self._parseFederation(raw_federation_summary)
-        $rootScope.$broadcast("FederationSummaryParser.federation_ready", federation)
+        return federation
 
     return self
 )

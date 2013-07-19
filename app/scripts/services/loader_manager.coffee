@@ -16,7 +16,7 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
             return name == classname
 
     # Watch to see when the list of known blackboards changes
-    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation) ->
+    $rootScope.$on('ServerService.federation_update', (event, federation) ->
 
         # Filter out any loaders that have disappeared
         self.loaders = _(self.loaders).pick _(federation.blackboards).keys

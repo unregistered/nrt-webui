@@ -8,7 +8,7 @@ angular.module('nrtWebuiApp').factory('ConnectionManagerService', ($rootScope, S
     ###
     self.connections = []
 
-    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation) ->
+    $rootScope.$on('ServerService.federation_update', (event, federation) ->
         self.connections = federation.connections
     )
 

@@ -12,22 +12,18 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self.modules = {}
     self.ports = []
 
-    $rootScope.$on('FederationSummaryParser.federation_ready', (event, federation_summary) ->
+    $rootScope.$on('ServerService.federation_update', (event, federation_summary) ->
         self.modules = federation_summary.modules
         self.ports = federation_summary.ports
-
-        $rootScope.$broadcast("GOOD")
     )
 
-    $rootScope.$watch('last_guidata_time', ->
-        return unless ServerService.guidata
-        _.each ServerService.guidata.message, (it) ->
-            if it.id[0] == "m"
-                # Modules
-                moduid = it.id.substring(2)
-                module = self.modules[moduid]
-                module.x = it.x
-                module.y = it.y
+    $rootScope.$on('ServerService.module_position_update', (event, positions) ->
+        _(positions).each (position) ->
+            moduid = position.id.substring(2) # Knock off prefix m: or n:
+            module = self.modules[moduid]
+            return unless module
+            module.x = position.x
+            module.y = position.y
     )
 
     return self
