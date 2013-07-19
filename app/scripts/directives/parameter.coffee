@@ -1,6 +1,7 @@
 angular.module("nrtWebuiApp").directive 'parameter', ->
     scope: {
         model: "=model"
+
     } # Isolate scope
     restrict: "E"
 
@@ -11,17 +12,9 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
             <div style="display:table-cell">{{model.name}}</div>
 
             <div style="display:table-cell">
-                <span ng-switch="model.valuetype">
 
-                    <span ng-switch-when="bool">
-                        <input type="checkbox" id="{{model.name}}" ng-checked="model.value == 'true'">
-                    </span>
+            <span ng-bind-html-unsafe="inputArea"></span>
 
-                    <span ng-switch-default>
-                        <input type="text" id="{{model.name}}" value="{{model.value}}">
-                    </span>
-
-                </span>
             </div>
 
             <div style="display:table-cell">
@@ -32,5 +25,35 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
     """
     replace: true
     transclude: true
-    link: (scope, iElement, iAttrs) ->
+    compile: (element, attr, transclude) -> (scope, iElement, iAttr) ->
+        console.log 'Compiling parameter', scope.model
+
+        parameter = scope.model
+        valid_values = parameter.validvalues.split /[:\[\]\|]+/
+
+        # Create the input area for the various types of parameters
+        if valid_values[0] == 'None'
+
+            if _(["short", "unsigned short", "int", "unsigned int", "long int", "unsigned long int", "unsigned long"]).contains(parameter.valuetype)
+                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+
+            else if _(["float", "double", "long double"]).contains(parameter.valuetype)
+                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+
+            else if "bool" == parameter.valuetype
+                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+
+            else
+                scope.inputArea = """<input type="text" name="#{parameter.descriptor}">"""
+
+        else if valid_values[0] == 'List'
+            scope.inputArea = """<select name="#{parameter.descriptor}">"""
+            for value in valid_values[1 .. valid_values.length-2]
+                scope.inputArea += """  <option value="#{value}">#{value}</option>"""
+            scope.inputArea += """</select>"""
+
+        else
+            console.error "Unknown parameter valid_values specification", parameter
+            scope.inputArea = """<input type="text" name="#{parameter.descriptor}">"""
+
 
