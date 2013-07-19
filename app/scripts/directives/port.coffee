@@ -212,9 +212,8 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         , true)
 
         # During pairing, dim ourselves if we aren't a valid option
-        scope.ConnectorService = ConnectorService
-        scope.$watch("ConnectorService.pairingState", ->
-            if ConnectorService.pairingState == 'PAIRING'
+        scope.$on("ConnectorService.pairing_state_changed", ->
+            if ConnectorService.isPairing()
                 if ConnectorService.isViableCandidate(scope.model) || ConnectorService.pairFrom == scope.model
                     # Stay as we are
                 else

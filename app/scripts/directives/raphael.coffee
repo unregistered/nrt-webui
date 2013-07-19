@@ -1,3 +1,8 @@
+###
+Sets up the raphael canvas
+Provides the Raphael object (paper)
+@broadcasts Workspace.select_drag_ended indicates that the user dragged to select
+###
 angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService) ->
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
@@ -105,7 +110,7 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
             # Remove the box, and broadcast the bounds of the box
             box = scope.selbox.getBBox()
 
-            scope.$broadcast("SelectDragEnded", {
+            scope.$broadcast("Workspace.select_drag_ended", {
                 xlow: box.x
                 xhigh: box.x + box.width
                 ylow: box.y

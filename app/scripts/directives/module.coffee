@@ -145,18 +145,14 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 box = scope.raphael_drawings.hitbox
                 box.node.draggable = true
                 box.node.onDragStart = (event) =>
-                    # Add to selection
-                    SelectionService.set 'module', scope.model
-                    console.log "Drag start"
+                    # For all selected modules, initiate dragging
                     _.each SelectionService.get('module'), (module) =>
                         module._dragging = true
                         module.start_x = module.x
                         module.start_y = module.y
 
-                    scope.$apply()
-                    console.log "Selected?", scope.model
-
                 box.node.onDrag = (delta, event) =>
+                    # Update all module positions
                     _.each SelectionService.get('module'), (module) =>
                         dx = delta.toX - delta.fromX
                         dy = delta.toY - delta.fromY
@@ -175,13 +171,13 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                         else if nexty < -ConfigService.UI_CANVAS_HEIGHT/2
                             nexty = -ConfigService.UI_CANVAS_HEIGHT/2
 
-                        scope.model.y = nexty
-                        scope.model.x = nextx
+                        module.y = nexty
+                        module.x = nextx
 
                         scope.$apply()
 
                 box.node.onDragStop = =>
-                    console.log "Drag stop"
+                    # End drag
                     _.each scope.selectedModules, (module) =>
                         module._dragging = false
                     scope.$apply()
@@ -191,17 +187,13 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                     scope.$apply()
 
                 scope.container.mousedown ->
-                    console.log "MD"
-                    # isPartOfMultipleSelection = ->
-                    #     modules = SelectionService.get('module')
-                    #     modules.length > 1
-
-                    # if isPartOfMultipleSelection()
-                    #     # The user in dragging a group of modules
-                    # else
-                    #     # Then we can become active
-                    #     SelectionService.set 'module', scope.model
-                    #     scope.toFront()
+                    if SelectionService.get('module').length > 1
+                        # The user is dragging a group of modules
+                    else
+                        # We can become active
+                        SelectionService.set 'module', scope.model
+                        scope.toFront()
+                        scope.$apply()
 
             )
 
@@ -218,7 +210,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                     scope.raphael_drawings.box.animate "fill-opacity": 0, 500
             )
 
-            scope.$on("SelectDragEnded", (scopes, message) ->
+            scope.$on("Workspace.select_drag_ended", (scopes, message) ->
                 # A multiple-select drag ended, check to see if we should be included
                 mybbox = scope.raphael_drawings.box.getBBox()
                 dragbbox = message
