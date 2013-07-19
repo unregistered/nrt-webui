@@ -7,7 +7,6 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
     self.host = ''
     self.port = ''
     self.connected = false
-    self.federation_summary = null
 
     self.last_update_time = NaN
 
@@ -20,12 +19,17 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             self.session   = session
             self.connected = true
 
+            # Get the latest blackboard federation summary
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then((res) ->
-                self.federation_summary = res
                 $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
             , (error, desc) ->
                 console.error "Failed to get blackboard_federation_summary", error, desc
             )
+
+            # Subscribe to all further blackboard federation summaries 
+            session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
+                $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", message)
+
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
         )

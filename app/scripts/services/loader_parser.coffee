@@ -18,9 +18,19 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
     # Watch to see when the list of known blackboards changes
     $rootScope.$on('BlackboardParserService.content_changed', (event, blackboardFederationSummary) ->
 
+        console.log 'SUMMARY: ', blackboardFederationSummary
+        new_bbuids = _.keys blackboardFederationSummary
+
+        console.log 'FILTERING: ', new_bbuids, self.loaders
+
+        # Filter out any loaders that have disappeared
+        self.loaders = _.pick self.loaders, new_bbuids
+
+        console.log 'Filtered: ', self.loaders
+
         # If a new loader pops up that we haven't seen before, request a loader summary
         # from it, and add blackboard reference to each element
-        for bbuid in _.keys blackboardFederationSummary
+        for bbuid in new_bbuids
 
             blackboard = BlackboardParserService.getBlackboardFromUID(bbuid)
 
@@ -44,15 +54,13 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
                             it.blackboard = blackboardFederationSummary[bbuid]
                             it.name = it.logicalPath.split('/').pop()
                             return it
-
-                    # Let everyone know that the list of loaders has changed
-                    $rootScope.$broadcast("LoaderParserService.loaders_changed", self.loaders)
                 else
                     console.error 'Got loader summary from ', bbnick, ' with no modules'
             , (reason) ->
                 console.error('Failed to get loader summary from ', bbuid, ' because ', reason)
 
             )
+
     )
 
     return self

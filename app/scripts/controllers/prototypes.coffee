@@ -38,6 +38,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
 
+        return $scope.emptyTree unless LoaderParserService.loaders
         return $scope.emptyTree unless LoaderParserService.loaders[$scope.currentLoaderUID]
 
         if $scope.search == $scope.lastSearch && $scope.lastTree
