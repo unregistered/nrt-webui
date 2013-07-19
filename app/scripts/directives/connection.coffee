@@ -191,6 +191,7 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
 
         # When we're being removed
         iElement.bind('$destroy', ->
+            console.log "Destroy connection", scope.connection
             _.each scope.raphael_drawings, (obj, key) ->
                 obj.remove()
         )

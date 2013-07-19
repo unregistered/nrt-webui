@@ -9,8 +9,6 @@ angular.module("nrtWebuiApp").controller "ConnectionsCtrl", ($scope, ConnectionP
     $scope.phantom_connections = []
 
     # Update phantom_connections whenever we pair
-    $scope.ConnectorService = ConnectorService
-    $scope.$watch("ConnectorService.pairingState", ->
-        console.log "GPC"
+    $scope.$on("ConnectorService.pairing_state_changed", ->
         $scope.phantom_connections = ConnectorService.getPhantomConnections();
     )

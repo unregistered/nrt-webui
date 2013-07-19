@@ -228,7 +228,13 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                     scope.$apply()
             )
 
+            # Ensure that modules render on top of everything else
             scope.$on("Connection.last_connection_rendered", ->
                 scope.toFront()
+            )
+
+            # When we're being removed
+            iElement.bind('$destroy', ->
+                scope.container.remove()
             )
     }
