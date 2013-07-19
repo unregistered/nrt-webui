@@ -21,10 +21,8 @@
         <div id="collapse_parameters" class="accordion-body collapse in">
           <div class="accordion-inner"> 
 
-            <div ng-repeat="parameter in module.parameters">
-              <label class="control-label" for="{{parameter.name}}">{{parameter.name}}</label>
-              <input type="text" id="{{parameter.name}}">
-              <i class="icon-comment" data-toggle="tooltip" title="{{parameter.description}}"></i>
+            <div style="display:table">
+                <parameter ng-repeat="parameter in module.parameters" model="parameter">
             </div>
 
           </div>
