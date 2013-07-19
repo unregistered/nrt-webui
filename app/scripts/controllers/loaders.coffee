@@ -1,15 +1,15 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderParserService) ->
+angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderManagerService) ->
 
     $scope.loaders = []
     $scope.selected_bbnick = ""
 
-    $scope.LoaderParserService = LoaderParserService
-    $scope.$watch('LoaderParserService.loaders', ->
-        return if _.isEmpty LoaderParserService.loaders
+    $scope.LoaderManagerService = LoaderManagerService
+    $scope.$watch('LoaderManagerService.loaders', ->
+        return if _.isEmpty LoaderManagerService.loaders
         $scope.loaders = []
-        loaders = LoaderParserService.loaders
+        loaders = LoaderManagerService.loaders
         console.log 'Got loaders: ', loaders
         for bbuid in _.keys loaders
             $scope.loaders.push
@@ -23,7 +23,7 @@ angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderParserSer
 
 
 
-    #$scope.$on("LoaderParserService.loaders_changed", (event, loaders) ->
+    #$scope.$on("LoaderManagerService.loaders_changed", (event, loaders) ->
     #    $scope.loaders = []
     #    console.log 'Got loaders: ', loaders
     #    for bbuid in _.keys loaders

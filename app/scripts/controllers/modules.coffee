@@ -1,7 +1,7 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "ModulesCtrl", ($scope, ModuleParserService, $timeout) ->
+angular.module("nrtWebuiApp").controller "ModulesCtrl", ($scope, ModuleManagerService, $timeout) ->
     ###
     Modules are stored in an object, keyed by moduid
     ###
-    $scope.modules = ModuleParserService.modules
+    $scope.modules = ModuleManagerService.modules

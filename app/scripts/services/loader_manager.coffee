@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, ServerService, BlackboardParserService) ->
+angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, ServerService, BlackboardManagerService) ->
     self = {}
 
     # All known module loaders summaries, indexed by their bbuid with the following fields
@@ -16,7 +16,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
             return name == classname
 
     # Watch to see when the list of known blackboards changes
-    $rootScope.$on('BlackboardParserService.content_changed', (event, blackboardFederationSummary) ->
+    $rootScope.$on('BlackboardManagerService.content_changed', (event, blackboardFederationSummary) ->
 
         console.log 'SUMMARY: ', blackboardFederationSummary
         new_bbuids = _.keys blackboardFederationSummary
@@ -32,7 +32,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
         # from it, and add blackboard reference to each element
         for bbuid in new_bbuids
 
-            blackboard = BlackboardParserService.getBlackboardFromUID(bbuid)
+            blackboard = BlackboardManagerService.getBlackboardFromUID(bbuid)
 
             bbnick = blackboard.nick
 
@@ -46,7 +46,7 @@ angular.module('nrtWebuiApp').factory('LoaderParserService', ($rootScope, $q, Se
 
                 bbuid  = loaderSummaryMessage.message.bbUID
                 bbnick = loaderSummaryMessage.message.bbNick
-                
+
                 if _.has loaderSummaryMessage.message, 'modules'
                     self.loaders[bbuid] =
                         bbnick: bbnick

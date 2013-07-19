@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, UtilityService, SelectionService, ConfigService, LoaderParserService, $filter, HoverService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, UtilityService, SelectionService, ConfigService, LoaderManagerService, $filter, HoverService) ->
     {
         scope: {
             model: "=model"
@@ -80,7 +80,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 controller[0].paper.text(scope.getWidth()/2, 70, scope.model.classname)
 
             scope.drawBBNick = ->
-                nick = BlackboardParserService.content[scope.model.bbuid].nick
+                nick = BlackboardManagerService.content[scope.model.bbuid].nick
                 controller[0].paper.text( scope.getWidth()/2, scope.getHeight() - 20, nick )
 
             scope.drawBBNickBackground = ->
@@ -102,7 +102,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardParserService, Util
                 y = 30
 
                 # Find the prototype
-                proto = LoaderParserService.getPrototype(scope.model.bbuid, scope.model.classname)
+                proto = LoaderManagerService.getPrototype(scope.model.bbuid, scope.model.classname)
                 if proto
                     # If the user drags in a module, and we already have its prototype
                     src = "data:#{$filter('ext2mime')(proto.iconext)};base64,#{proto.icondata}"

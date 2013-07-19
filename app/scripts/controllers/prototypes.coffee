@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerService, LoaderParserService) ->
+angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerService, LoaderManagerService) ->
 
     $scope.lastSearch = null
     $scope.emptyTree = {name: "Modules", expanded: true, children: []}
@@ -28,7 +28,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
                     currCategory = result[0]
 
             currCategory['children'].push module
-            
+
         return tree
 
     $scope.currentLoaderUID = ''
@@ -38,13 +38,13 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
 
-        return $scope.emptyTree unless LoaderParserService.loaders
-        return $scope.emptyTree unless LoaderParserService.loaders[$scope.currentLoaderUID]
+        return $scope.emptyTree unless LoaderManagerService.loaders
+        return $scope.emptyTree unless LoaderManagerService.loaders[$scope.currentLoaderUID]
 
         if $scope.search == $scope.lastSearch && $scope.lastTree
             return $scope.lastTree
 
-        filteredPrototypes = _.filter LoaderParserService.loaders[$scope.currentLoaderUID]['prototypes'], (it) ->
+        filteredPrototypes = _.filter LoaderManagerService.loaders[$scope.currentLoaderUID]['prototypes'], (it) ->
             return ~it.name.toLowerCase().indexOf($scope.search.toLowerCase())
 
         $scope.lastTree = $scope._treeify filteredPrototypes
@@ -55,7 +55,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
 
     # When the list of known loaders has changed, treeify the currently selected loader
-    $scope.$on("LoaderParserService.loaders_changed", (event, loaders) ->
+    $scope.$on("LoaderManagerService.loaders_changed", (event, loaders) ->
 
         if $scope.currentLoaderUID == ''
             return if loaders.length == 0

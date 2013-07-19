@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module('nrtWebuiApp').factory('BlackboardParserService', ($rootScope, ServerService) ->
+angular.module('nrtWebuiApp').factory('BlackboardManagerService', ($rootScope, ServerService) ->
     self = {};
 
     ###
@@ -17,7 +17,7 @@ angular.module('nrtWebuiApp').factory('BlackboardParserService', ($rootScope, Se
         _.each federation_summary.message.bbnicks, (it) ->
             self.content[it.uid] = it
 
-        $rootScope.$broadcast('BlackboardParserService.content_changed', self.content)
+        $rootScope.$broadcast('BlackboardManagerService.content_changed', self.content)
     )
 
     return self

@@ -2,7 +2,7 @@
 Draws a raphael connection
 @broadcasts Connection.last_connection_rendered signifies that all connections have rendered
 ###
-angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorService, SelectionService, ConfigService, ModuleParserService, HoverService) ->
+angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorService, SelectionService, ConfigService, ModuleManagerService, HoverService) ->
     require: '^raphael'
     restrict: "E"
     template: """

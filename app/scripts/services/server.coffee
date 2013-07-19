@@ -21,13 +21,17 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
             # Get the latest blackboard federation summary
             session.call("org.nrtkit.designer/get/blackboard_federation_summary").then((res) ->
-                FederationSummaryParserService.updateFederationSummary res
+                try
+                    FederationSummaryParserService.updateFederationSummary res
+                catch error
+                    console.error error.message
+                    console.error error.stack
                 # $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", res)
             , (error, desc) ->
                 console.error "Failed to get blackboard_federation_summary", error, desc
             )
 
-            # Subscribe to all further blackboard federation summaries 
+            # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
                 $rootScope.$broadcast("ServerService.new_blackboard_federation_summary", message)
 

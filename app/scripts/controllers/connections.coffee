@@ -1,10 +1,10 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "ConnectionsCtrl", ($scope, ConnectionParserService, ConnectorService) ->
+angular.module("nrtWebuiApp").controller "ConnectionsCtrl", ($scope, ConnectionManagerService, ConnectorService) ->
     ###
     Connections are stored in an array
     ###
-    $scope.connections = ConnectionParserService.connections
+    $scope.connections = ConnectionManagerService.connections
 
     $scope.phantom_connections = []
 

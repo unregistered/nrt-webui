@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "LeftPaneCtrl", ($scope, LoaderParserService) ->
+angular.module("nrtWebuiApp").controller "LeftPaneCtrl", ($scope, LoaderManagerService) ->
 
     $scope.MODULES_TAB = 0
     $scope.INSPECT_TAB = 1

@@ -5,7 +5,7 @@ Responsible for a couple things relating to connections:
 * Registers the bounding box of ports to allow connectors to latch
 * Assists active connections by providing a list of matching ports
 ###
-angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerService, HoverService, ModuleParserService) ->
+angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerService, HoverService, ModuleManagerService) ->
     self = {};
 
     self.portdb = {} # Ports keyed by bbuid, moduid, portname
@@ -63,7 +63,7 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
     self.getPhantomConnections = ->
         return [] unless self.pairingState == 'PAIRING'
 
-        viablePorts = _.filter ModuleParserService.ports, (port) -> self.isViableCandidate(port)
+        viablePorts = _.filter ModuleManagerService.ports, (port) -> self.isViableCandidate(port)
 
         connections = _.map viablePorts, (port) ->
                     module = port.module

@@ -13,8 +13,6 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
             ports       : []
             connections : []
 
-
-
         # Parse the blackboards
         for blackboard_summary in raw_federation_summary.message.bbnicks
             federation.blackboards[blackboard_summary.uid] = blackboard_summary
@@ -28,24 +26,24 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
             _(module_summary).extend(
                 x          : 0
                 y          : 0
-                blackboard : blackboards[module_summary.bbuid]
+                blackboard : federation.blackboards[module_summary.bbuid]
             )
 
             # Add details to ports
             _(module_summary.posters).each (poster) ->
                 poster.module = module_summary
                 poster.orientation = 'poster'
-                ports.push poster
+                federation.ports.push poster
 
             _(module_summary.subscribers).each (subscriber) ->
                 subscriber.module = module_summary
                 subscriber.orientation = 'subscriber'
-                ports.push subscriber
+                federation.ports.push subscriber
 
             _(module_summary.checkers).each (checker) ->
                 checker.module = module_summary
                 checker.orientation = 'checker'
-                ports.push checker
+                federation.ports.push checker
 
             federation.modules[module_summary.moduid] = module_summary
 
@@ -64,11 +62,9 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
                 return null
 
             connection_summary = _(connection_summary).extend(
-                from_module : modules[connection_summary.module1]
-                to_module   : modules[connection_summary.module2]
+                from_module : federation.modules[connection_summary.module1]
+                to_module   : federation.modules[connection_summary.module2]
             )
-
-            console.log 'connection_summary', connection_summary
 
             connection_summary = _(connection_summary).extend(
                 from_port : getPort connection_summary.from_module, connection_summary.portname1
