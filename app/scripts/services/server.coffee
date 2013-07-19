@@ -5,7 +5,7 @@ Interacts with the server
 @broadcasts ServerService.federation_update containing the parsed federation
 @broadcasts ServerService.module_position_update containing array of moduids and positions
 ###
-angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService) ->
+angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService, AlertRegistryService) ->
     self = {}
 
     self.name = ''
@@ -52,6 +52,9 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
+            AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc} Dismiss to retry.", false, ->
+                self.connect()
+
         )
 
     self.requestLoaderSummary = (bbuid) ->
