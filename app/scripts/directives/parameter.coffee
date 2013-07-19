@@ -12,6 +12,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
 
             <div style="display:table-cell">
                 <span ng-switch="model.valuetype">
+
                     <span ng-switch-when="bool">
                         <input type="checkbox" id="{{model.name}}" ng-checked="model.value == 'true'">
                     </span>
@@ -19,6 +20,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                     <span ng-switch-default>
                         <input type="text" id="{{model.name}}" value="{{model.value}}">
                     </span>
+
                 </span>
             </div>
 
