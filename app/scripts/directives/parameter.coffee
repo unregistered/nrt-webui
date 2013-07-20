@@ -26,14 +26,13 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
     replace: true
     transclude: true
     link: (scope, iElement, iAttr) ->
-        console.log 'Linking parameter', scope.model
-
         parameter = scope.model
 
         # Parse the valid value specification (it looks like None:[], or List:[item1, item2])
         valid_values = parameter.validvalues.split /[:\[\]\|]+/
 
-        id = 'parameter_' + parameter.$$hashKey
+        id = 'parameter_input_' + parameter.$$hashKey
+
         boilerplate = """ id=#{id} value="#{parameter.value}" name="#{parameter.descriptor}" """
 
         setParameter = ->

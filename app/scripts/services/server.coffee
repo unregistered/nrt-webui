@@ -71,6 +71,22 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         return prototypesPromise.promise
 
+    self.setParameter = (module, parameter, new_value) ->
+        console.log "Setting parameter #{parameter.name} for #{module} to #{new_value}"
+
+        message =
+            parameter_descriptor: parameter.descriptor
+            parameter_value: new_value
+            module_uid: module.moduid
+
+        console.log '########## Message: ', message
+
+        self.session.call("org.nrtkit.designer/edit/parameter", message).then((res) ->
+            console.log 'Parameter set succesfully'
+        , (error, desc) ->
+            console.error 'Failed to set parameter'
+        )
+
 
     self.createModule = (prototype, x, y, bbuid) ->
         console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.bbnick
