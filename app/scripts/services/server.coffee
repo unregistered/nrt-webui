@@ -45,7 +45,8 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
                 try
-                    FederationSummaryParserService.parseFederationSummary message
+                    federation = FederationSummaryParserService.parseFederationSummary message
+                    $rootScope.$broadcast("ServerService.federation_update", federation)
                 catch error
                     console.error error.message
                     console.error error.stack
@@ -72,24 +73,35 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         return prototypesPromise.promise
 
     self.setParameter = (module, parameter, new_value) ->
-        console.log "Setting parameter #{parameter.name} for #{module} to #{new_value}"
-
         message =
             parameter_descriptor: parameter.descriptor
             parameter_value: new_value
             module_uid: module.moduid
 
-        console.log '########## Message: ', message
-
         self.session.call("org.nrtkit.designer/edit/parameter", message).then((res) ->
             console.log 'Parameter set succesfully'
         , (error, desc) ->
-            console.error 'Failed to set parameter'
+            console.error 'Failed to set parameter', desc
         )
 
 
     self.createModule = (prototype, x, y, bbuid) ->
-        console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.bbnick
+        console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.blackboard.nick, prototype
+        message =
+            bbNick: prototype.blackboard.nick
+            logicalPath: prototype.logicalPath
+
+        self.session.call("org.nrtkit.designer/post/module", message).then((moduid) ->
+            move_message =
+                moduid: moduid
+                x: x
+                y: y
+            console.log 'Module created sucessfully', move_message
+            self.session.call("org.nrtkit.designer/update/module_position", move_message)
+
+        , (error, desc) ->
+            console.error 'Failed to create module', desc
+        )
 
     return self
 )

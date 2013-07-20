@@ -44,7 +44,7 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
                 # point = @transformedPoint(point)
 
                 # @get('controller').createModule(prototype, point.x, point.y)
-                ServerService.createModule(prototype, point.x, point.y)
+                ServerService.createModule(prototype, point.layerX, point.layerY)
         )
 
         # Draw a mat to intercept multiple selection, these are also the bounds of the program
