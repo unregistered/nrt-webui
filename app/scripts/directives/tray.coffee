@@ -26,5 +26,4 @@ angular.module("nrtWebuiApp").directive 'tray', ->
     replace: true
     transclude: true
     link: (scope, iElement, iAttrs) ->
-        console.log "Link"
 

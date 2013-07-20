@@ -7,15 +7,17 @@ angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, 
 
     $scope.module = null
 
+    # Try to set a parameter to the given value
+    $scope.setParameter = (parameter, new_value) ->
+        console.log "######## Setting parameter #{parameter.name} to #{new_value}"
+
+    # Watch to see when the selected objects have changed and set the
+    # appropriate variables in the scope
     $scope.SelectionService = SelectionService
     $scope.$watch("selectedTypes()", ->
         selected = SelectionService.content
         if selected.module
             $scope.module = selected.module[0]
-
-            console.log 'Parameters ', $scope.module.parameters
-
-            console.log "Selected Module: ", $scope.module
         else
             $scope.module = null
     , true)
