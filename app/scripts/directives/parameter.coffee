@@ -59,6 +59,12 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                 scope.inputArea = """<input type="text" #{boilerplate}>"""
                 $(iElement).on('blur', 'input', setParameter)
 
+            # Send the parameter and unfocus on <enter> key
+            $(iElement).on 'keydown', 'input', (e) ->
+                if e.keyCode == 13
+                    setParameter()
+                    $(e.currentTarget).blur()
+
         else if valid_values[0] == 'List'
             scope.inputArea = """<select #{boilerplate}>"""
             for value in valid_values[1 .. valid_values.length-2]
