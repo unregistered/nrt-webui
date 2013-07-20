@@ -31,29 +31,31 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
         parameter = scope.model
         valid_values = parameter.validvalues.split /[:\[\]\|]+/
 
+        boilerplate = """ value="#{parameter.value}" name="#{parameter.descriptor}" """
+
         # Create the input area for the various types of parameters
         if valid_values[0] == 'None'
 
             if _(["short", "unsigned short", "int", "unsigned int", "long int", "unsigned long int", "unsigned long"]).contains(parameter.valuetype)
-                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+                scope.inputArea = """<input type="number" #{boilerplate}>"""
 
             else if _(["float", "double", "long double"]).contains(parameter.valuetype)
-                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+                scope.inputArea = """<input type="number" #{boilerplate}>"""
 
             else if "bool" == parameter.valuetype
-                scope.inputArea = """<input type="number" name="#{parameter.descriptor}">"""
+                scope.inputArea = """<input type="number" #{boilerplate}>"""
 
             else
-                scope.inputArea = """<input type="text" name="#{parameter.descriptor}">"""
+                scope.inputArea = """<input type="text" #{boilerplate}>"""
 
         else if valid_values[0] == 'List'
-            scope.inputArea = """<select name="#{parameter.descriptor}">"""
+            scope.inputArea = """<select #{boilerplate}>"""
             for value in valid_values[1 .. valid_values.length-2]
-                scope.inputArea += """  <option value="#{value}">#{value}</option>"""
+                scope.inputArea += """  <option value="#{value}" #{'selected' if value == parameter.value}>#{value}</option>"""
             scope.inputArea += """</select>"""
 
         else
             console.error "Unknown parameter valid_values specification", parameter
-            scope.inputArea = """<input type="text" name="#{parameter.descriptor}">"""
+            scope.inputArea = """<input type="text" #{boilerplate}>"""
 
 
