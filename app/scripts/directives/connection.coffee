@@ -17,10 +17,10 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
 
     link: (scope, iElement, iAttrs, controller) ->
         scope.getFromBBox = ->
-            ConnectorService.getPortBBox scope.connection.bbuid1, scope.connection.module1, scope.connection.portname1
+            ConnectorService.getPortBBox scope.connection.from_port
 
         scope.getToBBox = ->
-            ConnectorService.getPortBBox scope.connection.bbuid2, scope.connection.module2, scope.connection.portname2
+            ConnectorService.getPortBBox scope.connection.to_port
 
         scope.getCurvedPathString = ->
             bb1 = scope.getFromBBox()

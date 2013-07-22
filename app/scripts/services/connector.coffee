@@ -9,11 +9,11 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
     self = {};
 
     self.portdb = {} # Ports keyed by bbuid, moduid, portname
-    self.registerPortBBox = (module, port, bbox) ->
-        self.portdb["#{module.bbuid}>>#{module.moduid}>>#{port.portname}"] = bbox
+    self.registerPortBBox = (port, bbox) ->
+        self.portdb["#{port.module.moduid}>>#{port.portname}"] = bbox
 
-    self.getPortBBox = (bbuid, moduid, portname) ->
-        self.portdb["#{bbuid}>>#{moduid}>>#{portname}"]
+    self.getPortBBox = (port) ->
+        self.portdb["#{port.module.moduid}>>#{port.portname}"]
 
     #
     # Pairing
