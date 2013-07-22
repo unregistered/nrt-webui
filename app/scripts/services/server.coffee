@@ -51,6 +51,12 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                     console.error error.message
                     console.error error.stack
 
+            # Subscribe to all further gui coordinate messages
+            session.subscribe "org.nrtkit.designer/event/gui_data_update", (topic, res) ->
+                $rootScope.$broadcast("ServerService.module_position_update", res.message)
+            , (error, desc) ->
+                console.log "Did not get gui data event", error, desc
+
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
             AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc} Dismiss to retry.", false, ->
@@ -102,6 +108,14 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         , (error, desc) ->
             console.error 'Failed to create module', desc
         )
+
+    self.updateModulePosition = (module, x, y) ->
+        self.session.call("org.nrtkit.designer/update/module_position",
+            moduid: module.moduid
+            x: Math.round(x)
+            y: Math.round(y)
+        )
+
 
     return self
 )

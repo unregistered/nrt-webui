@@ -3,7 +3,7 @@
 ###
 Parses and processes modules and ports
 ###
-angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService) ->
+angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService, safeApply) ->
     self = {};
 
     ###
@@ -24,6 +24,10 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
             return unless module
             module.x = position.x
             module.y = position.y
+            # if module.x != 0 && module.y != 0
+            #     console.log "Module", module, "is not 0"
+
+        safeApply($rootScope)
     )
 
     return self
