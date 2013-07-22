@@ -37,10 +37,13 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             )
 
             # Get the latest gui coords
-            session.call("org.nrtkit.designer/get/gui_data").then (res) =>
-                $rootScope.$broadcast("ServerService.module_position_update", res.message)
-            , (error, desc) =>
-                console.log "Not got", error, desc
+            # Timeout hack is to get ports to render in the correct location
+            $timeout(->
+                session.call("org.nrtkit.designer/get/gui_data").then (res) ->
+                    $rootScope.$broadcast("ServerService.module_position_update", res.message)
+                , (error, desc) ->
+                    console.log "Not got", error, desc
+            , 100)
 
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
