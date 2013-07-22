@@ -52,6 +52,11 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
                 checker.orientation = 'checker'
                 federation.ports.push checker
 
+            # Add details to parameters
+            _(module_summary.parameters).each (param) ->
+                param.module = module_summary
+
+
             federation.modules[module_summary.moduid] = module_summary
 
 
