@@ -41,12 +41,18 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
     replace: true
     transclude: true
 
-    controller: ($scope, ServerService) ->
+    controller: ($scope, ServerService, AlertRegistryService) ->
         $scope.getParameter = (p) ->
             ServerService.getParameter p.module, p
 
         $scope.setParameter = (p)->
-            ServerService.setParameter p.module, p, p.value
+            ServerService.setParameter(p.module, p, p.value).then((res) ->
+                console.log 'Set parameter success'
+            , (err) ->
+                error = err.desc.replace 'Wrapped NRT Exception:', ''
+                AlertRegistryService.registerError "Failed to set parameter", error, false, ->
+                p.value = $scope.parameter.value
+            )
 
     link: (scope, iElement, iAttr, controller) ->
         console.log 'Linking', scope
@@ -62,11 +68,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
 
             # Determine the type of parameter
             if valid_values[0] == 'None'
-                if _(["short", "unsigned short", "int", "unsigned int", "long int", "unsigned long int", "unsigned long"]).contains(scope.parameter.valuetype)
-                    scope.type = "int"
-                else if _(["float", "double", "long double"]).contains(scope.parameter.valuetype)
-                    scope.type = "float"
-                else if "bool" == scope.parameter.valuetype
+                if "bool" == scope.parameter.valuetype
                     scope.type = "list"
                     scope.list = ['true', 'false']
                 else
