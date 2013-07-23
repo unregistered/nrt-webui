@@ -10,6 +10,9 @@ Parses a raw federation summary to produce an object containing:
 angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootScope) ->
     self = {}
 
+    self.stripParameterDescriptor = (parameter_descriptor) ->
+        return parameter_descriptor.replace 'TheManager:Loader:', ''
+
     # Parse a list of modules from the raw_federation_summary, cleaning up the
     # data and adding fields and links as necessary
     self._parseFederation = (raw_federation_summary) ->
@@ -55,10 +58,11 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
             # Add details to parameters
             _(module_summary.parameters).each (param) ->
                 param.module = module_summary
-
+                param.value = undefined
+                # Make the descriptor relative
+                param.descriptor = self.stripParameterDescriptor param.descriptor
 
             federation.modules[module_summary.moduid] = module_summary
-
 
         # Parse the connections
         federation.connections = _(namespace.connections).map (connection_summary) ->

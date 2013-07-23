@@ -14,7 +14,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                 </abbr>
             </div>
 
-            <form ng-submit="setParameter(parameter)" class="form-inline" ng-controller="ParameterCtrl">
+            <form ng-submit="setParameter(localparameter)" class="form-inline" >
                 <div style="display:table-cell">
                     <span ng-switch="type">
 
@@ -40,27 +40,43 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
     """
     replace: true
     transclude: true
-    link: (scope, iElement, iAttr) ->
+
+    controller: ($scope, ServerService) ->
+        $scope.getParameter = (p) ->
+            ServerService.getParameter p.module, p
+
+        $scope.setParameter = (p)->
+            ServerService.setParameter p.module, p, p.value
+
+    link: (scope, iElement, iAttr, controller) ->
         console.log 'Linking', scope
-        scope.localparameter = _.clone scope.parameter
 
-        valid_values = scope.parameter.validvalues.split /[:\[\]\|]+/
+        if typeof scope.parameter.value == 'undefined'
+            console.log 'Getting Parameter ', scope.parameter.name
+            scope.getParameter(scope.parameter)
 
-        # Determine the type of parameter
-        if valid_values[0] == 'None'
-            if _(["short", "unsigned short", "int", "unsigned int", "long int", "unsigned long int", "unsigned long"]).contains(scope.parameter.valuetype)
-                scope.type = "int"
-            else if _(["float", "double", "long double"]).contains(scope.parameter.valuetype)
-                scope.type = "float"
-            else if "bool" == scope.parameter.valuetype
+        scope.$watch('parameter.value', ->
+            scope.localparameter = _.clone scope.parameter
+
+            valid_values = scope.parameter.validvalues.split /[:\[\]\|]+/
+
+            # Determine the type of parameter
+            if valid_values[0] == 'None'
+                if _(["short", "unsigned short", "int", "unsigned int", "long int", "unsigned long int", "unsigned long"]).contains(scope.parameter.valuetype)
+                    scope.type = "int"
+                else if _(["float", "double", "long double"]).contains(scope.parameter.valuetype)
+                    scope.type = "float"
+                else if "bool" == scope.parameter.valuetype
+                    scope.type = "list"
+                    scope.list = ['true', 'false']
+                else
+                    scope.type = "text"
+            else if valid_values[0] == 'List'
                 scope.type = "list"
-                scope.list = ['true', 'false']
-            else
-                scope.type = "text"
-        else if valid_values[0] == 'List'
-            scope.type = "list"
-            scope.list = valid_values[1 .. valid_values.length-2]
+                scope.list = valid_values[1 .. valid_values.length-2]
+        )
 
         scope.isDirty = ->
+            return false unless scope.localparameter
             scope.localparameter.value != scope.parameter.value
 

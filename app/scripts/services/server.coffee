@@ -15,9 +15,11 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
     self.last_update_time = NaN
 
+    ######################################################################
     self.getWsUri = ->
         "ws://#{self.host}:#{self.port}"
 
+    ######################################################################
     self.connect = ->
         console.log "Connecting to #{self.host}:#{self.port}"
         ab.connect(self.getWsUri(), (session) ->
@@ -45,8 +47,17 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
                 try
-                    federation = FederationSummaryParserService.parseFederationSummary message
-                    $rootScope.$broadcast("ServerService.federation_update", federation)
+                    self.federation = FederationSummaryParserService.parseFederationSummary message
+                    $rootScope.$broadcast("ServerService.federation_update", self.federation)
+                catch error
+                    console.error error.message
+                    console.error error.stack
+
+            # Subscribe to all further blackboard federation summaries
+            session.subscribe "org.nrtkit.designer/event/module_param_update", (topic, message) ->
+                try
+                    console.log 'Got module param changed: ', message
+                    $rootScope.$broadcast "ServerService.parameter_changed", message.message
                 catch error
                     console.error error.message
                     console.error error.stack
@@ -58,6 +69,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         )
 
+    ######################################################################
     self.requestLoaderSummary = (bbuid) ->
         prototypesPromise = $q.defer()
 
@@ -72,19 +84,38 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         return prototypesPromise.promise
 
+    ######################################################################
     self.setParameter = (module, parameter, new_value) ->
         message =
             parameter_descriptor: parameter.descriptor
             parameter_value: new_value
             module_uid: module.moduid
 
+        console.log 'Setting parameter: ', message
         self.session.call("org.nrtkit.designer/edit/parameter", message).then((res) ->
             console.log 'Parameter set succesfully'
         , (error, desc) ->
             console.error 'Failed to set parameter', desc
         )
+    
+    ######################################################################
+    self.getParameter = (module, parameter) ->
+        message =
+            parameter_descriptor: parameter.descriptor
+            module_uid: module.moduid
+
+        console.log 'Getting parameter: ', message
+        self.session.call("org.nrtkit.designer/get/parameter", message).then((res) ->
+            console.log 'Parameter read succesfully'
+            console.log 'RES: ', res
+            parameter.value = res
+
+        , (error, desc) ->
+            console.error 'Failed to set parameter', desc
+        )
 
 
+    ######################################################################
     self.createModule = (prototype, x, y, bbuid) ->
         console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.blackboard.nick, prototype
         message =
