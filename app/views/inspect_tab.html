@@ -19,7 +19,7 @@
           </a>
         </div>
         <div id="collapse_parameters" class="accordion-body collapse in">
-          <div class="accordion-inner"> 
+          <div class="accordion-inner">
 
             <div style="display:table">
               <parameter ng-repeat="parameter in module.parameters" model="parameter">
@@ -58,5 +58,13 @@
     </div>
 
   </div> <!-- End module inspector -->
+
+  <!-- Connection Inspector -->
+  <div ng-show="connection">
+    <h3>Connection</h3>
+    From {{connection.from_module.classname}}::{{connection.from_port.portname}}
+    To {{connection.to_module.classname}}::{{connection.to_port.portname}}
+  </div>
+  <!-- End connection inspector -->
 
 </div>
