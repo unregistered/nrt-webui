@@ -4,7 +4,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
             model: "=model"
         }
 
-        controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
+        controller: ['$scope', '$element', '$attrs', '$transclude', 'ServerService', ($scope, $element, $attrs, $transclude, ServerService) ->
             @getContainer = ->
                 $scope.container
 
@@ -16,6 +16,9 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             @getModel = ->
                 $scope.model
+
+            @updateModulePosition = (module) ->
+                ServerService.updateModulePosition module, module.x, module.y
         ]
 
         require: ["^raphael", "module"] # Get controller from parent directive, and our own controller
@@ -174,12 +177,15 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                         module.y = nexty
                         module.x = nextx
 
+                        controller[1].updateModulePosition(module)
+
                         scope.$apply()
 
                 box.node.onDragStop = =>
                     # End drag
-                    _.each scope.selectedModules, (module) =>
+                    _.each SelectionService.get('module'), (module) =>
                         module._dragging = false
+
                     scope.$apply()
 
                 box.mouseover ->

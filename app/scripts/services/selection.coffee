@@ -8,15 +8,22 @@ Tracks selected objects and selected types. Supports multiple selection.
 angular.module('nrtWebuiApp').factory('SelectionService', ($rootScope) ->
     self = {};
 
-    self.content = {}
+    self._content = {}
 
     ###
     Get selected objects of type
+    @argument type: a string of type, such as 'module' or 'port'
     ###
     self.get = (type) ->
-        ret = self.content[type]
+        ret = self._content[type]
         return [] unless ret
         return ret
+
+    ###
+    Get all the types selected as an array
+    ###
+    self.getTypes = ->
+        return _(self._content).keys()
 
     ###
     Append obj of string type "type" into the selection database.
@@ -24,15 +31,15 @@ angular.module('nrtWebuiApp').factory('SelectionService', ($rootScope) ->
     ###
     # Private append - does not broadcast event
     self._append = (type, obj) ->
-        self.content[type] = [] unless self.content[type]
+        self._content[type] = [] unless self._content[type]
 
         if obj instanceof Array
             _.each obj, (it) ->
                 obj._selected = true
-                self.content[type].push obj
+                self._content[type].push obj
         else
             obj._selected = true
-            self.content[type].push obj
+            self._content[type].push obj
 
     # Public append - broadcasts event
     self.append = (type, obj) ->
@@ -58,11 +65,11 @@ angular.module('nrtWebuiApp').factory('SelectionService', ($rootScope) ->
     ###
     # Private clear - does not broadcast event
     self._clear = ->
-        _.each self.content, (it, key) ->
+        _.each self._content, (it, key) ->
             _.each it, (obj) ->
                 obj._selected = false
 
-        self.content = {}
+        self._content = {}
 
     # Public clear - broadcasts event
     self.clear = ->

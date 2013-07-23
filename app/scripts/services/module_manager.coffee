@@ -3,12 +3,8 @@
 ###
 Parses and processes modules and ports
 ###
-angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService, FederationSummaryParserService) ->
+angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService, FederationSummaryParserService, safeApply) ->
     self = {}
-
-    self.updateParameter = (moduid, parameter) ->
-        console.log 'Update parameter ', moduid, parameter
-
 
     ###
     Modules are stored in an object, keyed by moduid
@@ -28,7 +24,6 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
         new_value = parameter_update.paramsummary.value
 
         parameter = _(module.parameters).findWhere({descriptor: descriptor})
-        console.log 'XXXXXXXXXXX', module.parameters, descriptor, parameter
         parameter.value = new_value
     )
 
@@ -39,6 +34,10 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
             return unless module
             module.x = position.x
             module.y = position.y
+            # if module.x != 0 && module.y != 0
+            #     console.log "Module", module, "is not 0"
+
+        safeApply($rootScope)
     )
 
     return self

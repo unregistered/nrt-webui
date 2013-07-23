@@ -39,10 +39,13 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             )
 
             # Get the latest gui coords
-            session.call("org.nrtkit.designer/get/gui_data").then (res) =>
-                $rootScope.$broadcast("ServerService.module_position_update", res.message)
-            , (error, desc) =>
-                console.log "Not got", error, desc
+            # Timeout hack is to get ports to render in the correct location
+            $timeout(->
+                session.call("org.nrtkit.designer/get/gui_data").then (res) ->
+                    $rootScope.$broadcast("ServerService.module_position_update", res.message)
+                , (error, desc) ->
+                    console.log "Not got", error, desc
+            , 100)
 
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
@@ -61,6 +64,12 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                 catch error
                     console.error error.message
                     console.error error.stack
+
+            # Subscribe to all further gui coordinate messages
+            session.subscribe "org.nrtkit.designer/event/gui_data_update", (topic, res) ->
+                $rootScope.$broadcast("ServerService.module_position_update", res.message)
+            , (error, desc) ->
+                console.log "Did not get gui data event", error, desc
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
@@ -133,6 +142,14 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         , (error, desc) ->
             console.error 'Failed to create module', desc
         )
+
+    self.updateModulePosition = (module, x, y) ->
+        self.session.call("org.nrtkit.designer/update/module_position",
+            moduid: module.moduid
+            x: Math.round(x)
+            y: Math.round(y)
+        )
+
 
     return self
 )

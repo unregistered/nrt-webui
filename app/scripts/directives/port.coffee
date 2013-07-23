@@ -208,7 +208,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         # Register our location for connectors
         scope.$watch("[model.module.x, model.module.y]", ->
             bbox = scope.raphael_drawings.box.getBBox()
-            ConnectorService.registerPortBBox(scope.model.module, scope.model, bbox)
+            ConnectorService.registerPortBBox(scope.model, bbox)
         , true)
 
         # During pairing, dim ourselves if we aren't a valid option
