@@ -115,8 +115,6 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         console.log 'Getting parameter: ', message
         self.session.call("org.nrtkit.designer/get/parameter", message).then((res) ->
-            console.log 'Parameter read succesfully'
-            console.log 'RES: ', res
             parameter.value = res
 
         , (error, desc) ->

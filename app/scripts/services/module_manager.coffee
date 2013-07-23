@@ -12,21 +12,63 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self.modules = {}
     self.ports = []
 
+    ######################################################################
     $rootScope.$on('ServerService.federation_update', (event, federation_summary) ->
         self.modules = federation_summary.modules
         self.ports = federation_summary.ports
     )
 
-    $rootScope.$on('ServerService.parameter_changed', (event, parameter_update) ->
-
+    ######################################################################
+    self._modifyParameter = (parameter_update) ->
+        console.log 'Modifying parameter ' + parameter_update.paramsummary.name, parameter_update
         module = self.modules[parameter_update.moduleuid]
-        descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
         new_value = parameter_update.paramsummary.value
+        descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
 
         parameter = _(module.parameters).findWhere({descriptor: descriptor})
         parameter.value = new_value
+
+    ######################################################################
+    self._destroyParameter = (parameter_update) ->
+        console.log 'Destroying parameter ' + parameter_update.paramsummary.name,  parameter_update
+        module = self.modules[parameter_update.moduleuid]
+        descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
+
+        parameter = _(module.parameters).findWhere({descriptor: descriptor})
+
+        if parameter
+            console.log 'Destroying parameter ', module, descriptor
+        else
+            console.error 'Could not destroy unknown parameter', module, descriptor
+
+    ######################################################################
+    self._createParameter = (parameter_update) ->
+        console.log 'Creating parameter ' + parameter_update.paramsummary.name,  parameter_update
+        module = self.modules[parameter_update.moduleuid]
+        summary = parameter_update.paramsummary
+
+        parameter = FederationSummaryParserService.cleanParameter summary, module, summary.value
+
+        module.parameters.push parameter
+
+    ######################################################################
+    $rootScope.$on('ServerService.parameter_changed', (event, parameter_update) ->
+
+        module = self.modules[parameter_update.moduleuid]
+        new_value = parameter_update.paramsummary.value
+
+        if parameter_update.paramsummary.state == 'Destroy'
+            self._destroyParameter parameter_update
+        else if parameter_update.paramsummary.state == 'Create'
+            self._createParameter parameter_update
+        else if parameter_update.paramsummary.state == 'Modify'
+            self._modifyParameter parameter_update
+        else
+            console.error 'Unknown parameter update state: ', parameter_update.state
+
     )
 
+    ######################################################################
     $rootScope.$on('ServerService.module_position_update', (event, positions) ->
         _(positions).each (position) ->
             moduid = position.id.substring(2) # Knock off prefix m: or n:
