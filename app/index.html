@@ -29,7 +29,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container-fluid" ng-controller="ServersCtrl">
+    <div class="container-fluid">
         <div class="navbar">
           <div class="navbar-inner">
             <div class="container">
@@ -41,9 +41,9 @@
                 <ul class="nav">
 
                   <!-- File -->
-                  <li class="dropdown">
+                  <li class="dropdown" ng-controller="FileMenuCtrl">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                      File
+                      File {{message}}
                       <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
@@ -57,7 +57,7 @@
                 <ul class="nav pull-right">
 
                   <!-- QuickConnect -->
-                  <li class="dropdown">
+                  <li class="dropdown" ng-controller="ServersCtrl">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <span ng-show="active.name">{{active.name}}</span>
                     <span ng-hide="active.name">Disconnected</span>
@@ -111,6 +111,7 @@
     <script src="scripts/controllers/leftpane.js"></script>
     <script src="scripts/controllers/inspect.js"></script>
     <script src="scripts/controllers/workspace.js"></script>
+    <script src="scripts/controllers/filemenu.js"></script>
 
     <script src="scripts/services/server.js"></script>
     <script src="scripts/services/module_manager.js"></script>
@@ -159,6 +160,7 @@
         <script src="bower_components/bootstrap-sass/js/bootstrap-scrollspy.js"></script>
         <script src="bower_components/bootstrap-sass/js/bootstrap-collapse.js"></script>
         <script src="bower_components/bootstrap-sass/js/bootstrap-tab.js"></script>
+        <script src="bower_components/FileSaver/FileSaver.min.js"></script>
         <!-- endbuild -->
 
         <!-- build:js scripts/modules.js -->
