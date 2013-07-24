@@ -73,9 +73,10 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
-            AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc} Dismiss to retry.", false, ->
-                self.connect()
-
+            AlertRegistryService.registerError "Failed to connect to #{self.host}:#{self.port}", "Reason: #{desc}", true
+        ,
+            # WAMP Session options
+            maxRetries: 0
         )
 
     ######################################################################
@@ -108,11 +109,11 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         , (error) ->
             console.log 'XXXXXXXXXXXXXXXXXXXXXXX'
             $rootScope.$apply -> resultPromise.reject(error)
-            
+
         )
 
         return resultPromise.promise
-    
+
     ######################################################################
     self.getParameter = (module, parameter) ->
         message =
