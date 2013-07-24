@@ -100,21 +100,22 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 )
                 return r
 
+            scope.imgSrc = ->
+                proto = LoaderManagerService.getPrototype(scope.model.bbuid, scope.model.classname)
+                return null unless proto
+                "data:#{$filter('ext2mime')(proto.iconext)};base64,#{proto.icondata}"
+
             scope.drawImage = ->
                 x = scope.getWidth()/2 - ConfigService.UI_MODULE_IMAGE_WIDTH/2
                 y = 30
 
-                # Find the prototype
-                proto = LoaderManagerService.getPrototype(scope.model.bbuid, scope.model.classname)
-                if proto
+                src = scope.imgSrc()
+                if src
                     # If the user drags in a module, and we already have its prototype
-                    src = "data:#{$filter('ext2mime')(proto.iconext)};base64,#{proto.icondata}"
-
                     return controller[0].paper.image(src, x, y, ConfigService.UI_MODULE_IMAGE_WIDTH, ConfigService.UI_MODULE_IMAGE_WIDTH)
                 else
                     # We don't know the prototypes yet, create a small blank image and we'll update it later
                     controller[0].paper.image('', x, y, 0, 0)
-
 
             scope.toFront = ->
                 _.each scope.container, (it) =>
@@ -237,6 +238,16 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
             # Ensure that modules render on top of everything else
             scope.$on("Connection.last_connection_rendered", ->
                 scope.toFront()
+            )
+
+            # Update image when we get the prototype data
+            scope.$watch("imgSrc()", ->
+                src = scope.imgSrc()
+                return unless src
+                scope.raphael_drawings.image.attr
+                    src: src
+                    width: ConfigService.UI_MODULE_IMAGE_WIDTH
+                    height: ConfigService.UI_MODULE_IMAGE_WIDTH
             )
 
             # When we're being removed

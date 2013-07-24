@@ -1,5 +1,9 @@
 "use strict"
 
+###
+Loader manager
+@broadcasts LoaderManagerService.loaders_updated
+###
 angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, ServerService, BlackboardManagerService) ->
     self = {}
 
@@ -19,7 +23,9 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
     $rootScope.$on('ServerService.federation_update', (event, federation) ->
 
         # Filter out any loaders that have disappeared
+        old_length = _(self.loaders).keys().length
         self.loaders = _(self.loaders).pick _(federation.blackboards).keys
+        $rootScope.$broadcast("LoaderManagerService.loaders_updated") if _(self.loaders).keys().length != old_length
 
         # If a new loader pops up that we haven't seen before, request a loader summary
         # from it, and add blackboard reference to each element
@@ -41,6 +47,8 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
                         it.blackboard = blackboard
                         it.name = it.logicalPath.split('/').pop()
                         return it
+
+                $rootScope.$broadcast("LoaderManagerService.loaders_updated")
 
             , (reason) -> console.error "Failed to get loader summary from #{blackboard.bbnick}", reason
 

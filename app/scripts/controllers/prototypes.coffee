@@ -55,9 +55,8 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
 
     # When the list of known loaders has changed, treeify the currently selected loader
-    $scope.LoaderManagerService = LoaderManagerService
-    $scope.$watch("LoaderManagerService.loaders", ->
-        loaders = $scope.LoaderManagerService.loaders
+    $scope.$on("LoaderManagerService.loaders_updated", ->
+        loaders = LoaderManagerService.loaders
 
         console.log 'Loaders changed', loaders
         return unless loaders
