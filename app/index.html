@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>NRT Designer</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -32,31 +32,54 @@
     <div class="container-fluid" ng-controller="ServersCtrl">
         <div class="navbar">
           <div class="navbar-inner">
-            <a class="brand" href="#">NRT::Designer v{{App.VERSION}}</a>
+            <div class="container">
+              <a class="brand" href="#">NRT::Designer v{{App.VERSION}}</a>
 
-            <ul class="nav pull-right">
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <div class="nav-collapse collapse">
+
+                <!-- Left menu -->
+                <ul class="nav">
+
+                  <!-- File -->
+                  <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                      File
+                      <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><a ng-click="exportPython()">Export Python Script</a></li>
+                    </ul>
+                  </li>
+
+                </ul>
+
+                <!-- Right menu -->
+                <ul class="nav pull-right">
+
+                  <!-- QuickConnect -->
+                  <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <span ng-show="active.name">{{active.name}}</span>
                     <span ng-hide="active.name">Disconnected</span>
-                  <b class="caret"></b>
-                </a>
+                    <b class="caret"></b>
+                  </a>
 
-                <ul class="dropdown-menu" role="menu">
+                  <ul class="dropdown-menu" role="menu">
 
-                        <li ng-repeat="server in servers">
-                            <a tabindex="-1" ng-click="viewServer(server)">{{server.name}}</a>
-                        </li>
+                    <li ng-repeat="server in servers">
+                      <a tabindex="-1" ng-click="viewServer(server)">{{server.name}}</a>
+                    </li>
 
                     <li class="divider"></li>
-                    <li>
-                        <a ng-click="goToQuickConnect()">Quick Connect</a>
-                    </li>
+                    <li> <a ng-click="goToQuickConnect()">Quick Connect</a> </li>
+                  </ul>
+                  </li>
                 </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
+
+              </div> <!-- nav-collapse -->
+            </div> <!-- container -->
+          </div> <!-- navbar-inner -->
+        </div> <!-- navbar -->
 
         <div id="main" role="main" class="container-fluid" ng-view="">
         </div>
