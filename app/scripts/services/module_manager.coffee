@@ -30,7 +30,6 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
 
     ######################################################################
     self._destroyParameter = (parameter_update) ->
-        console.log 'Destroying parameter ' + parameter_update.paramsummary.name,  parameter_update
         module = self.modules[parameter_update.moduleuid]
         descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
 
@@ -38,7 +37,6 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
 
         if parameter
             module.parameters = _(module.parameters).reject (it) -> it.descriptor == descriptor
-            console.log 'Destroying parameter ', module, descriptor
         else
             console.error 'Could not destroy unknown parameter', module, descriptor
 
