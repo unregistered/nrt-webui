@@ -36,15 +36,13 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
                 prototype = $(ui.draggable).data('context')
 
                 svg_offset = iElement.find('svg').offset()
-                console.log "Offset", svg_offset
                 point = {
                     layerX: event.clientX - svg_offset.left
                     layerY: event.clientY - svg_offset.top
                 }
-                # point = @transformedPoint(point)
+                point = controller.zpd.getTransformedPoint(point)
 
-                # @get('controller').createModule(prototype, point.x, point.y)
-                ServerService.createModule(prototype, point.layerX, point.layerY)
+                ServerService.createModule(prototype, point.x, point.y)
         )
 
         # Draw a mat to intercept multiple selection, these are also the bounds of the program

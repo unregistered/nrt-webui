@@ -130,7 +130,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
 
     ######################################################################
-    self.createModule = (prototype, x, y, bbuid) ->
+    self.createModule = (prototype, x, y) ->
         console.log "Create module", prototype.logicalPath, "at", x, y, "on", prototype.blackboard.nick, prototype
         message =
             bbNick: prototype.blackboard.nick
@@ -139,8 +139,8 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         self.session.call("org.nrtkit.designer/post/module", message).then((moduid) ->
             move_message =
                 moduid: moduid
-                x: x
-                y: y
+                x: Math.round(x)
+                y: Math.round(y)
             console.log 'Module created sucessfully', move_message
             self.session.call("org.nrtkit.designer/update/module_position", move_message)
 
