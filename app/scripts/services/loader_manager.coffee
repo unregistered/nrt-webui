@@ -23,15 +23,21 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
     $rootScope.$on('ServerService.federation_update', (event, federation) ->
 
         # Filter out any loaders that have disappeared
+        old_loaders = _(self.loaders).clone()
+
         old_length = _(self.loaders).keys().length
-        self.loaders = _(self.loaders).pick _(federation.blackboards).keys
-        $rootScope.$broadcast("LoaderManagerService.loaders_updated") if _(self.loaders).keys().length != old_length
+
+        self.loaders = _(self.loaders).pick _(federation.blackboards).keys()
+
+        if _(self.loaders).keys().length != old_length
+            console.log 'Loaders removed', _(old_loaders).chain().keys().difference(_(self.loaders).keys()).value()
+            $rootScope.$broadcast("LoaderManagerService.loaders_updated")
 
         # If a new loader pops up that we haven't seen before, request a loader summary
         # from it, and add blackboard reference to each element
         for blackboard in _(federation.blackboards).values()
 
-            continue if _(self.loaders).has blackboard.bbuid
+            continue if _(self.loaders).has blackboard.uid
 
             ServerService.requestLoaderSummary(blackboard.nick).then (loader_summary) ->
 
@@ -48,6 +54,7 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
                         it.name = it.logicalPath.split('/').pop()
                         return it
 
+                console.log 'New loader detected: ' + bbnick
                 $rootScope.$broadcast("LoaderManagerService.loaders_updated")
 
             , (reason) -> console.error "Failed to get loader summary from #{blackboard.bbnick}", reason

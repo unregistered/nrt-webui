@@ -44,7 +44,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                 session.call("org.nrtkit.designer/get/gui_data").then (res) ->
                     $rootScope.$broadcast("ServerService.module_position_update", res.message)
                 , (error, desc) ->
-                    console.log "Not got", error, desc
+                    console.error "Not got", error, desc
             , 100)
 
             # Subscribe to all further blackboard federation summaries
@@ -59,7 +59,6 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/module_param_update", (topic, message) ->
                 try
-                    console.log 'Got module param changed: ', message
                     $rootScope.$broadcast "ServerService.parameter_changed", message.message
                 catch error
                     console.error error.message
@@ -69,7 +68,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             session.subscribe "org.nrtkit.designer/event/gui_data_update", (topic, res) ->
                 $rootScope.$broadcast("ServerService.module_position_update", res.message)
             , (error, desc) ->
-                console.log "Did not get gui data event", error, desc
+                console.error "Did not get gui data event", error, desc
 
         , (error, desc) ->
             console.error "Failed to connect to (#{self.host}:#{self.port}) ", error, desc
@@ -103,11 +102,9 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             parameter_value: String(new_value)
             module_uid: module.moduid
 
-        console.log 'Setting parameter: ', message
         self.session.call("org.nrtkit.designer/edit/parameter", message).then((res) ->
             $rootScope.$apply -> resultPromise.resolve(res)
         , (error) ->
-            console.log 'XXXXXXXXXXXXXXXXXXXXXXX'
             $rootScope.$apply -> resultPromise.reject(error)
 
         )
@@ -120,12 +117,11 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             parameter_descriptor: parameter.descriptor
             module_uid: module.moduid
 
-        console.log 'Getting parameter: ', message
         self.session.call("org.nrtkit.designer/get/parameter", message).then((res) ->
             parameter.value = res
 
         , (error, desc) ->
-            console.error 'Failed to set parameter', desc
+            console.error 'Failed to get parameter', desc
         )
 
 
@@ -141,7 +137,6 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                 moduid: moduid
                 x: Math.round(x)
                 y: Math.round(y)
-            console.log 'Module created sucessfully', move_message
             self.session.call("org.nrtkit.designer/update/module_position", move_message)
 
         , (error, desc) ->

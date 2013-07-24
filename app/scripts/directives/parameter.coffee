@@ -46,8 +46,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
             ServerService.getParameter p.module, p
 
         $scope.setParameter = (p)->
-            ServerService.setParameter(p.module, p, p.value).then((res) ->
-                console.log 'Set parameter success'
+            ServerService.setParameter(p.module, p, p.value).then(((res) ->)
             , (err) ->
                 error = err.desc.replace 'Wrapped NRT Exception:', ''
                 AlertRegistryService.registerError "Failed to set parameter", error, false, ->
@@ -55,10 +54,8 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
             )
 
     link: (scope, iElement, iAttr, controller) ->
-        console.log 'Linking', scope
 
         if typeof scope.parameter.value == 'undefined'
-            console.log 'Getting Parameter ', scope.parameter.name
             scope.getParameter(scope.parameter)
 
         scope.$watch('parameter.value', ->

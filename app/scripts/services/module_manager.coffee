@@ -37,6 +37,7 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
         parameter = _(module.parameters).findWhere({descriptor: descriptor})
 
         if parameter
+            module.parameters = _(module.parameters).reject (it) -> it.descriptor == descriptor
             console.log 'Destroying parameter ', module, descriptor
         else
             console.error 'Could not destroy unknown parameter', module, descriptor
@@ -49,6 +50,7 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
 
         parameter = FederationSummaryParserService.cleanParameter summary, module, summary.value
 
+        return if _(module.parameters).findWhere {descriptor: parameter.descriptor}
         module.parameters.push parameter
 
     ######################################################################

@@ -58,7 +58,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
     $scope.$on("LoaderManagerService.loaders_updated", ->
         loaders = LoaderManagerService.loaders
 
-        console.log 'Loaders changed', loaders
+        #console.log 'Loaders changed', loaders
         return unless loaders
 
         if $scope.currentLoaderUID == '' or not _(loaders).has($scope.currentLoaderUID)
