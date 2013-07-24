@@ -10,7 +10,7 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
 
     self.portdb = {} # Ports keyed by bbuid, moduid, portname
     self.registerPortBBox = (port, bbox) ->
-        self.portdb["#{port.module.moduid}>>#{port.portname}"] = bbox
+        self.portdb["#{port.module.moduid}>>#{port.portname}"] = _.clone bbox
 
     self.getPortBBox = (port) ->
         self.portdb["#{port.module.moduid}>>#{port.portname}"]
