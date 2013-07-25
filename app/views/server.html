@@ -1,59 +1,65 @@
-    <!-- Left pane tabs -->
-    <div id="leftpane" ng-controller="LeftPaneCtrl">
-      <ul class="nav nav-tabs">
-        <li ng-class="{'active': selected_pane==MODULES_TAB}"><a href="" ng-click="selected_pane=MODULES_TAB">Modules</a></li>
-        <li ng-class="{'active': selected_pane==INSPECT_TAB}"><a href="" ng-click="selected_pane=INSPECT_TAB">Inspect</a></li>
-        <li ng-class="{'active': selected_pane==LOADERS_TAB}"><a href="" ng-click="selected_pane=LOADERS_TAB">Loaders</a></li>
-      </ul>
+<!-- Left pane tabs -->
+<div pane="leftpane" ng-controller="LeftPaneCtrl">
+  <ul class="nav nav-tabs">
+    <li ng-class="{'active': selected_pane==MODULES_TAB}"><a href="" ng-click="selected_pane=MODULES_TAB">Modules</a></li>
+    <li ng-class="{'active': selected_pane==INSPECT_TAB}"><a href="" ng-click="selected_pane=INSPECT_TAB">Inspect</a></li>
+    <li ng-class="{'active': selected_pane==LOADERS_TAB}"><a href="" ng-click="selected_pane=LOADERS_TAB">Loaders</a></li>
+  </ul>
 
-      <div ng-show="selected_pane==MODULES_TAB" ng-include="'views/modules_tab.html'"></div>
-      <div ng-show="selected_pane==INSPECT_TAB" ng-include="'views/inspect_tab.html'"></div>
-      <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
+  <div ng-show="selected_pane==MODULES_TAB" ng-include="'views/modules_tab.html'"></div>
+  <div ng-show="selected_pane==INSPECT_TAB" ng-include="'views/inspect_tab.html'"></div>
+  <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
+</div>
+
+<div pane="divider">
+    <div class="draggable">
+        <i class="icon-ellipsis-vertical"></i>
+    </div>
+</div>
+
+<div pane="rightpane" ng-controller="WorkspaceCtrl">
+    <!-- Alert view -->
+    <div ng-controller="AlertsCtrl">
+        <div ng-repeat="alert in getAlerts()">
+            <alert model="alert" dismiss="dismiss(alert)"></alert>
+        </div>
     </div>
 
-    <div id="rightpane" ng-controller="WorkspaceCtrl">
-        <!-- Alert view -->
-        <div ng-controller="AlertsCtrl">
-            <div ng-repeat="alert in getAlerts()">
-                <alert model="alert" dismiss="dismiss(alert)"></alert>
-            </div>
+    <!-- Toolbar -->
+    <div class="btn-toolbar">
+        <div class="btn-group">
+            <a class="btn btn-small" ng-click="WorkspaceCtrl.panToHome()" title="Move"><i class="icon-home"></i></a>
+            <a class="btn btn-small" ng-click="WorkspaceCtrl.zoomOut()" title="Zoom out"><i class="icon-zoom-out"></i></a>
+            <a class="btn btn-small" ng-click="WorkspaceCtrl.zoomIn()" title="Zoom in"><i class="icon-zoom-in"></i></a>
         </div>
-
-        <!-- Toolbar -->
-        <div class="btn-toolbar">
-            <div class="btn-group">
-                <a class="btn btn-small" ng-click="WorkspaceCtrl.panToHome()" title="Move"><i class="icon-home"></i></a>
-                <a class="btn btn-small" ng-click="WorkspaceCtrl.zoomOut()" title="Zoom out"><i class="icon-zoom-out"></i></a>
-                <a class="btn btn-small" ng-click="WorkspaceCtrl.zoomIn()" title="Zoom in"><i class="icon-zoom-in"></i></a>
-            </div>
-            <div class="btn-group">
-                <a class="btn btn-small" ng-class="{active: WorkspaceCtrl.isDragMode()}" ng-click="WorkspaceCtrl.setMousemodeDrag()" title="Move"><i class="icon-move"></i></a>
-                <a class="btn btn-small" ng-class="{active: WorkspaceCtrl.isSelectMode()}" ng-click="WorkspaceCtrl.setMousemodeSelect()" title="Multiple Selection"><i class="icon-check-empty"></i></a>
-            </div>
-
+        <div class="btn-group">
+            <a class="btn btn-small" ng-class="{active: WorkspaceCtrl.isDragMode()}" ng-click="WorkspaceCtrl.setMousemodeDrag()" title="Move"><i class="icon-move"></i></a>
+            <a class="btn btn-small" ng-class="{active: WorkspaceCtrl.isSelectMode()}" ng-click="WorkspaceCtrl.setMousemodeSelect()" title="Multiple Selection"><i class="icon-check-empty"></i></a>
         </div>
-
-        <!-- Namespaces -->
-        <ul class="breadcrumb">
-          <li><a href="#">root</a> <span class="divider">/</span></li>
-          <li><a href="#">to</a> <span class="divider">/</span></li>
-          <li class="active">do</li>
-        </ul>
-
-        <!-- Workspace -->
-        <raphael>
-            <div ng-controller="ModulesCtrl">
-                <module ng-repeat="(moduid, module) in getModules()" model="module">
-                    <port ng-repeat="port in module.checkers" model="port" index="{{$index}}"></port>
-                    <port ng-repeat="port in module.posters" model="port" index="{{$index}}"></port>
-                    <port ng-repeat="port in module.subscribers" model="port" index="{{$index}}"></port>
-                </module>
-            </div>
-            <div ng-controller="ConnectionsCtrl">
-                <connection ng-repeat="connection in getConnections()" model="connection" last="$last"></connection>
-                <connection ng-repeat="connection in phantom_connections" model="connection" phantom="true"></connection>
-            </div>
-        </raphael>
 
     </div>
+
+    <!-- Namespaces -->
+    <ul class="breadcrumb">
+      <li><a href="#">root</a> <span class="divider">/</span></li>
+      <li><a href="#">to</a> <span class="divider">/</span></li>
+      <li class="active">do</li>
+    </ul>
+
+    <!-- Workspace -->
+    <raphael>
+        <div ng-controller="ModulesCtrl">
+            <module ng-repeat="(moduid, module) in getModules()" model="module">
+                <port ng-repeat="port in module.checkers" model="port" index="{{$index}}"></port>
+                <port ng-repeat="port in module.posters" model="port" index="{{$index}}"></port>
+                <port ng-repeat="port in module.subscribers" model="port" index="{{$index}}"></port>
+            </module>
+        </div>
+        <div ng-controller="ConnectionsCtrl">
+            <connection ng-repeat="connection in getConnections()" model="connection" last="$last"></connection>
+            <connection ng-repeat="connection in phantom_connections" model="connection" phantom="true"></connection>
+        </div>
+    </raphael>
+
+</div>
 

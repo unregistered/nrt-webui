@@ -24,8 +24,12 @@ a {
 
 .workspace {
     border: 2px solid #ccc;
+    position: relative;
+    height: 80%;
     svg {
         background: #eee;
+        position: absolute;
+        top:0; right: 0; left: 0; bottom: 0;
     }
 
     &.ui-state-active {
@@ -94,22 +98,42 @@ a {
 
 /* Element positioning */
 .navbar {
-    padding-top: 20px
+    padding-top: 20px;
 }
 
-#leftpane, #rightpane {
+[pane=leftpane], [pane=rightpane], [pane=divider] {
     position: absolute;
     top: 100px;
     bottom: 20px;
 }
 
-#leftpane {
+[pane=leftpane] {
     position: absolute;
-    overflow-y: scroll;
+    overflow: scroll;
     width: 300px;
 }
 
-#rightpane {
-    left: 400px;
+[pane=rightpane] {
+    left: 380px;
     right: 30px;
+}
+
+[pane=divider] {
+
+    height: 100%;
+    width: 20px;
+    left: 360px;
+    .draggable {
+        display: block;
+        position: relative;
+        // background: #ccc;
+        cursor: ew-resize;
+        color: #aaa;
+        height: 100%;
+        i {
+            position: absolute;
+            top: 50%;
+            left: 8px;
+        }
+    }
 }

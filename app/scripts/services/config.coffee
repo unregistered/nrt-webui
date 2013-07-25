@@ -26,6 +26,10 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.UI_CONNECTION_INACTIVE_COLOR = "#ccc"
     self.UI_CONNECTION_ACTIVE_COLOR = "#000"
 
+    # GUI Panes
+    self.UI_PANE_DEFAULT_WIDTH = 300
+    self.UI_PANE_MINIMUM_WIDTH = 200
+
     # Controls whether dragging on the canvas will drag the canvas or allow for multiple selection
     self.SETTING_CANVAS_MOUSEMODE_DRAG = 'drag'
     self.SETTING_CANVAS_MOUSEMODE_SELECT = 'select'
@@ -35,12 +39,13 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.SETTING_HIDE_INTERNAL_MODULES = 'hidemodules'
 
     ###
-    Variables in settings will be serialized
+    Variables in settings will be deserialized, these are default values
     ###
     self.settings = {
         'version': 0.1
         'canvas_mousemode': self.SETTING_CANVAS_MOUSEMODE_DRAG
         'module_visibility': self.SETTING_SHOW_INTERNAL_MODULES
+        'leftpane_width': self.UI_PANE_DEFAULT_WIDTH
     }
 
     return self
