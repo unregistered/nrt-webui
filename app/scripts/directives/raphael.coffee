@@ -10,7 +10,7 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
     ]
     restrict: "E"
     template: """
-    <div>
+    <div class="workspace">
         <div><!--Canvas--></div>
         <div ng-transclude><!--Modules--></div>
     </div>

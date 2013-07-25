@@ -27,4 +27,7 @@ angular.module("nrtWebuiApp").directive "prototype", ($compile) ->
             start: (event, ui) ->
                 # Put the prototype in the context var of the event, to be consumed by the receiver
                 $(this).data('context', scope.model)
+            containment: $('document')
+            scroll: false
+            appendTo: "body"
         )

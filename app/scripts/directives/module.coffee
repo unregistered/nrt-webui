@@ -25,7 +25,6 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
         restrict: "E"
         template: """
         <div>
-            Model
             <div ng-transclude></div>
         </div>
         """

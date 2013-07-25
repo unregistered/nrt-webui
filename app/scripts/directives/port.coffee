@@ -2,7 +2,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
     require: ['^raphael', '^module']
     restrict: "E"
     template: """
-    <div>Port</div>
+    <div></div>
     """
     replace: true
 

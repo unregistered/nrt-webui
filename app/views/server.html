@@ -1,7 +1,5 @@
-<div class="row-fluid">
-
-  <!-- Left pane tabs -->
-    <div class="span4" ng-controller="LeftPaneCtrl">
+    <!-- Left pane tabs -->
+    <div id="leftpane" ng-controller="LeftPaneCtrl">
       <ul class="nav nav-tabs">
         <li ng-class="{'active': selected_pane==MODULES_TAB}"><a href="" ng-click="selected_pane=MODULES_TAB">Modules</a></li>
         <li ng-class="{'active': selected_pane==INSPECT_TAB}"><a href="" ng-click="selected_pane=INSPECT_TAB">Inspect</a></li>
@@ -13,7 +11,7 @@
       <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
     </div>
 
-    <div class="span8" ng-controller="WorkspaceCtrl">
+    <div id="rightpane" ng-controller="WorkspaceCtrl">
         <!-- Alert view -->
         <div ng-controller="AlertsCtrl">
             <div ng-repeat="alert in getAlerts()">
@@ -58,4 +56,4 @@
         </raphael>
 
     </div>
-</div>
+
