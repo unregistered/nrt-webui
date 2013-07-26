@@ -6,16 +6,16 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
 
     # Note, angular cannot handle tables in directives, so we hack around it for now
     template: """
-        <div style="display:table-row">
+        <div class="parameter-form">
 
-            <div style="display:table-cell">
+            <div class="parameter-name">
                 <abbr title="{{parameter.description}}">
                     {{parameter.name}}
                 </abbr>
             </div>
 
             <form ng-submit="setParameter(localparameter)" class="form-inline" >
-                <div style="display:table-cell">
+                <div class="parameter-value">
                     <span ng-switch="type">
 
                         <input ng-switch-when="int" type="number" ng-model="localparameter.value">
@@ -31,7 +31,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                     </span>
                 </div>
 
-                <div style="display:table-cell">
+                <div class="parameter-submit">
                     <button ng-show="isDirty()" type="submit" class="btn btn-small btn-success">Save</button>
                 </div>
             </form>

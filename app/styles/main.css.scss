@@ -95,6 +95,22 @@ a {
     }
 }
 
+/* Parameters */
+.parameter-form {
+    display: table-row;
+    .parameter-name, .parameter-value, .parameter-submit {
+        display: table-cell;
+    }
+    .parameter-name {
+        padding-right: 20px;
+    }
+    .parameter-value {
+        input, select {
+            width: 100%;
+        }
+        padding-right: 20px;
+    }
+}
 
 /* Element positioning */
 .navbar {
