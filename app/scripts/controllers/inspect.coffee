@@ -10,6 +10,7 @@ angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, 
     $scope.$on("SelectionService.selection_changed", ->
         $scope.module = null
         $scope.connection = null
+        $scope.port = null
 
         types = SelectionService.getTypes()
 
@@ -17,5 +18,7 @@ angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, 
             $scope.module = SelectionService.get('module')[0]
         else if _(types).contains 'connection'
             $scope.connection = SelectionService.get('connection')[0]
+        else if _(types).contains 'port'
+            $scope.port = SelectionService.get('port')[0]
     , true)
 

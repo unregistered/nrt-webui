@@ -11,11 +11,11 @@
     <p>moduid: {{module.moduid}}</p>
 
     <!-- Parameters -->
-    <div class="accordion" id="parameters_accordion" ng-show="module.parameters">
+    <div class="accordion" id="parameters_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#parameters_accordion" href="#collapse_parameters">
-            Parameters
+            Parameters ({{module.parameters.length}})
           </a>
         </div>
         <div id="collapse_parameters" class="accordion-body collapse in">
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Ports -->
-    <div class="accordion" id="ports_accordion" show="module.subscribers">
+    <div class="accordion" id="ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
@@ -40,13 +40,13 @@
         </div>
         <div id="collapse_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.subscribers">
-            {{port.portname}}
+            <entity-link type="port" model="port"></entity-link>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="accordion" id="ports_accordion" show="module.posters">
+    <div class="accordion" id="ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
@@ -55,13 +55,13 @@
         </div>
         <div id="collapse_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.posters">
-            {{port.portname}}
+            <entity-link type="port" model="port"></entity-link>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="accordion" id="ports_accordion" show="module.checkers">
+    <div class="accordion" id="ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
@@ -70,7 +70,7 @@
         </div>
         <div id="collapse_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.checkers">
-            {{port.portname}}
+            <entity-link type="port" model="port"></entity-link>
           </div>
         </div>
       </div>
@@ -81,9 +81,29 @@
   <!-- Connection Inspector -->
   <div ng-show="connection">
     <h3>Connection</h3>
-    From {{connection.from_module.classname}}::{{connection.from_port.portname}}
-    To {{connection.to_module.classname}}::{{connection.to_port.portname}}
+    From <entity-link type="module" model="connection.from_module"></entity-link>::<entity-link type="port" model="connection.from_port"></entity-link>
+
+    To <entity-link type="module" model="connection.to_module"></entity-link>::<entity-link type="port" model="connection.to_port"></entity-link>
   </div>
   <!-- End connection inspector -->
 
+  <!-- Port inspector -->
+  <div ng-show="port">
+    <h3>Port</h3>
+    <dl>
+      <dt>Portname</dt>
+      <dd>{{port.portname}}</dd>
+      <dt>Msgtype</dt>
+      <dd>{{port.msgtype}}</dd>
+      <dt>Return Type</dt>
+      <dd>{{port.rettype}}</dd>
+      <dt>Description</dt>
+      <dd>{{port.description}}</dd>
+      <dt>Topic</dt>
+      <dd>{{port.topi}}</dd>
+      <dt>Module</dt>
+      <dd><entity-link type="module" model="port.module"></entity-link></dd>
+    </dl>
+  </div>
+  <!-- End port inspector -->
 </div>
