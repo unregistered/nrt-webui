@@ -12,9 +12,20 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self.modules = {}
     self.ports = []
 
+    # Cache module positions so things don't jump around during federation updates
+    self._module_position_cache = {}
+
     ######################################################################
     $rootScope.$on('ServerService.federation_update', (event, federation_summary) ->
         self.modules = federation_summary.modules
+
+        # Update modules from the position cache
+        _(self.modules).each (module) ->
+            entry = self._module_position_cache[module.moduid]
+            return unless entry
+            module.x = entry.x
+            module.y = entry.y
+
         self.ports = federation_summary.ports
     )
 
@@ -76,8 +87,10 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
             return unless module
             module.x = position.x
             module.y = position.y
-            # if module.x != 0 && module.y != 0
-            #     console.log "Module", module, "is not 0"
+            self._module_position_cache[module.moduid] = (
+                x: position.x
+                y: position.y
+            )
 
         safeApply($rootScope)
     )
