@@ -212,9 +212,24 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             scope.$watch("model._selected", (newValue, oldValue, scope) ->
                 window.w =  scope.raphael_drawings.box
-                scope.raphael_drawings.box.animate {"fill-opacity": .2}, 500
+
                 if _.contains SelectionService.get('module'), scope.model
-                    scope.raphael_drawings.box.animate "fill-opacity": .2, 500
+                    fadeOut = ->
+                        scope.raphael_drawings.box.animate "fill-opacity": 0.3, 500, "linear", ->
+                            if _( SelectionService.get('module') ).contains scope.model
+                                fadeIn()
+                            else
+                                scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+
+                    fadeIn = ->
+                        scope.raphael_drawings.box.animate "fill-opacity": .5, 500, "linear", ->
+                            if _( SelectionService.get('module') ).contains scope.model
+                                fadeOut()
+                            else
+                                scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+
+                    fadeIn()
+
                 else
                     scope.raphael_drawings.box.animate "fill-opacity": 0, 500
             )
