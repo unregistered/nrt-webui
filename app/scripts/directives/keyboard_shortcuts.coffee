@@ -1,8 +1,9 @@
 ###
 Triggers element on keypress
 
-Focuses text inputs
-Clicks buttons and submits
+Behavior is element dependent:
+- Focuses text inputs
+- Clicks anchor elements
 ###
 angular.module("nrtWebuiApp").directive 'keyboardShortcut', (KeyboardShortcutService) ->
         restrict: "A"
@@ -12,12 +13,13 @@ angular.module("nrtWebuiApp").directive 'keyboardShortcut', (KeyboardShortcutSer
             shortcut = iAttrs.keyboardShortcut
 
             if shortcut[0] == '[' and shortcut.slice(-1) == ']'
-                console.log "We are given an array"
                 shortcut = JSON.parse(shortcut)
 
             KeyboardShortcutService.bind shortcut, (e) ->
-                console.log "Trigg"
                 if iElement.is('input')
                     iElement.focus()
+
+                if iElement.is('a')
+                    iElement.click()
 
                 e.preventDefault()
