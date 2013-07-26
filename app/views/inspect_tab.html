@@ -2,7 +2,7 @@
 
 
   <!-- Module inspector -->
-  <div ng-show="module">
+  <div ng-show="module" ng-controller="ModuleCtrl">
 
     <h3>{{module.classname}}</h3>
     <h4>({{module.instance}})</h4>
@@ -75,6 +75,8 @@
         </div>
       </div>
     </div>
+
+    <a ng-click="deleteModule(module)" class="btn btn-danger btn-block">Delete Module</a>
 
   </div> <!-- End module inspector -->
 

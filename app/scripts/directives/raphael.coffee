@@ -3,7 +3,7 @@ Sets up the raphael canvas
 Provides the Raphael object (paper)
 @broadcasts Workspace.select_drag_ended indicates that the user dragged to select
 ###
-angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService) ->
+angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService, KeyboardShortcutService) ->
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
         @zpd = undefined
@@ -147,3 +147,8 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         scope.$on("RequestPanHome", (arg) ->
             controller.zpd.panTo(0, 0)
         )
+
+        # Keyboard shortcuts
+        KeyboardShortcutService.bind "esc", ->
+            SelectionService.clear()
+            scope.$apply()

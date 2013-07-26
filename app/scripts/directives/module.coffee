@@ -1,4 +1,4 @@
-angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, UtilityService, SelectionService, ConfigService, LoaderManagerService, $filter, HoverService) ->
+angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, UtilityService, SelectionService, ConfigService, LoaderManagerService, $filter, HoverService, KeyboardShortcutService) ->
     {
         scope: {
             model: "=model"
@@ -19,6 +19,9 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             @updateModulePosition = (module) ->
                 ServerService.updateModulePosition module, module.x, module.y
+
+            @deleteModule = (module) ->
+                ServerService.deleteModule module
         ]
 
         require: ["^raphael", "module"] # Get controller from parent directive, and our own controller

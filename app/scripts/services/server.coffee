@@ -150,6 +150,14 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             y: Math.round(y)
         )
 
+    self.deleteModule = (module) ->
+        self.session.call("org.nrtkit.designer/delete/module",
+            moduid: module.moduid
+        ).then( (res) ->
+            console.log res
+        , (error, desc) ->
+            console.error error, desc
+        )
 
     return self
 )
