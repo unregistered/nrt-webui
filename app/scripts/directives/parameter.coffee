@@ -18,13 +18,13 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                 <div class="parameter-value">
                     <span ng-switch="type">
 
-                        <input ng-switch-when="int" type="number" ng-model="localparameter.value">
+                        <input id="{{id}}" ng-switch-when="int" type="number" ng-model="localparameter.value">
 
-                        <input ng-switch-when="float" type="number" ng-model="localparameter.value">
+                        <input id="{{id}}" ng-switch-when="float" type="number" ng-model="localparameter.value">
 
-                        <input ng-switch-when="text" type="text"  ng-model="localparameter.value">
+                        <input id="{{id}}" ng-switch-when="text" type="text"  ng-model="localparameter.value">
 
-                        <select ng-switch-when="list" ng-model="localparameter.value">
+                        <select id="{{id}}" ng-switch-when="list" ng-model="localparameter.value">
                             <option ng-repeat="item in list" ng-selected="parameter.value == item">{{item}}</option>
                         </select>
 
@@ -46,14 +46,19 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
             ServerService.getParameter p.module, p
 
         $scope.setParameter = (p)->
-            ServerService.setParameter(p.module, p, p.value).then(((res) ->)
+            ServerService.setParameter(p.module, p, p.value).then(((res) ->
+                $("##{$scope.id}").stop().css("background-color", "#BBFFBB").animate({ backgroundColor: "FFFFFF"}, 1000)
+            )
             , (err) ->
                 error = err.desc.replace 'Wrapped NRT Exception:', ''
-                AlertRegistryService.registerError "Failed to set parameter", error, false, ->
+                AlertRegistryService.registerError "Failed to set parameter", error, false, (->)
                 p.value = $scope.parameter.value
+                $("##{$scope.id}").stop().css("background-color", "#FFBBBB").animate({ backgroundColor: "FFFFFF"}, 1000)
             )
 
     link: (scope, iElement, iAttr, controller) ->
+
+        scope.id = 'parameter_' + scope.parameter.$$hashKey
 
         if typeof scope.parameter.value == 'undefined'
             scope.getParameter(scope.parameter)
