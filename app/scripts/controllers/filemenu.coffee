@@ -31,7 +31,8 @@ angular.module("nrtWebuiApp").controller "FileMenuCtrl", ($scope, ModuleManagerS
             script += "  nrtlib.addModule(\n"
             script += "    path         = '#{prototype.logicalPath},\n"
             script += "    instancename = '#{module.instance},\n"
-            script += "    position = (#{module.x}, #{module.y}),\n"
+            script += "    bbnick       = '#{loader.bbnick},\n"
+            script += "    position     = (#{module.x}, #{module.y}),\n"
 
             # Parameters
             script += "    parameters   = {\n"

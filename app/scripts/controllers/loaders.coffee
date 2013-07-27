@@ -10,7 +10,6 @@ angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderManagerSe
         return if _.isEmpty LoaderManagerService.loaders
         $scope.loaders = []
         loaders = LoaderManagerService.loaders
-        console.log 'Got loaders: ', loaders
         for bbuid in _.keys loaders
             $scope.loaders.push
               bbuid: bbuid
