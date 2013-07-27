@@ -83,9 +83,20 @@
   <!-- Connection Inspector -->
   <div ng-show="connection">
     <h3>Connection</h3>
-    From <entity-link type="module" model="connection.from_module"></entity-link>::<entity-link type="port" model="connection.from_port"></entity-link>
+    <div style="text-align:center">
+      <div class="well">
+        <p><entity-link type="module" model="connection.from_module"></entity-link></p>
+        <p><entity-link type="port" model="connection.from_port"></entity-link></p>
+      </div>
 
-    To <entity-link type="module" model="connection.to_module"></entity-link>::<entity-link type="port" model="connection.to_port"></entity-link>
+      <i class="icon-arrow-down"></i>
+      <br> <br>
+
+      <div class="well">
+        <p><entity-link type="module" model="connection.to_module"></entity-link></p>
+        <p><entity-link type="port" model="connection.to_port"></entity-link></p>
+      </div>
+    </div>
   </div>
   <!-- End connection inspector -->
 
