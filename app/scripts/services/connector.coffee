@@ -24,7 +24,7 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
         self.pairingState == 'PAIRING'
 
     self.startPairing = (port) ->
-        console.log "Begin pairing"
+        console.log "Begin pairing", port
         self.pairFrom = port
         self.pairingState = 'PAIRING'
 
@@ -32,10 +32,11 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
 
     self.completePairing = ->
         # Get the hovered object
-        pairTo = HoverService.getHovered 'port'
+        connection = HoverService.getHovered 'connection'
 
-        console.log "Complete pairing"
-        self.createConnection pairTo, self.pairFrom
+        return unless connection
+
+        self.createConnection connection.from_port, connection.to_port
 
         self.pairFrom = null
         self.pairingState = 'IDLE'
@@ -58,7 +59,18 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
         return true
 
     self.createConnection = (port1, port2) ->
-        console.log "Create connection, TODO"
+        console.log "Create connection, TODO", port1, port2
+
+        # If no source topic, then generate a random one
+        topic = port1.topi
+        if topic == ""
+            topic = 'UnnamedTopic_' + Math.random().toString(36).substring(7)
+            # TODO: Send message to loader to set poster topic
+
+        filter = port2.topi
+        if filter != ""
+            filter += "|#{topic}"
+        # TODO: Send message to loader to set checker/subscriber topic filter
 
     self.getPhantomConnections = ->
         return [] unless self.pairingState == 'PAIRING'
