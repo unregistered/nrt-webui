@@ -113,16 +113,20 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
 
     ######################################################################
     self.getParameter = (module, parameter) ->
+        resultPromise = $q.defer()
+
         message =
             parameter_descriptor: parameter.descriptor
             module_uid: module.moduid
 
         self.session.call("org.nrtkit.designer/get/parameter", message).then((res) ->
-            parameter.value = res
-
-        , (error, desc) ->
-            console.error 'Failed to get parameter', desc
+            $rootScope.$apply -> resultPromise.resolve(res)
+            #parameter.value = res
+        , (error) ->
+            $rootScope.$apply -> resultPromise.reject(error)
         )
+
+        return resultPromise.promise
 
 
     ######################################################################

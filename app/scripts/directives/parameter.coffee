@@ -43,7 +43,13 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
 
     controller: ($scope, ServerService, AlertRegistryService) ->
         $scope.getParameter = (p) ->
-            ServerService.getParameter p.module, p
+            ServerService.getParameter(p.module, p).then( (res) ->
+                p.value = res
+            , (err) ->
+                console.error 'Failed to get parameter', p, err
+                AlertRegistryService.registerError "Failed to get parameter \"#{p.name}\"", err.desc, false, (->)
+                $("##{$scope.id}").stop().css("background-color", "#FFBBBB").animate({ backgroundColor: "FFFFFF"}, 1000)
+            )
 
         $scope.setParameter = (p)->
             ServerService.setParameter(p.module, p, p.value).then(((res) ->
@@ -51,7 +57,7 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
             )
             , (err) ->
                 error = err.desc.replace 'Wrapped NRT Exception:', ''
-                AlertRegistryService.registerError "Failed to set parameter", error, false, (->)
+                AlertRegistryService.registerError "Failed to set parameter \"#{p.name}\"", error, false, (->)
                 p.value = $scope.parameter.value
                 $("##{$scope.id}").stop().css("background-color", "#FFBBBB").animate({ backgroundColor: "FFFFFF"}, 1000)
             )
