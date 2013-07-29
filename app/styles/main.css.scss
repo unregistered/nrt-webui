@@ -67,6 +67,7 @@ a {
 }
 
 .tray {
+    margin-top: 20px;
     td.h1 {
         font-weight: bold;
         font-size: 1.5em;
@@ -125,24 +126,25 @@ a.entity-link {
     padding-top: 20px;
 }
 
-[pane=leftpane], [pane=rightpane], [pane=divider] {
+[pane-horizontal=leftpane], [pane-horizontal=rightpane], [pane-horizontal=divider] {
     position: absolute;
     top: 100px;
     bottom: 20px;
 }
 
-[pane=leftpane] {
+[pane-horizontal=leftpane] {
     position: absolute;
     overflow: scroll;
     width: 300px;
+    padding-right: 15px;
 }
 
-[pane=rightpane] {
+[pane-horizontal=rightpane] {
     left: 380px;
     right: 30px;
 }
 
-[pane=divider] {
+[pane-horizontal=divider] {
 
     height: 100%;
     width: 20px;

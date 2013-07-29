@@ -53,6 +53,9 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                 try
                     self.federation = FederationSummaryParserService.parseFederationSummary message
                     $rootScope.$broadcast("ServerService.federation_update", self.federation)
+                    $timeout(->
+                        safeApply($rootScope)
+                    , 100)
                 catch error
                     console.error error.message
                     console.error error.stack

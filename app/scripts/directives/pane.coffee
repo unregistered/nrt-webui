@@ -1,11 +1,11 @@
-angular.module("nrtWebuiApp").directive 'pane', (ConfigService) ->
+angular.module("nrtWebuiApp").directive 'paneHorizontal', (ConfigService) ->
     restrict: "A"
     link: (scope, iElement, iAttrs) ->
-        panetype = iAttrs.pane
+        panetype = iAttrs.paneHorizontal
 
         # These are from main.css, units are px
         DIVIDER_WIDTH = 20
-        DIVIDER_MARGIN = 5
+        DIVIDER_MARGIN = 10
         LEFTPANE_LEFT_MARGIN = 40
 
         scope.setPosition = ->

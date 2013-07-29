@@ -1,21 +1,25 @@
 <!-- Modules tree view -->
-<tray name="Modules">
-  <div ng-controller="PrototypesCtrl">
-    <div>
-      <input type="text" class="form-control" placeholder="Search <alt-s>" ng-model="search" accesskey="s" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
+
+<div ng-controller="PrototypesCtrl">
+  <div class="panel">
+    <div class="panel-heading">
+      <h3 class="panel-title">Modules</h3>
     </div>
-    <hr>
+    <input type="text" class="form-control" placeholder="Search <alt-s>" ng-model="search" accesskey="s" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
+    <hr/>
     <tree model="getFilterPrototypes()"> </tree>
   </div>
-</tray>
+</div>
 
 <!-- Loaders list -->
-<tray name="Loaders">
-  <div ng-controller="LoadersCtrl">
-    <ul class="nav nav-list">
-      <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}" >
-      <a href="" ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
-      </li>
-    </ul>
+<div class="panel">
+  <div class="panel-heading">
+    <h3 class="panel-title">Loaders</h3>
   </div>
-</tray>
+
+  <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
+    <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}">
+      <a ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
+    </li>
+  </ul>
+</div>

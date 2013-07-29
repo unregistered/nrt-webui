@@ -1,6 +1,6 @@
 <!-- Left pane tabs -->
-<div pane="leftpane" ng-controller="LeftPaneCtrl">
-  <ul class="nav nav-tabs">
+<div pane-horizontal="leftpane" ng-controller="LeftPaneCtrl">
+  <ul class="nav nav-pills" style="margin-bottom: 20px">
     <li ng-class="{'active': selected_pane==MODULES_TAB}"><a href="" ng-click="selected_pane=MODULES_TAB">Modules</a></li>
     <li ng-class="{'active': selected_pane==INSPECT_TAB}"><a href="" ng-click="selected_pane=INSPECT_TAB">Inspect</a></li>
     <li ng-class="{'active': selected_pane==LOADERS_TAB}"><a href="" ng-click="selected_pane=LOADERS_TAB">Loaders</a></li>
@@ -11,13 +11,13 @@
   <div ng-show="selected_pane==LOADERS_TAB" ng-include="'views/loaders_tab.html'"></div>
 </div>
 
-<div pane="divider">
+<div pane-horizontal="divider">
     <div class="draggable">
         <i class="icon-ellipsis-vertical"></i>
     </div>
 </div>
 
-<div pane="rightpane" ng-controller="WorkspaceCtrl">
+<div pane-horizontal="rightpane" ng-controller="WorkspaceCtrl">
     <!-- Alert view -->
     <div ng-controller="AlertsCtrl">
         <div ng-repeat="alert in getAlerts()">
