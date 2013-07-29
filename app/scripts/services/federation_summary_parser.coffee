@@ -21,6 +21,13 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
         parameter.descriptor = self.stripParameterDescriptor parameter.descriptor
         return parameter
 
+    module_blacklist = [
+        'DesignerServerModule',
+        'nrt::Module',
+        'nrt::BlackboardManager',
+        'nrt::ModuleLoader'
+    ]
+
     # Parse a list of modules from the raw_federation_summary, cleaning up the
     # data and adding fields and links as necessary
     self._parseFederation = (raw_federation_summary) ->
@@ -39,6 +46,8 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
         # Parse the modules and ports
         for module_summary in namespace.modules
+
+            continue if _(module_blacklist).contains module_summary.classname
 
             # Add a default position
             _(module_summary).extend(
@@ -69,6 +78,11 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
             federation.modules[module_summary.moduid] = module_summary
 
+        # Filter out any connections to blacklisted modules
+        module_uids = _(federation.modules).keys()
+        namespace.connections = _(namespace.connections).filter (it) -> _(module_uids).contains(it.module1)
+        namespace.connections = _(namespace.connections).filter (it) -> _(module_uids).contains(it.module2)
+
         # Parse the connections
         federation.connections = _(namespace.connections).map (connection_summary) ->
 
@@ -93,6 +107,8 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
             )
 
             return connection_summary
+
+        federation.connections = _(federation.connections).filter (it) -> ((!it.from_port?) || (!it.to_port?))
 
         return federation
 
