@@ -12,6 +12,10 @@ body {
   height: 100%;
 }
 
+.container-fluid {
+    max-width: -1;
+}
+
 a {
     &:hover {
         cursor: pointer;
@@ -123,7 +127,6 @@ a.entity-link {
 
 /* Element positioning */
 .navbar {
-    padding-top: 20px;
 }
 
 [pane-horizontal=leftpane], [pane-horizontal=rightpane], [pane-horizontal=divider] {
@@ -137,6 +140,7 @@ a.entity-link {
     overflow: scroll;
     width: 300px;
     padding-right: 15px;
+    left: 40px;
 }
 
 [pane-horizontal=rightpane] {
