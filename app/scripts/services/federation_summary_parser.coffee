@@ -96,7 +96,7 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
         return federation
 
-    # Takes in a raw blackboardFederationSummary message, parses it, and broadcasts the results
+    # Takes in a raw blackboardFederationSummary message, parses it, and returns the results
     self.parseFederationSummary = (raw_federation_summary) ->
         console.log "raw_federation_summary", raw_federation_summary
 

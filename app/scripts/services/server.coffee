@@ -5,7 +5,7 @@ Interacts with the server
 @broadcasts ServerService.federation_update containing the parsed federation
 @broadcasts ServerService.module_position_update containing array of moduids and positions
 ###
-angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService, AlertRegistryService) ->
+angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService, AlertRegistryService, safeApply) ->
     self = {}
 
     self.name = ''
@@ -31,6 +31,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
                 try
                     federation = FederationSummaryParserService.parseFederationSummary res
                     $rootScope.$broadcast("ServerService.federation_update", federation)
+
                 catch error
                     console.error error.message
                     console.error error.stack
@@ -162,6 +163,18 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
         , (error, desc) ->
             console.error error, desc
         )
+
+    ######################################################################
+    self.setPortTopic = (port, topic) ->
+        console.log "Set module topic", port, topic
+        self.session.call('org.nrtkit.designer/edit/module/topic',
+            moduid: port.module.moduid
+            port_type: port.orientation
+            portname: port.portname
+            topi: topic
+        ).then (res) =>
+            console.log res
+
 
     return self
 )
