@@ -18,13 +18,13 @@ angular.module("nrtWebuiApp").directive 'parameter', ->
                 <div class="parameter-value">
                     <span ng-switch="type">
 
-                        <input id="{{id}}" ng-switch-when="int" type="number" ng-model="localparameter.value">
+                        <input id="{{id}}" class="form-control input-small" ng-switch-when="int" type="number" ng-model="localparameter.value">
 
-                        <input id="{{id}}" ng-switch-when="float" type="number" ng-model="localparameter.value">
+                        <input id="{{id}}" class="form-control input-small" ng-switch-when="float" type="number" ng-model="localparameter.value">
 
-                        <input id="{{id}}" ng-switch-when="text" type="text"  ng-model="localparameter.value">
+                        <input id="{{id}}" class="form-control input-small" ng-switch-when="text" type="text"  ng-model="localparameter.value">
 
-                        <select id="{{id}}" ng-switch-when="list" ng-model="localparameter.value">
+                        <select id="{{id}}" class="form-control input-small" ng-switch-when="list" ng-model="localparameter.value">
                             <option ng-repeat="item in list" ng-selected="parameter.value == item">{{item}}</option>
                         </select>
 
