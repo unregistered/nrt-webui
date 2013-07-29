@@ -5,7 +5,7 @@ Responsible for a couple things relating to connections:
 * Registers the bounding box of ports to allow connectors to latch
 * Assists active connections by providing a list of matching ports
 ###
-angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerService, HoverService, ModuleManagerService) ->
+angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerService, HoverService, ModuleManagerService, ConnectionManagerService) ->
     self = {};
 
     self.portdb = {} # Ports keyed by bbuid, moduid, portname
@@ -36,9 +36,9 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
 
         if connection
             if connection.from_port.orientation == 'poster'
-                self.createConnection connection.from_port, connection.to_port
+                ConnectionManagerService.createConnection connection.from_port, connection.to_port
             else
-                self.createConnection connection.to_port, connection.from_port
+                ConnectionManagerService.createConnection connection.to_port, connection.from_port
 
         self.pairFrom = null
         self.pairingState = 'IDLE'
@@ -59,23 +59,6 @@ angular.module('nrtWebuiApp').factory('ConnectorService', ($rootScope, ServerSer
         # return false
 
         return true
-
-    self.createConnection = (poster_port, subscriber_port) ->
-        console.log "Create connection from poster to subscriber", poster_port, subscriber_port
-        # If no source topic, then generate a random one
-        topic = poster_port.topi
-        if topic == ""
-            topic = 'UnnamedTopic_' + Math.random().toString(36).substring(7)
-            # Send message to loader to set poster topic
-            ServerService.setPortTopic poster_port, topic
-
-        filter = subscriber_port.topi
-        if filter == ""
-            filter = topic
-        else
-            filter += "|#{topic}"
-        # Send message to loader to set checker/subscriber topic filter
-        ServerService.setPortTopic subscriber_port, filter
 
     self.getPhantomConnections = ->
         return [] unless self.pairingState == 'PAIRING'

@@ -10,6 +10,7 @@ angular.module("nrtWebuiApp").directive 'keyboardShortcut', (KeyboardShortcutSer
         replace: false
 
         link: (scope, iElement, iAttrs, controller) ->
+            console.log "Link", iAttrs.keyboardShortcut
             shortcut = iAttrs.keyboardShortcut
 
             if shortcut[0] == '[' and shortcut.slice(-1) == ']'

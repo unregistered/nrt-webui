@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, SelectionService) ->
+angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, ConnectionManagerService, SelectionService) ->
     $scope.module = null
     $scope.modules = null
     $scope.connection = null
@@ -41,3 +41,16 @@ angular.module("nrtWebuiApp").controller "InspectCtrl", ($scope, ServerService, 
                 $scope.port = ports[0]
     , true)
 
+    $scope.deleteSelected = (entity) ->
+        console.log "Delete selected"
+
+        types = SelectionService.getTypes()
+        if _(types).contains 'module'
+            modules = SelectionService.get('module')
+            _(modules).each (module) ->
+                ServerService.deleteModule module
+
+        if _(types).contains 'connection'
+            connections = SelectionService.get('connection')
+            _(connections).each (connection) ->
+                ConnectionManagerService.deleteConnection connection

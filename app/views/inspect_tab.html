@@ -2,13 +2,12 @@
 
 
   <!-- Module inspector -->
-  <div ng-show="module" ng-controller="ModuleCtrl">
+  <div ng-show="module">
 
     <h3>{{module.classname}}</h3>
     <h4>({{module.instance}})</h4>
 
-    <p>bbuid: {{module.bbuid}}</p>
-    <p>moduid: {{module.moduid}}</p>
+    <p>{{module.moduid}}</p>
 
     <!-- Parameters -->
     <div class="accordion" id="parameters_accordion">
@@ -76,7 +75,7 @@
       </div>
     </div>
 
-    <a ng-click="deleteModule(module)" keyboard-shortcut='["del", "backspace"]' class="btn btn-danger btn-block">Delete Module</a>
+    <a ng-click="deleteSelected()" keyboard-shortcut='["del", "backspace"]' class="btn btn-danger btn-block">Delete Module</a>
 
   </div> <!-- End module inspector -->
 
@@ -96,6 +95,9 @@
         <p><entity-link type="module" model="connection.to_module"></entity-link></p>
         <p><entity-link type="port" model="connection.to_port"></entity-link></p>
       </div>
+
+      <!-- Only one delete button need a shortcut, since only one shortcut can be registered anyways -->
+      <a ng-click="deleteSelected()" class="btn btn-danger btn-block">Delete Connection</a>
     </div>
   </div>
   <!-- End connection inspector -->
