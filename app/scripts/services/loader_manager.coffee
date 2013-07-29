@@ -13,6 +13,13 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
     #   prototypes: A hierarchy or module prototypes
     self.loaders = {}
 
+    self.selected_loader = null
+
+    self.getSelectedLoader = -> self.selected_loader
+
+    self.setSelectedLoader = (bbnick) ->
+        self.selected_loader = _(self.loaders).findWhere({bbnick: bbnick})
+
     # Returns prototype for bbuid and classname. Classnames are unique
     self.getPrototype = (bbuid, classname) ->
         return null unless self.loaders[bbuid]
@@ -58,10 +65,13 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
                         return it
 
                 console.log 'New loader detected: ' + bbnick
+
+                if ((!self.selected_bbnick?) || (!_(self.loaders).findWhere({bbnick: self.selected_bbnick})?)) && (!_(self.loaders).isEmpty())
+                    self.selected_loader = self.loaders[_(self.loaders).keys()[0]]
+
                 $rootScope.$broadcast("LoaderManagerService.loaders_updated")
 
             , (reason) -> console.error "Failed to get loader summary from #{blackboard.bbnick}", reason
-
     )
 
     return self
