@@ -1,25 +1,35 @@
 <!-- Modules tree view -->
 
 <div ng-controller="PrototypesCtrl">
-  <div class="panel">
+  <div class="panel" pane-vertical="top">
     <div class="panel-heading">
       <h3 class="panel-title">Modules</h3>
     </div>
     <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
     <hr/>
-    <tree model="getFilterPrototypes()"> </tree>
+    <div class="scrollable">
+      <tree model="getFilterPrototypes()"> </tree>
+    </div>
+  </div>
+</div>
+
+<div pane-vertical="divider">
+  <div class="draggable">
+    <span class="i">...</span>
   </div>
 </div>
 
 <!-- Loaders list -->
-<div class="panel">
+<div class="panel" pane-vertical="bottom">
   <div class="panel-heading">
     <h3 class="panel-title">Loaders</h3>
   </div>
 
-  <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
-    <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}">
-      <a ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
-    </li>
-  </ul>
+  <div class="scrollable">
+    <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
+      <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}">
+        <a ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
+      </li>
+    </ul>
+  </div>
 </div>

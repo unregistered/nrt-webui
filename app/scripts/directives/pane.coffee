@@ -52,3 +52,63 @@ angular.module("nrtWebuiApp").directive 'paneHorizontal', (ConfigService) ->
                         return false
 
             )
+
+angular.module("nrtWebuiApp").directive 'paneVertical', (ConfigService) ->
+    restrict: "A"
+    link: (scope, iElement, iAttrs) ->
+        panetype = iAttrs.paneVertical
+
+        # These are from main.css, units are px
+        DIVIDER_HEIGHT = 20
+        DIVIDER_MARGIN = 10
+        TOPPANE_TOP_MARGIN = 50
+
+        scope.setPosition = ->
+            height = ConfigService.settings.toppane_height
+            if panetype is "top"
+                iElement.css(
+                    height: height
+                )
+            else if panetype is "bottom"
+                iElement.css(
+                    top: height + TOPPANE_TOP_MARGIN + DIVIDER_HEIGHT + DIVIDER_MARGIN*2
+                )
+                scrollHeight = iElement.height() - iElement.find('.panel-heading').height() - 20
+                iElement.find('.scrollable').css(
+                    height: scrollHeight
+                )
+                console.log "Set height to", scrollHeight
+            else if panetype is "divider"
+                iElement.css(
+                    top: height + TOPPANE_TOP_MARGIN + DIVIDER_MARGIN
+                )
+
+        # Set initial position
+        scope.setPosition()
+
+        # left and right panes should watch for changes in leftpane width
+        scope.ConfigService = ConfigService
+        if panetype is "top" or panetype is "bottom"
+            scope.$watch("ConfigService.settings.toppane_height", ->
+                scope.setPosition()
+            )
+
+        # Divider should be draggable
+        if panetype is "divider"
+            start_y = 0
+            start_page_height = 0
+            iElement.draggable(
+                axis: 'y'
+                start: (evt) ->
+                    start_y = evt.pageY
+                    start_page_height = ConfigService.settings.toppane_height
+                drag: (evt) ->
+                    delta_y = evt.pageY - start_y
+                    next_pane_height = start_page_height + delta_y
+                    # if next_pane_height > ConfigService.UI_PANE_MAXIMUM_HEIGHT # The minimum pane height
+                    ConfigService.settings.toppane_height = start_page_height + delta_y
+                    scope.$apply()
+                    # else
+                    #     return false
+
+            )

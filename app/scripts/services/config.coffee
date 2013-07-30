@@ -29,6 +29,8 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     # GUI Panes
     self.UI_PANE_DEFAULT_WIDTH = 300
     self.UI_PANE_MINIMUM_WIDTH = 200
+    self.UI_PANE_DEFAULT_HEIGHT = 300
+    self.UI_PANE_MINIMUM_HEIGHT = 100
 
     # Controls whether dragging on the canvas will drag the canvas or allow for multiple selection
     self.SETTING_CANVAS_MOUSEMODE_DRAG = 'drag'
@@ -46,6 +48,7 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
         'canvas_mousemode': self.SETTING_CANVAS_MOUSEMODE_DRAG
         'module_visibility': self.SETTING_SHOW_INTERNAL_MODULES
         'leftpane_width': self.UI_PANE_DEFAULT_WIDTH
+        'toppane_height': self.UI_PANE_DEFAULT_HEIGHT
     }
 
     return self

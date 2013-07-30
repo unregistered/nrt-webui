@@ -126,12 +126,9 @@ a.entity-link {
 }
 
 /* Element positioning */
-.navbar {
-}
-
 [pane-horizontal=leftpane], [pane-horizontal=rightpane], [pane-horizontal=divider] {
     position: absolute;
-    top: 100px;
+    top: 80px;
     bottom: 20px;
 }
 
@@ -167,3 +164,42 @@ a.entity-link {
         }
     }
 }
+
+
+[pane-vertical=top], [pane-vertical=bottom], [pane-vertical=divider] {
+    position: absolute;
+    width: 100%;
+    .scrollable {
+        overflow-y: scroll;
+    }
+}
+
+[pane-vertical=top] {
+    top: 50px;
+    height: 200px;
+    overflow: scroll;
+}
+
+[pane-vertical=bottom] {
+    top: 290px;
+    bottom: 0px;
+}
+
+[pane-vertical=divider] {
+    top: 260px;
+    height: 20px;
+    .draggable {
+        display: block;
+        position: relative;
+        background: #ccc;
+        cursor: ns-resize;
+        color: #aaa;
+        height: 100%;
+        .i {
+            margin: 0 auto;
+            width: 100px;
+        }
+    }
+}
+
+
