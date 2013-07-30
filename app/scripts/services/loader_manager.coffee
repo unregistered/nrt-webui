@@ -52,15 +52,15 @@ angular.module('nrtWebuiApp').factory('LoaderManagerService', ($rootScope, $q, S
                 # The blackboard is not actually a loader
                 return unless loader_summary
 
-                bbuid    = loader_summary.message.bbUID
-                bbnick   = loader_summary.message.bbNick
-                hostname = loader_summary.message.hostname
+                bbuid      = loader_summary.message.bbUID
+                bbnick     = loader_summary.message.bbNick
+                hostname   = loader_summary.message.hostname
 
                 self.loaders[bbuid] =
                     hostname: hostname
                     bbnick: bbnick
                     prototypes: _.map loader_summary.message.modules, (it) ->
-                        it.blackboard = blackboard
+                        it.blackboard = federation.blackboards[bbuid]
                         it.name = it.logicalPath.split('/').pop()
                         return it
 

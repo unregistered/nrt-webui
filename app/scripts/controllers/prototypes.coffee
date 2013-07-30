@@ -3,8 +3,9 @@
 angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerService, LoaderManagerService) ->
 
     $scope.lastSearch = null
-    $scope.emptyTree = {name: "Modules", expanded: true, children: []}
-    $scope.lastTree = $scope.emptyTree
+    $scope.emptyTree  = {name: "Modules", expanded: true, children: []}
+    $scope.lastTree   = $scope.emptyTree
+    $scope.lastBBNick = ''
 
     # Treeify a flat list of modules, inserting them into a hierarchy based on their categories
     $scope._treeify = (modules) ->
@@ -33,14 +34,6 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
     $scope.search = ''
 
-    $scope.LoaderManagerService = LoaderManagerService
-    $scope.$watch('LoaderManagerService.getSelectedLoader()', ->
-        console.log 'SELECTED LOADER CHANGED'
-        loader = LoaderManagerService.getSelectedLoader()
-        return unless loader
-        $scope.prototypes = $scope._treeify loader.prototypes
-    )
-
     # Get the filtered prototype tree
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
@@ -49,7 +42,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
         return unless loader
 
-        if $scope.search == $scope.lastSearch && $scope.lastTree
+        if $scope.search == $scope.lastSearch && $scope.lastTree && loader.bbnick == $scope.lastBBNick
             return $scope.lastTree
 
         filteredPrototypes = _.filter loader['prototypes'], (it) ->
@@ -58,5 +51,7 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
         $scope.lastTree = $scope._treeify filteredPrototypes
 
         $scope.lastSearch = $scope.search
+
+        $scope.lastBBNick = loader.bbnick
 
         return $scope.lastTree
