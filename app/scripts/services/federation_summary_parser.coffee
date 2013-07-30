@@ -108,8 +108,6 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
             return connection_summary
 
-        federation.connections = _(federation.connections).filter (it) -> ((!it.from_port?) || (!it.to_port?))
-
         return federation
 
     # Takes in a raw blackboardFederationSummary message, parses it, and returns the results
