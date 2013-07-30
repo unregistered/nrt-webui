@@ -11,6 +11,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         index: "@index"
     }
     link: (scope, iElement, iAttrs, controller) ->
+        scope.touched = false
         scope.getMsgColor = ->
             UtilityService.str2color(scope.model.msgtype)
 
@@ -47,10 +48,18 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
 
             return retval
 
+        scope.getStartX = ->
+            return scope.model.module.x if scope.model.module
+            return 0
+
+        scope.getStartY = ->
+            return scope.model.module.y if scope.model.module
+            return 0
+
         scope.drawBox = ->
             ip = scope.getInitialPosition()
 
-            rect =  controller[0].paper.rect(ip.x, ip.y, ip.w, ip.h, ConfigService.UI_PORT_BORDER_RADIUS)
+            rect =  controller[0].paper.rect(scope.getStartX() + ip.x, scope.getStartY() + ip.y, ip.w, ip.h, ConfigService.UI_PORT_BORDER_RADIUS)
             rect.attr
                 fill: scope.getMsgColor()
 
@@ -69,7 +78,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             if scope.model.orientation is 'poster'
                 ip.w = ip.w/2
 
-            rect =  controller[0].paper.rect(ip.x, ip.y, ip.w, ip.h, ConfigService.UI_PORT_BORDER_RADIUS)
+            rect =  controller[0].paper.rect(scope.getStartX() + ip.x, scope.getStartY() + ip.y, ip.w, ip.h, ConfigService.UI_PORT_BORDER_RADIUS)
             rect.attr
                 fill: scope.getRetColor()
 
@@ -90,7 +99,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 ip.w = ip.w * 1.5
                 ip.h = ip.h + ConfigService.UI_PORT_SPACING
 
-            rect =  controller[0].paper.rect(ip.x, ip.y, ip.w, ip.h, 0)
+            rect =  controller[0].paper.rect(scope.getStartX() + ip.x, scope.getStartY() + ip.y, ip.w, ip.h, 0)
             rect.attr(
                 fill: 'green'
                 opacity: 0
@@ -206,7 +215,21 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         )
 
         # Register our location for connectors
-        scope.$watch("[model.module.x, model.module.y]", ->
+        scope.$watch("[model.module.x, model.module.y]", (newValue, oldValue) ->
+            return if newValue == oldValue
+
+            if !scope.touched
+                ip = scope.getInitialPosition()
+                _(scope.raphael_drawings).each (val) ->
+                    old_x = val.attr('x')
+                    old_y = val.attr('y')
+                    new_x = old_x - oldValue[0]
+                    new_y = old_y - oldValue[1]
+                    val.attr(x: new_x, y: new_y)
+
+                # scope.raphael_drawings.box.attr(x: ip.x, y: ip.y)
+                scope.touched = true
+
             bbox = scope.raphael_drawings.box.getBBox()
             ConnectorService.registerPortBBox(scope.model, bbox)
         , true)

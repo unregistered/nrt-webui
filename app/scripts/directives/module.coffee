@@ -19,6 +19,9 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             @updateModulePosition = (module) ->
                 ServerService.updateModulePosition module, module.x, module.y
+
+            @getTouched = ->
+                $scope.touched
         ]
 
         require: ["^raphael", "module"] # Get controller from parent directive, and our own controller
@@ -32,6 +35,14 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
         transclude: true
 
         link: (scope, iElement, iAttrs, controller) ->
+            scope.touched = false  # The user has not yet dragged this module
+
+            scope.getStartX = ->
+                scope.model.x || 0
+
+            scope.getStartY = ->
+                scope.model.y || 0
+
             scope.getWidth = ->
                 min_width = 100
 
@@ -59,7 +70,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             scope.drawBox = ->
                 # The base box
-                rect =  controller[0].paper.rect(0, 0, scope.getWidth(), scope.getHeight(), 7)
+                rect =  controller[0].paper.rect(scope.getStartX(), scope.getStartY(), scope.getWidth(), scope.getHeight(), 7)
                 color = scope.getColor()
                 rect.attr
                     fill: color
@@ -70,7 +81,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 return rect
 
             scope.drawHitbox = ->
-                rect = controller[0].paper.rect(0, 0, scope.getWidth(), scope.getHeight())
+                rect = controller[0].paper.rect(scope.getStartX(), scope.getStartY(), scope.getWidth(), scope.getHeight())
                 rect.attr
                     fill: 'black'
                     opacity: 0
@@ -79,18 +90,18 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 return rect
 
             scope.drawText = ->
-                controller[0].paper.text(scope.getWidth()/2, 70, scope.model.classname)
+                controller[0].paper.text(scope.getStartX() + scope.getWidth()/2, scope.getStartY() + 70, scope.model.classname)
 
             scope.drawBBNick = ->
                 nick = BlackboardManagerService.content[scope.model.bbuid].nick
-                controller[0].paper.text( scope.getWidth()/2, scope.getHeight() - 20, nick )
+                controller[0].paper.text( scope.getStartX() + scope.getWidth()/2, scope.getStartY() + scope.getHeight() - 20, nick )
 
             scope.drawBBNickBackground = ->
                 textbbox = scope.raphael_drawings.bbnick.getBBox()
                 w = textbbox.width + 10
                 h = textbbox.height + 6
-                x = scope.getWidth()/2 - w/2
-                y = scope.getHeight() - 20 - h/2
+                x = scope.getStartX() + scope.getWidth()/2 - w/2
+                y = scope.getStartY() + scope.getHeight() - 20 - h/2
 
                 r = controller[0].paper.rect(x, y, w, h, 3)
                 r.attr(
@@ -105,8 +116,8 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 "data:#{$filter('ext2mime')(proto.iconext)};base64,#{proto.icondata}"
 
             scope.drawImage = ->
-                x = scope.getWidth()/2 - ConfigService.UI_MODULE_IMAGE_WIDTH/2
-                y = 30
+                x = scope.getStartX() + scope.getWidth()/2 - ConfigService.UI_MODULE_IMAGE_WIDTH/2
+                y = scope.getStartY() + 30
 
                 src = scope.imgSrc()
                 if src
@@ -204,6 +215,20 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
             )
 
             scope.$watch("[model.x, model.y]", (newValue, oldValue, scope) ->
+                return if newValue == oldValue
+
+                if !scope.touched
+                    # We draw the boxes at the module location, but we need to move them back to the origin
+                    # so we can translate the container relative to the origin
+                    _(scope.raphael_drawings).each (val, key) ->
+                        old_x = val.attr('x')
+                        old_y = val.attr('y')
+                        new_x = old_x - oldValue[0]
+                        new_y = old_y - oldValue[1]
+                        val.attr(x: new_x, y: new_y)
+                    # And only do this on the first one
+                    scope.touched = true
+
                 scope.moveTo(scope.model.x, scope.model.y)
             , true)
 

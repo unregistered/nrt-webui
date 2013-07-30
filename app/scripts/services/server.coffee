@@ -5,7 +5,7 @@ Interacts with the server
 @broadcasts ServerService.federation_update containing the parsed federation
 @broadcasts ServerService.module_position_update containing array of moduids and positions
 ###
-angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q, FederationSummaryParserService, AlertRegistryService, safeApply) ->
+angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, FederationSummaryParserService, AlertRegistryService, safeApply) ->
     self = {}
 
     self.name = ''
@@ -40,22 +40,16 @@ angular.module('nrtWebuiApp').factory('ServerService', ($timeout, $rootScope, $q
             )
 
             # Get the latest gui coords
-            # Timeout hack is to get ports to render in the correct location
-            $timeout(->
-                session.call("org.nrtkit.designer/get/gui_data").then (res) ->
-                    $rootScope.$broadcast("ServerService.module_position_update", res.message)
-                , (error, desc) ->
-                    console.error "Not got", error, desc
-            , 100)
+            session.call("org.nrtkit.designer/get/gui_data").then (res) ->
+                $rootScope.$broadcast("ServerService.module_position_update", res.message)
+            , (error, desc) ->
+                console.error "Not got", error, desc
 
             # Subscribe to all further blackboard federation summaries
             session.subscribe "org.nrtkit.designer/event/blackboard_federation_summary", (topic, message) ->
                 try
                     self.federation = FederationSummaryParserService.parseFederationSummary message
                     $rootScope.$broadcast("ServerService.federation_update", self.federation)
-                    $timeout(->
-                        safeApply($rootScope)
-                    , 100)
                 catch error
                     console.error error.message
                     console.error error.stack

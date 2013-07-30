@@ -3,7 +3,7 @@
 ###
 Parses and processes modules and ports
 ###
-angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService, FederationSummaryParserService, safeApply, $timeout) ->
+angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, ServerService, FederationSummaryParserService, safeApply) ->
     self = {}
 
     ###
@@ -17,21 +17,16 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
 
     ######################################################################
     $rootScope.$on('ServerService.federation_update', (event, federation_summary) ->
-        console.log "Get modules"
         self.modules = federation_summary.modules
-        self.ports = federation_summary.ports
-    )
 
-    $rootScope.$on('ServerService.federation_update', (event, federation_summary) ->
-        console.log "Update module positions"
-        $timeout(->
-            # Update modules from the position cache
-            _(self.modules).each (module) ->
-                entry = self._module_position_cache[module.moduid]
-                return unless entry
-                module.x = entry.x
-                module.y = entry.y
-        , 100)
+        # Update modules from the position cache
+        _(self.modules).each (module) ->
+            entry = self._module_position_cache[module.moduid]
+            return unless entry
+            module.x = entry.x
+            module.y = entry.y
+
+        self.ports = federation_summary.ports
     )
 
     ######################################################################
