@@ -37,12 +37,18 @@
                 <ul class="nav navbar-nav">
 
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Export <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li><a href="#">Export Python Script</a></li>
                       <li><a href="#">Export Network to JSON</a></li>
                     </ul>
                   </li>
+
+                  <!-- Button trigger modal -->
+                  <li>
+                    <a data-toggle="modal" href="#preferences-modal">Preferences</a>
+                  </li>
+
                 </ul>
 
                 <ul class="nav navbar-nav pull-right">
@@ -67,6 +73,27 @@
 
         <div id="main" role="main" class="container-fluid" ng-view="">
         </div>
+
+        <!-- Modal -->
+        <div class="modal" id="preferences-modal" ng-controller="PreferencesCtrl">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Designer Preferences</h4>
+              </div>
+
+              <div class="modal-body">
+                <textarea class="form-control" rows="3" ng-model=""></textarea>
+              </div>
+
+              <div class="modal-footer">
+                <a class="btn btn-danger" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-primary">Save changes</a>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 
     </div>
 
@@ -96,6 +123,7 @@
     <script src="scripts/controllers/inspect.js"></script>
     <script src="scripts/controllers/workspace.js"></script>
     <script src="scripts/controllers/filemenu.js"></script>
+    <script src="scripts/controllers/preferences.js"></script>
 
     <script src="scripts/services/server.js"></script>
     <script src="scripts/services/module_manager.js"></script>

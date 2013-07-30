@@ -211,7 +211,6 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                         SelectionService.set 'module', scope.model
                         scope.toFront()
                         scope.$apply()
-
             )
 
             scope.$watch("[model.x, model.y]", (newValue, oldValue, scope) ->
