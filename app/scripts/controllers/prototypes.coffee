@@ -31,20 +31,28 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
 
         return tree
 
-    $scope.currentLoaderUID = ''
     $scope.search = ''
+
+    $scope.LoaderManagerService = LoaderManagerService
+    $scope.$watch('LoaderManagerService.getSelectedLoader()', ->
+        console.log 'SELECTED LOADER CHANGED'
+        loader = LoaderManagerService.getSelectedLoader()
+        return unless loader
+        $scope.prototypes = $scope._treeify loader.prototypes
+    )
 
     # Get the filtered prototype tree
     #   Make sure to memoize the result based on the search so that we don't keep returning brand new objects (angular hates that)
     $scope.getFilterPrototypes = ->
 
-        return $scope.emptyTree unless LoaderManagerService.loaders
-        return $scope.emptyTree unless LoaderManagerService.loaders[$scope.currentLoaderUID]
+        loader = LoaderManagerService.getSelectedLoader()
+
+        return unless loader
 
         if $scope.search == $scope.lastSearch && $scope.lastTree
             return $scope.lastTree
 
-        filteredPrototypes = _.filter LoaderManagerService.loaders[$scope.currentLoaderUID]['prototypes'], (it) ->
+        filteredPrototypes = _.filter loader['prototypes'], (it) ->
             return ~it.name.toLowerCase().indexOf($scope.search.toLowerCase())
 
         $scope.lastTree = $scope._treeify filteredPrototypes
@@ -52,18 +60,3 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
         $scope.lastSearch = $scope.search
 
         return $scope.lastTree
-
-
-    # When the list of known loaders has changed, treeify the currently selected loader
-    $scope.$on("LoaderManagerService.loaders_updated", ->
-        loaders = LoaderManagerService.loaders
-
-        #console.log 'Loaders changed', loaders
-        return unless loaders
-
-        if $scope.currentLoaderUID == '' or not _(loaders).has($scope.currentLoaderUID)
-            return if _(loaders).isEmpty()
-            $scope.currentLoaderUID = _(loaders).keys()[0]
-
-        $scope.prototypes = $scope._treeify loaders[$scope.currentLoaderUID]['prototypes']
-    )

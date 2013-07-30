@@ -29,14 +29,14 @@
     </div>
 
     <!-- Ports -->
-    <div class="accordion" id="ports_accordion">
+    <div class="accordion" id="subscriber_ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#subscriber_ports_accordion" href="#collapse_subscriber_ports">
             Subscriber Ports <span class="badge">{{module.subscribers.length}}</span>
           </a>
         </div>
-        <div id="collapse_ports" class="accordion-body collapse in">
+        <div id="collapse_subscriber_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.subscribers">
             <entity-link type="port" model="port"></entity-link>
           </div>
@@ -44,14 +44,14 @@
       </div>
     </div>
 
-    <div class="accordion" id="ports_accordion">
+    <div class="accordion" id="poster_ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#poster_ports_accordion" href="#collapse_poster_ports">
             Poster Ports <span class="badge">{{module.posters.length}}</span>
           </a>
         </div>
-        <div id="collapse_ports" class="accordion-body collapse in">
+        <div id="collapse_poster_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.posters">
             <entity-link type="port" model="port"></entity-link>
           </div>
@@ -59,14 +59,14 @@
       </div>
     </div>
 
-    <div class="accordion" id="ports_accordion">
+    <div class="accordion" id="checker_ports_accordion">
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#ports_accordion" href="#collapse_ports">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#checker_ports_accordion" href="#collapse_checker_ports">
             Checker Ports ({{module.checkers.length}})
           </a>
         </div>
-        <div id="collapse_ports" class="accordion-body collapse in">
+        <div id="collapse_checker_ports" class="accordion-body collapse in">
           <div class="accordion-inner" ng-repeat="port in module.checkers">
             <entity-link type="port" model="port"></entity-link>
           </div>

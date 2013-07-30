@@ -3,7 +3,13 @@
 angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderManagerService) ->
 
     $scope.loaders = []
-    $scope.selected_bbnick = ""
+    #$scope.selected_bbnick = ""
+
+    $scope.setSelectedLoader = (bbnick) ->
+        LoaderManagerService.setSelectedLoader bbnick
+
+    $scope.getSelectedLoader = ->
+        LoaderManagerService.getSelectedLoader()
 
     $scope.LoaderManagerService = LoaderManagerService
     $scope.$watch('LoaderManagerService.loaders', ->
@@ -15,6 +21,6 @@ angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderManagerSe
               bbuid: bbuid
               bbnick: loaders[bbuid]['bbnick']
 
-         if $scope.selected_bbnick == ""
-             $scope.selected_bbnick = $scope.loaders[0].bbnick
+         #if $scope.selected_bbnick == ""
+         #    $scope.selected_bbnick = $scope.loaders[0].bbnick
     , true)

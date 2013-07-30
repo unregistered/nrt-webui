@@ -27,9 +27,10 @@
 
   <div class="scrollable">
     <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
-      <li ng-repeat="loader in loaders" ng-class="{active: $parent.selected_bbnick == loader.bbnick}">
-        <a ng-click="$parent.selected_bbnick = loader.bbnick">{{loader.bbnick}}</a>
+      <li ng-repeat="loader in loaders" ng-class="{active: getSelectedLoader().bbnick == loader.bbnick}">
+      <a ng-click="setSelectedLoader(loader.bbnick)">{{loader.bbnick}}</a>
       </li>
     </ul>
   </div>
+
 </div>
