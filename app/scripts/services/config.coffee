@@ -27,7 +27,7 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.UI_CONNECTION_ACTIVE_COLOR = "#000"
 
     # GUI Panes
-    self.UI_PANE_DEFAULT_WIDTH = 300
+    self.UI_PANE_DEFAULT_WIDTH = 400
     self.UI_PANE_MINIMUM_WIDTH = 200
     self.UI_PANE_DEFAULT_HEIGHT = 300
     self.UI_PANE_MINIMUM_HEIGHT = 100
