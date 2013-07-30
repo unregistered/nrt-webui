@@ -56,6 +56,9 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
                 blackboard : federation.blackboards[module_summary.bbuid]
             )
 
+            # Remove any NRT hidden ports
+            module_summary.posters = _(module_summary.posters).reject (it) -> it.portname == 'ModuleParamChangedOutput'
+
             # Add details to ports
             _(module_summary.posters).each (poster) ->
                 poster.module = module_summary
