@@ -1,30 +1,16 @@
 <!-- Modules tree view -->
-
 <div ng-controller="PrototypesCtrl">
-  <div class="panel" pane-vertical="top">
-    <div class="panel-heading">
-      <h3 class="panel-title">Modules</h3>
-    </div>
-    <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
-    <hr/>
-    <div class="scrollable">
-      <tree model="getFilterPrototypes()"> </tree>
-    </div>
-  </div>
-</div>
-
-<div pane-vertical="divider">
-  <div class="draggable">
-    <span class="i">...</span>
-  </div>
+  <tray name="Modules">
+      <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
+      <hr/>
+      <div class="scrollable">
+        <tree model="getFilterPrototypes()"> </tree>
+      </div>
+  </tray>
 </div>
 
 <!-- Loaders list -->
-<div class="panel" pane-vertical="bottom">
-  <div class="panel-heading">
-    <h3 class="panel-title">Loaders</h3>
-  </div>
-
+<tray name="Loaders">
   <div class="scrollable">
     <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
       <li ng-repeat="loader in loaders" ng-class="{active: getSelectedLoader().bbnick == loader.bbnick}">
@@ -33,4 +19,4 @@
     </ul>
   </div>
 
-</div>
+</tray>

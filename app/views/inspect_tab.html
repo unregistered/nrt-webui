@@ -2,128 +2,128 @@
 
   <!-- Module inspector -->
   <div ng-show="module">
+    <tray name="Module: {{module.classname}}">
+      <!-- Parameters -->
+      <div class="accordion" id="parameters_accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#parameters_accordion" href="#collapse_parameters">
+              Parameters <span class="badge pull-right">{{module.parameters.length}}</span>
+            </a>
+          </div>
+          <div id="collapse_parameters" class="accordion-body collapse in">
+            <div class="accordion-inner">
 
-    <h3>{{module.classname}}</h3>
-    <h4>({{module.instance}})</h4>
+              <div style="display:table">
+                <parameter ng-repeat="parameter in module.parameters" model="parameter">
+              </div>
 
-    <p>{{module.moduid}}</p>
-
-    <!-- Parameters -->
-    <div class="accordion" id="parameters_accordion">
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#parameters_accordion" href="#collapse_parameters">
-            Parameters <span class="badge">{{module.parameters.length}}</span>
-          </a>
-        </div>
-        <div id="collapse_parameters" class="accordion-body collapse in">
-          <div class="accordion-inner">
-
-            <div style="display:table">
-              <parameter ng-repeat="parameter in module.parameters" model="parameter">
             </div>
-
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Ports -->
-    <div class="accordion" id="subscriber_ports_accordion">
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#subscriber_ports_accordion" href="#collapse_subscriber_ports">
-            Subscriber Ports <span class="badge">{{module.subscribers.length}}</span>
-          </a>
-        </div>
-        <div id="collapse_subscriber_ports" class="accordion-body collapse in">
-          <div class="accordion-inner" ng-repeat="port in module.subscribers">
-            <entity-link type="port" model="port"></entity-link>
+      <!-- Ports -->
+      <div class="accordion" id="subscriber_ports_accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#subscriber_ports_accordion" href="#collapse_subscriber_ports">
+              Subscriber Ports <span class="badge pull-right">{{module.subscribers.length}}</span>
+            </a>
+          </div>
+          <div id="collapse_subscriber_ports" class="accordion-body collapse in">
+            <div class="accordion-inner" ng-repeat="port in module.subscribers">
+              <entity-link type="port" model="port"></entity-link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="accordion" id="poster_ports_accordion">
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#poster_ports_accordion" href="#collapse_poster_ports">
-            Poster Ports <span class="badge">{{module.posters.length}}</span>
-          </a>
-        </div>
-        <div id="collapse_poster_ports" class="accordion-body collapse in">
-          <div class="accordion-inner" ng-repeat="port in module.posters">
-            <entity-link type="port" model="port"></entity-link>
+      <div class="accordion" id="poster_ports_accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#poster_ports_accordion" href="#collapse_poster_ports">
+              Poster Ports <span class="badge pull-right">{{module.posters.length}}</span>
+            </a>
+          </div>
+          <div id="collapse_poster_ports" class="accordion-body collapse in">
+            <div class="accordion-inner" ng-repeat="port in module.posters">
+              <entity-link type="port" model="port"></entity-link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="accordion" id="checker_ports_accordion">
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#checker_ports_accordion" href="#collapse_checker_ports">
-            Checker Ports ({{module.checkers.length}})
-          </a>
-        </div>
-        <div id="collapse_checker_ports" class="accordion-body collapse in">
-          <div class="accordion-inner" ng-repeat="port in module.checkers">
-            <entity-link type="port" model="port"></entity-link>
+      <div class="accordion" id="checker_ports_accordion">
+        <div class="accordion-group">
+          <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#checker_ports_accordion" href="#collapse_checker_ports">
+              Checker Ports <span class="badge pull-right">{{module.checkers.length}}</span>
+            </a>
+          </div>
+          <div id="collapse_checker_ports" class="accordion-body collapse in">
+            <div class="accordion-inner" ng-repeat="port in module.checkers">
+              <entity-link type="port" model="port"></entity-link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <a ng-click="deleteSelected()" keyboard-shortcut='["del", "backspace"]' class="btn btn-danger btn-block">Delete Module</a>
-
-  </div> <!-- End module inspector -->
+      <a ng-click="deleteSelected()" keyboard-shortcut='["del", "backspace"]' class="btn btn-danger btn-block">Delete Module</a>
+    </tray>
+  </div>
+  <!-- End module inspector -->
 
   <!-- Connection Inspector -->
   <div ng-show="connection">
-    <h3>Connection</h3>
-    <div style="text-align:center">
-      <div class="well">
-        <p><entity-link type="module" model="connection.from_module"></entity-link></p>
-        <p><entity-link type="port" model="connection.from_port"></entity-link></p>
+    <tray name="Connection">
+      <div style="text-align:center">
+        <div class="well">
+          <p><entity-link type="module" model="connection.from_module"></entity-link></p>
+          <p><entity-link type="port" model="connection.from_port"></entity-link></p>
+        </div>
+
+        <i class="icon-arrow-down"></i>
+        <br> <br>
+
+        <div class="well">
+          <p><entity-link type="module" model="connection.to_module"></entity-link></p>
+          <p><entity-link type="port" model="connection.to_port"></entity-link></p>
+        </div>
+
+        <!-- Only one delete button need a shortcut, since only one shortcut can be registered anyways -->
+        <a ng-click="deleteSelected()" class="btn btn-danger btn-block">Delete Connection</a>
       </div>
-
-      <i class="icon-arrow-down"></i>
-      <br> <br>
-
-      <div class="well">
-        <p><entity-link type="module" model="connection.to_module"></entity-link></p>
-        <p><entity-link type="port" model="connection.to_port"></entity-link></p>
-      </div>
-
-      <!-- Only one delete button need a shortcut, since only one shortcut can be registered anyways -->
-      <a ng-click="deleteSelected()" class="btn btn-danger btn-block">Delete Connection</a>
-    </div>
+    </tray>
   </div>
   <!-- End connection inspector -->
 
   <!-- Port inspector -->
   <div ng-show="port">
-    <h3>Port</h3>
-    <dl>
-      <dt>Portname</dt>
-      <dd>{{port.portname}}</dd>
-      <dt>Msgtype</dt>
-      <dd>{{port.msgtype}}</dd>
-      <dt>Return Type</dt>
-      <dd>{{port.rettype}}</dd>
-      <dt>Description</dt>
-      <dd>{{port.description}}</dd>
-      <dt>Topic</dt>
-      <dd>{{port.topi}}</dd>
-      <dt>Module</dt>
-      <dd><entity-link type="module" model="port.module"></entity-link></dd>
-    </dl>
+    <tray name="Port: {{port.portname}}">
+      <dl>
+        <dt>Portname</dt>
+        <dd>{{port.portname}}</dd>
+        <dt>Msgtype</dt>
+        <dd>{{port.msgtype}}</dd>
+        <dt>Return Type</dt>
+        <dd>{{port.rettype}}</dd>
+        <dt>Description</dt>
+        <dd>{{port.description}}</dd>
+        <dt>Topic</dt>
+        <dd>{{port.topi}}</dd>
+        <dt>Module</dt>
+        <dd><entity-link type="module" model="port.module"></entity-link></dd>
+      </dl>
+    </tray>
   </div>
   <!-- End port inspector -->
-</div>
 
-<!-- Multiple object selection -->
-<div ng-show="modules">
-  <h3>{{modules.length}} modules selected</h3>
+  <!-- Multiple object selection -->
+  <div ng-show="modules">
+    <h3>{{modules.length}} modules selected</h3>
+  </div>
+  <div ng-show="modules">
+    <a ng-click="deleteSelected()" class="btn btn-danger btn-block">Delete Selected</a>
+  </div>
 </div>
-

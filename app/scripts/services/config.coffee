@@ -18,8 +18,8 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.UI_PORT_INITIAL_OFFSET = 20
     self.UI_PORT_SPACING = 8
 
-    self.UI_CANVAS_WIDTH = 1000
-    self.UI_CANVAS_HEIGHT = 1000
+    self.UI_CANVAS_WIDTH = 100000
+    self.UI_CANVAS_HEIGHT = 100000
 
     self.UI_MODULE_IMAGE_WIDTH = 25
 

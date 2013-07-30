@@ -4,24 +4,12 @@ angular.module("nrtWebuiApp").directive 'tray', ->
     } # Isolate scope
     restrict: "E"
     template: """
-    <table class="table table-bordered tray">
-        <thead>
-            <tr>
-                <td class="h1">
-                    {{name}}
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <div class="variable-height" ng-transclude>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{name}}</h3>
+        </div>
+        <div ng-transclude></div>
+    </div>
     """
     replace: true
     transclude: true
