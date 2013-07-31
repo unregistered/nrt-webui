@@ -5,7 +5,7 @@ Interacts with the server
 @broadcasts ServerService.federation_update containing the parsed federation
 @broadcasts ServerService.module_position_update containing array of moduids and positions
 ###
-angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, FederationSummaryParserService, AlertRegistryService, safeApply) ->
+angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, $timeout, FederationSummaryParserService, AlertRegistryService, safeApply) ->
     self = {}
 
     self.name = ''
@@ -50,6 +50,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, Federati
                 try
                     self.federation = FederationSummaryParserService.parseFederationSummary message
                     $rootScope.$broadcast("ServerService.federation_update", self.federation)
+                    $timeout (-> safeApply($rootScope)), 10 # Hack alert!
                 catch error
                     console.error error.message
                     console.error error.stack
