@@ -1,6 +1,6 @@
 "use strict"
 
-angular.module("nrtWebuiApp").controller "FileMenuCtrl", ($scope, ModuleManagerService, LoaderManagerService) ->
+angular.module("nrtWebuiApp").controller "ExportMenuCtrl", ($scope, ModuleManagerService, LoaderManagerService) ->
     $scope.exportPython = ->
 
         script = """
