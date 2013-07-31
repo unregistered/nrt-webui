@@ -142,7 +142,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, Federati
             self.session.call("org.nrtkit.designer/update/module_position", move_message)
 
         , (error, desc) ->
-            console.error 'Failed to create module', desc
+            console.error 'Failed to create module', error, desc
         )
 
     self.updateModulePosition = (module, x, y) ->
@@ -172,6 +172,17 @@ angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, Federati
         ).then (res) =>
             console.log res
 
+    ######################################################################
+    self.startStop = (startstop) ->
+        resultPromise = $q.defer()
+
+        self.session.call('org.nrtkit.designer/edit/nrt', startstop).then( (res) ->
+            $rootScope.apply -> resultPromise.resolve(res)
+        , (error) ->
+            $rootScope.$apply -> resultPromise.reject(error)
+        )
+
+        return resultPromise.promise
 
     return self
 )

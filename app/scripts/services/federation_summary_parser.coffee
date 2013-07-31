@@ -33,6 +33,7 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
     self._parseFederation = (raw_federation_summary) ->
 
         federation =
+            running     : raw_federation_summary.message.running
             blackboards : {} # keyed by uid
             modules     : {} # keyed by uid
             ports       : []
