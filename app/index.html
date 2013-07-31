@@ -36,6 +36,7 @@
               <div class="nav-collapse collapse navbar-responsive-collapse">
                 <ul class="nav navbar-nav">
 
+                  <!-- Export menu item -->
                   <li class="dropdown" ng-controller="ExportMenuCtrl">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Export <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -44,9 +45,14 @@
                     </ul>
                   </li>
 
-                  <!-- Button trigger modal -->
+                  <!-- Preferences menu item -->
                   <li>
                     <a data-toggle="modal" href="#preferences-modal">Preferences</a>
+                  </li>
+
+                  <!-- Help menu item -->
+                  <li>
+                    <a data-toggle="modal" href="#help-modal">Help</a>
                   </li>
 
                 </ul>
@@ -74,7 +80,7 @@
         <div id="main" role="main" class="container-fluid" ng-view="">
         </div>
 
-        <!-- Modal -->
+        <!-- Preferences modal -->
         <div class="modal" id="preferences-modal" ng-controller="PreferencesCtrl">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -90,6 +96,45 @@
               <div class="modal-footer">
                 <a class="btn btn-danger" data-dismiss="modal">Close</a>
                 <a href="#" class="btn btn-primary">Save changes</a>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Help modal -->
+        <div class="modal" id="help-modal" ng-controller="PreferencesCtrl">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Designer Help</h4>
+              </div>
+
+              <div class="modal-body">
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed
+                diam nonummy nibh euismod tincidunt ut laoreet dolore magna
+                aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+                nostrud exerci tation ullamcorper suscipit lobortis nisl ut
+                aliquip ex ea commodo consequat. Duis autem vel eum iriure
+                dolor in hendrerit in vulputate velit esse molestie consequat,
+                vel illum dolore eu feugiat nulla facilisis at vero eros et
+                accumsan et iusto odio dignissim qui blandit praesent luptatum
+                zzril delenit augue duis dolore te feugait nulla facilisi. Nam
+                liber tempor cum soluta nobis eleifend option congue nihil
+                imperdiet doming id quod mazim placerat facer possim assum.
+                Typi non habent claritatem insitam; est usus legentis in iis
+                qui facit eorum claritatem. Investigationes demonstraverunt
+                lectores legere me lius quod ii legunt saepius. Claritas est
+                etiam processus dynamicus, qui sequitur mutationem consuetudium
+                lectorum. Mirum est notare quam littera gothica, quam nunc
+                putamus parum claram, anteposuerit litterarum formas
+                humanitatis per seacula quarta decima et quinta decima. Eodem
+                modo typi, qui nunc nobis videntur parum clari, fiant sollemnes
+                in futurum.
+              </div>
+
+              <div class="modal-footer">
+                <a class="btn btn-danger" data-dismiss="modal">Close</a>
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
