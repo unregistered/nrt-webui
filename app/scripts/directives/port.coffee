@@ -105,7 +105,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
                 opacity: 0
             )
 
-        scope.drawLabel = (x, y) ->
+        scope.drawLabel = (x, y, orientation) ->
             textmsg = "#{scope.model.portname}\n    Msg: #{scope.model.msgtype}\n    Ret: #{scope.model.rettype}"
 
             # Draw text
@@ -127,6 +127,18 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             )
 
             t.toFront()
+
+            # Shift the label appropriately for the type of port
+            switch orientation
+                when 'poster'
+                    t.attr({x: t.attr('x')+30})
+                    tb.attr({x: tb.attr('x')+30})
+                when 'subscriber'
+                    t.attr({x: t.attr('x')-w})
+                    tb.attr({x: tb.attr('x')-w})
+                when 'checker'
+                    t.attr({y: t.attr('y')+h})
+                    tb.attr({y: tb.attr('y')+h})
 
             c = controller[0].paper.set()
             c.push t
@@ -209,7 +221,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
         scope.$watch("model._hovered", ->
             if scope.model._hovered
                 bbox = scope.raphael_drawings.box.getBBox()
-                scope.raphael_drawings.label = scope.drawLabel(bbox.x + 30, bbox.y)
+                scope.raphael_drawings.label = scope.drawLabel(bbox.x, bbox.y, scope.model.orientation)
             else
                 scope.raphael_drawings.label.remove() if scope.raphael_drawings.label
         )
