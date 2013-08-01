@@ -37,19 +37,25 @@
             <a class="btn btn-small btn-default" ng-click="WorkspaceCtrl.zoomOut()" title="Zoom out"><i class="icon-zoom-out"></i></a>
             <a class="btn btn-small btn-default" ng-click="WorkspaceCtrl.zoomIn()" title="Zoom in"><i class="icon-zoom-in"></i></a>
         </div>
+
         <div class="btn-group">
-            <a class="btn btn-small btn-default" ng-class="{active: WorkspaceCtrl.isDragMode()}" ng-click="WorkspaceCtrl.setMousemodeDrag()" title="Move"><i class="icon-move"></i></a>
-            <a class="btn btn-small btn-default" ng-class="{active: WorkspaceCtrl.isSelectMode()}" ng-click="WorkspaceCtrl.setMousemodeSelect()" title="Multiple Selection"><i class="icon-check-empty"></i></a>
+            <a class="btn btn-small btn-default" ng-class="{active: WorkspaceCtrl.isDragMode()}" ng-click="WorkspaceCtrl.setMousemodeDrag()" title="Move">
+              <i class="icon-move"></i>
+            </a>
+            <a class="btn btn-small btn-default" ng-class="{active: WorkspaceCtrl.isSelectMode()}" ng-click="WorkspaceCtrl.setMousemodeSelect()" title="Multiple Selection">
+              <i class="icon-check-empty"></i>
+            </a>
         </div>
+
+      <!-- Namespaces -->
+      <ul class="breadcrumb">
+        <li><a href="#">root</a></li>
+        <li><a href="#">to</a></li>
+        <li class="active">do</li>
+      </ul>
 
     </div>
 
-    <!-- Namespaces -->
-    <ul class="breadcrumb">
-      <li><a href="#">root</a></li>
-      <li><a href="#">to</a></li>
-      <li class="active">do</li>
-    </ul>
 
     <!-- Workspace -->
     <raphael>

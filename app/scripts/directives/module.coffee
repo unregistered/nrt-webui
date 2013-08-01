@@ -49,8 +49,9 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 number_of_ports = scope.model.checkers.length
                 port_width = ConfigService.UI_PORT_WIDTH + ConfigService.UI_PORT_SPACING
                 computed_width = port_width * number_of_ports + ConfigService.UI_PORT_INITIAL_OFFSET
+                text_width = scope.model.classname.length * 7
 
-                return Math.max(computed_width, min_width)
+                return Math.max(computed_width, text_width, min_width)
 
             scope.getHeight = ->
                 min_height = 150
@@ -90,7 +91,8 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 return rect
 
             scope.drawText = ->
-                controller[0].paper.text(scope.getStartX() + scope.getWidth()/2, scope.getStartY() + 70, scope.model.classname)
+                controller[0].paper.text(scope.getStartX() + scope.getWidth()/2,
+                    scope.getStartY() + ConfigService.UI_MODULE_IMAGE_WIDTH + ConfigService.UI_MODULE_IMAGE_VERTICAL_OFFSET + 10, scope.model.classname)
 
             scope.drawBBNick = ->
                 nick = BlackboardManagerService.content[scope.model.bbuid].nick
@@ -117,7 +119,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
 
             scope.drawImage = ->
                 x = scope.getStartX() + scope.getWidth()/2 - ConfigService.UI_MODULE_IMAGE_WIDTH/2
-                y = scope.getStartY() + 30
+                y = scope.getStartY() + ConfigService.UI_MODULE_IMAGE_VERTICAL_OFFSET
 
                 src = scope.imgSrc()
                 if src
@@ -139,10 +141,10 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 # Draw
                 scope.raphael_drawings = {}
                 scope.raphael_drawings.box = scope.drawBox()
-                scope.raphael_drawings.text = scope.drawText()
                 scope.raphael_drawings.bbnick = scope.drawBBNick()
                 scope.raphael_drawings.bbnick_background = scope.drawBBNickBackground()
                 scope.raphael_drawings.image = scope.drawImage()
+                scope.raphael_drawings.text = scope.drawText()
                 scope.raphael_drawings.hitbox = scope.drawHitbox()
 
                 # All the objects that will be grouped into a Raphael set
