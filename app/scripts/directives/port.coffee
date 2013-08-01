@@ -129,16 +129,12 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
             t.toFront()
 
             # Shift the label appropriately for the type of port
-            switch orientation
-                when 'poster'
-                    t.attr({x: t.attr('x')+30})
-                    tb.attr({x: tb.attr('x')+30})
-                when 'subscriber'
-                    t.attr({x: t.attr('x')-w})
-                    tb.attr({x: tb.attr('x')-w})
-                when 'checker'
-                    t.attr({y: t.attr('y')+h})
-                    tb.attr({y: tb.attr('y')+h})
+            offset = switch orientation
+                when 'subscriber' then [-w, 0]
+                when 'checker'    then [0,  h]
+                when 'poster'     then [30, 0]
+            t.attr({x: t.attr('x')+offset[0], y: t.attr('y')+offset[1]})
+            tb.attr({x: tb.attr('x')+offset[0], y: tb.attr('y')+offset[1]})
 
             c = controller[0].paper.set()
             c.push t
