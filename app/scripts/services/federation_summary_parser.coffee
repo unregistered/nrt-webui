@@ -45,17 +45,15 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
         namespace = raw_federation_summary.message.namespaces[0]
 
+        # Find the uids of all module loader modules
+        loader_uids = _(namespace.modules).chain().where({classname: 'nrt::ModuleLoader'}).pluck('moduid').value()
+
+        submodules = []
+
         # Parse the modules and ports
         for module_summary in namespace.modules
 
             continue if _(module_blacklist).contains module_summary.classname
-
-            # Add a default position
-            _(module_summary).extend(
-                x          : 0
-                y          : 0
-                blackboard : federation.blackboards[module_summary.bbuid]
-            )
 
             # Remove any NRT hidden ports
             module_summary.posters = _(module_summary.posters).reject (it) -> it.portname == 'ModuleParamChangedOutput'
@@ -80,7 +78,48 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
             _(module_summary.parameters).each (parameter) ->
                 self.cleanParameter parameter, module_summary, undefined
 
-            federation.modules[module_summary.moduid] = module_summary
+            # If this is a top-level module (it's parent is a loader), then add it to the federation
+            if _(loader_uids).contains module_summary.parent
+                # Add a default position
+                _(module_summary).extend(
+                    x          : 0
+                    y          : 0
+                    blackboard : federation.blackboards[module_summary.bbuid]
+                    submodules : []
+                )
+
+                federation.modules[module_summary.moduid] = module_summary
+            else
+                submodules.push module_summary
+
+        # Go through the list of submodules, and iteratively keep linking them
+        # into top-level modules until either there are no more submodules
+        # left, or an entire pass was made through the list without making
+        # a link (in which case we have some orphaned submodules!)
+        change_detected = true
+        while change_detected
+            change_detected = false
+            _submodules = _(submodules).clone()
+
+            for submodule in _submodules
+                toplevelmodule = _(federation.modules).find (it) -> _(it.submodules.concat it.moduid).contains submodule.parent
+
+                if toplevelmodule?
+                    toplevelmodule.submodules = toplevelmodule.submodules.concat submodule.moduid
+                    change_detected = true
+
+                    toplevelmodule.posters     = toplevelmodule.posters.concat submodule.posters
+                    toplevelmodule.subscribers = toplevelmodule.subscribers.concat submodule.subscribers
+                    toplevelmodule.checkers    = toplevelmodule.checkers.concat submodule.checkers
+                    toplevelmodule.parameters  = toplevelmodule.parameters.concat submodule.parameters
+
+                    for it in ((submodule.posters.concat submodule.subscribers).concat submodule.checkers).concat submodule.parameters
+                        it.module = toplevelmodule
+                   
+                    submodules = _(submodules).without submodule
+
+        unless submodules.length == 0
+            console.error "Orphaned submodules detected!", submodules
 
         # Filter out any connections to blacklisted modules
         module_uids = _(federation.modules).keys()
