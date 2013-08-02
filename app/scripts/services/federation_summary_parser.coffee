@@ -54,6 +54,7 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
         for module_summary in namespace.modules
 
             continue if _(module_blacklist).contains module_summary.classname
+            continue if module_summary.parent == ''
 
             # Remove any NRT hidden ports
             module_summary.posters = _(module_summary.posters).reject (it) -> it.portname == 'ModuleParamChangedOutput'
@@ -98,6 +99,7 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
         # a link (in which case we have some orphaned submodules!)
         change_detected = true
         while change_detected
+            console.log 'LOOP'
             change_detected = false
             _submodules = _(submodules).clone()
 
@@ -151,6 +153,7 @@ angular.module('nrtWebuiApp').factory('FederationSummaryParserService', ($rootSc
 
             return connection_summary
 
+        console.log 'Finished parsing federation summary'
         return federation
 
     # Takes in a raw blackboardFederationSummary message, parses it, and returns the results
