@@ -50,13 +50,13 @@ angular.module("nrtWebuiApp").directive 'startstopbutton', ->
             switch status
                 when scope.RUNNING  then 'btn-danger'
                 when scope.STOPPED  then 'btn-success'
-                when scope.STARTING then 'btn-danger disabled'
-                when scope.STOPPING then 'btn-success disabled'
+                when scope.STARTING then 'btn-success disabled'
+                when scope.STOPPING then 'btn-danger disabled'
 
         scope.getStatusText = (status) ->
             switch status
                 when scope.RUNNING  then 'Stop'
                 when scope.STOPPED  then 'Start'
-                when scope.STARTING then 'Starting...'
-                when scope.STOPPING then 'Stopping...'
+                when scope.STARTING then 'Start'
+                when scope.STOPPING then 'Stop'
 
