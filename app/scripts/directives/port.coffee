@@ -224,7 +224,7 @@ angular.module("nrtWebuiApp").directive 'port', (UtilityService, ConfigService, 
 
         # Register our location for connectors
         scope.$watch("[model.module.x, model.module.y]", (newValue, oldValue) ->
-            return if (scope.touched) && (newValue == oldValue)
+            return if (newValue == oldValue)
 
             if !scope.touched
                 ip = scope.getInitialPosition()
