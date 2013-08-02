@@ -6,12 +6,12 @@ angular.module("nrtWebuiApp").controller "ServersCtrl", ($scope, ServerService, 
         {
             name: 'localhost'
             host: 'localhost'
-            port: '9000'
+            port: '8080'
         },
         {
             name: 'iLab'
             host: 'ilab.usc.edu'
-            port: '9000'
+            port: '8080'
         }
     ]
 
