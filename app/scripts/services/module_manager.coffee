@@ -33,6 +33,11 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self._modifyParameter = (parameter_update) ->
         console.log 'Modifying parameter ' + parameter_update.paramsummary.name, parameter_update
         module = self.modules[parameter_update.moduleuid]
+
+        unless module?
+            console.warn 'Could not modify parameter for non-existent module: ', parameter_update.moduleuid
+            return
+
         new_value = parameter_update.paramsummary.value
         descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
 
@@ -43,6 +48,10 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self._destroyParameter = (parameter_update) ->
         module = self.modules[parameter_update.moduleuid]
         descriptor = FederationSummaryParserService.stripParameterDescriptor parameter_update.paramsummary.descriptor
+
+        unless module?
+            console.warn 'Could not destroy parameter for non-existent module: ', parameter_update.moduleuid
+            return
 
         parameter = _(module.parameters).findWhere({descriptor: descriptor})
 
@@ -55,6 +64,11 @@ angular.module('nrtWebuiApp').factory('ModuleManagerService', ($rootScope, Serve
     self._createParameter = (parameter_update) ->
         console.log 'Creating parameter ' + parameter_update.paramsummary.name,  parameter_update
         module = self.modules[parameter_update.moduleuid]
+
+        unless module?
+            console.warn 'Could not create parameter for non-existent module: ', parameter_update.moduleuid
+            return
+
         summary = parameter_update.paramsummary
 
         parameter = FederationSummaryParserService.cleanParameter summary, module, summary.value
