@@ -1,12 +1,14 @@
 <!-- Modules tree view -->
 <div ng-controller="PrototypesCtrl">
-  <tray name="Modules">
-      <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
-      <hr/>
-      <div class="scrollable">
-        <tree model="getFilterPrototypes()"> </tree>
-      </div>
-  </tray>
+  <div ng-controller="LoadersCtrl">
+    <tray name="Modules on {{LoadersCtrl.getSelectedLoader().bbnick}}">
+        <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="PrototypesCtrl.search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
+        <hr/>
+        <div class="scrollable">
+          <tree model="PrototypesCtrl.getFilterPrototypes()"> </tree>
+        </div>
+    </tray>
+  </div>
 </div>
 
 <!-- Loaders list -->

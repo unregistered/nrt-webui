@@ -24,3 +24,5 @@ angular.module("nrtWebuiApp").controller "LoadersCtrl", ($scope, LoaderManagerSe
          #if $scope.selected_bbnick == ""
          #    $scope.selected_bbnick = $scope.loaders[0].bbnick
     , true)
+
+    $scope.LoadersCtrl = $scope

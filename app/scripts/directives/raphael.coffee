@@ -3,7 +3,7 @@ Sets up the raphael canvas
 Provides the Raphael object (paper)
 @broadcasts Workspace.select_drag_ended indicates that the user dragged to select
 ###
-angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService, KeyboardShortcutService) ->
+angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionService, ServerService, HoverService, KeyboardShortcutService, $timeout) ->
     controller: ['$scope', '$element', '$attrs', '$transclude', ($scope, $element, $attrs, $transclude) ->
         @paper = undefined
         @zpd = undefined
@@ -18,6 +18,13 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
     replace: true
     transclude: true
     link: (scope, iElement, iAttrs, controller) ->
+        scope.panHome = ->
+            # zpd will pan origin to top left corner by default,
+            # so we must offset by the canvas width
+            w = $(canvas_el).width()
+            h = $(canvas_el).height()
+            controller.zpd.panTo(w/2, h/2)
+
         canvas_el = iElement.children()[0]
 
         controller.paper = new Raphael(canvas_el, "100%", "100%")
@@ -119,6 +126,11 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         controller.paper.path("M25,0 L-25,0").attr("stroke", "#ccc")
         controller.paper.path("M0,-25 L0,25").attr("stroke", "#ccc")
 
+        # Center the canvas
+        $timeout ->
+            scope.panHome()
+        , 100
+
         # Watch for settings changes
         scope.ConfigService = ConfigService
         scope.$watch("ConfigService.settings.canvas_mousemode", ->
@@ -145,7 +157,7 @@ angular.module("nrtWebuiApp").directive 'raphael', (ConfigService, SelectionServ
         )
 
         scope.$on("RequestPanHome", (arg) ->
-            controller.zpd.panTo(0, 0)
+            scope.panHome()
         )
 
         # Keyboard shortcuts

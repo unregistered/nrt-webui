@@ -55,3 +55,5 @@ angular.module("nrtWebuiApp").controller "PrototypesCtrl", ($scope, ServerServic
         $scope.lastBBNick = loader.bbnick
 
         return $scope.lastTree
+
+    $scope.PrototypesCtrl = $scope
