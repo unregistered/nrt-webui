@@ -4,7 +4,7 @@ angular.module("nrtWebuiApp").directive 'startstopbutton', ->
     } # Isolate scope
     restrict: "E"
     template: """
-    <button style="width:100px" ng-click="toggleState()" class="btn btn-block" ng-class="getStatusClass(status)">{{getStatusText(status)}}</button>
+    <a style="width:100px" ng-click="toggleState()" class="btn btn-small" ng-class="getStatusClass(status)">{{getStatusText(status)}}</a>
     """
 
     replace: true

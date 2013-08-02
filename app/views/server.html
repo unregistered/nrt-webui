@@ -28,10 +28,6 @@
     <!-- Toolbar -->
     <div class="toolbar">
 
-      <div class="btn-group">
-        <startstopbutton/>
-      </div>
-
         <div class="btn-group">
             <a class="btn btn-small btn-default" ng-click="WorkspaceCtrl.panToHome()" title="Move"><i class="icon-home"></i></a>
             <a class="btn btn-small btn-default" ng-click="WorkspaceCtrl.zoomOut()" title="Zoom out"><i class="icon-zoom-out"></i></a>
@@ -47,14 +43,18 @@
             </a>
         </div>
 
-      <!-- Namespaces -->
-      <ul class="breadcrumb">
-        <li><a href="#">root</a></li>
-        <li><a href="#">to</a></li>
-        <li class="active">do</li>
-      </ul>
+        <div class="btn-group pull-right">
+          <startstopbutton/>
+        </div>
 
     </div>
+
+    <!-- Namespaces -->
+    <ul class="breadcrumb">
+      <li><a href="#">root</a></li>
+      <li><a href="#">to</a></li>
+      <li class="active">do</li>
+    </ul>
 
 
     <!-- Workspace -->
