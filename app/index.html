@@ -90,12 +90,13 @@
               </div>
 
               <div class="modal-body">
-                <textarea class="form-control" rows="3" ng-model=""></textarea>
+                <p>Default settings can be overwritten. Enter valid JSON here.</p>
+                <textarea class="form-control" rows="3" ng-model="string_config"></textarea>
               </div>
 
               <div class="modal-footer">
                 <a class="btn btn-danger" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary">Save changes</a>
+                <a ng-click="saveChanges()" data-dismiss="modal" class="btn btn-primary">Save changes</a>
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->

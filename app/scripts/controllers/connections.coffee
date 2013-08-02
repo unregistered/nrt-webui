@@ -5,7 +5,7 @@ angular.module("nrtWebuiApp").controller "ConnectionsCtrl", ($scope, ConnectionM
     Connections are stored in an array
     ###
     $scope.getConnections = ->
-        return ConnectionManagerService.connections
+        ConnectionManagerService.connections
 
     $scope.phantom_connections = []
 
