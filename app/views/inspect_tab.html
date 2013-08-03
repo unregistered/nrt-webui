@@ -126,4 +126,24 @@
   <div ng-show="modules">
     <a ng-click="deleteSelected()" class="btn btn-danger btn-block">Delete Selected</a>
   </div>
+
+  <!-- This shows up when there is nothing selected -->
+  <div ng-hide="module || modules || port || ports || connection || connections">
+    <tray name="Modules">
+      <ul class="list-group" ng-controller="ModulesCtrl">
+        <li class="list-group-item" ng-repeat="module in getModules()">
+          <entity-link type="module" model="module"></entity-link>
+        </li>
+      </ul>
+    </tray>
+
+    <tray name="Connections">
+      <ul class="list-group" ng-controller="ConnectionsCtrl">
+        <li class="list-group-item" ng-repeat="connection in getConnections()">
+          <entity-link type="connection" model="connection"></entity-link>
+        </li>
+      </ul>
+    </tray>
+
+  </div>
 </div>

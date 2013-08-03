@@ -30,6 +30,11 @@ angular.module("nrtWebuiApp").directive "entityLink", (SelectionService, HoverSe
             return "" unless scope.model
             return scope.model.portname if iAttrs.type is "port"
             return scope.model.classname if iAttrs.type is "module"
+
+            if iAttrs.type is "connection"
+                c = scope.model
+
+                return "#{c.from_module.classname}::#{c.from_port.portname} → #{c.to_module.classname}::#{c.to_port.portname}"
             return "Unknown Entity"
 
         iElement.click(->
