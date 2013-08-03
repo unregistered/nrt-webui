@@ -1,24 +1,33 @@
 <!-- Modules tree view -->
 <div ng-controller="PrototypesCtrl">
-  <div ng-controller="LoadersCtrl">
-    <tray name="Modules on {{LoadersCtrl.getSelectedLoader().bbnick}}">
-        <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="PrototypesCtrl.search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
-        <hr/>
-        <div class="scrollable">
-          <tree model="PrototypesCtrl.getFilterPrototypes()"> </tree>
+    <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Modules on
+
+            <div class="btn-group" id="module-selection-dropdown" ng-controller="LoadersCtrl">
+              <a type="button" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+                {{getSelectedLoader().bbnick}}
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li ng-repeat="loader in loaders" ng-class="{active: getSelectedLoader().bbnick == loader.bbnick}">
+                  <a ng-click="setSelectedLoader(loader.bbnick)">{{loader.bbnick}}</a>
+                </li>
+              </ul>
+            </div>
+
+          </h3>
+
         </div>
-    </tray>
-  </div>
+        <div>
+
+          <input type="text" class="form-control" placeholder="Search <ctrl+f>" ng-model="PrototypesCtrl.search" keyboard-shortcut='["shift+f", "cmd+f", "ctrl+f"]'>
+          <hr/>
+          <div class="scrollable">
+            <tree model="PrototypesCtrl.getFilterPrototypes()"> </tree>
+          </div>
+
+        </div>
+    </div>
 </div>
-
-<!-- Loaders list -->
-<tray name="Loaders">
-  <div class="scrollable">
-    <ul class="nav nav-pills nav-stacked" ng-controller="LoadersCtrl">
-      <li ng-repeat="loader in loaders" ng-class="{active: getSelectedLoader().bbnick == loader.bbnick}">
-      <a ng-click="setSelectedLoader(loader.bbnick)">{{loader.bbnick}}</a>
-      </li>
-    </ul>
-  </div>
-
-</tray>
