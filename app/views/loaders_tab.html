@@ -1,2 +1,17 @@
-<h3>Loaders!</h3>
+<div class="list-group" ng-controller="LoadersCtrl">
+    <div href="#" class="list-group-item" ng-repeat="loader in loaders">
+        <h4 class="list-group-item-heading">{{loader.bbnick}}</h4>
+        <p class="list-group-item-text">
 
+            <h5>CPU Usage</h5>
+            <div class="progress">
+              <div class="progress-bar" style="width: 30%;"></div>
+            </div>
+            <h5>Memory Usage</h5>
+            <div class="progress">
+              <div class="progress-bar" style="width: 60%;"></div>
+            </div>
+
+        </p>
+    </div>
+</div>

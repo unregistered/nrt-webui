@@ -13,8 +13,6 @@ angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, $timeout
     self.port = ''
     self.connected = false
 
-    self.last_update_time = NaN
-
     ######################################################################
     self.getWsUri = ->
         "ws://#{self.host}:#{self.port}"
@@ -55,7 +53,7 @@ angular.module('nrtWebuiApp').factory('ServerService', ($rootScope, $q, $timeout
                     console.error error.message
                     console.error error.stack
 
-            # Subscribe to all further blackboard federation summaries
+            # Subscribe to all further parameter changes
             session.subscribe "org.nrtkit.designer/event/module_param_update", (topic, message) ->
                 try
                     $rootScope.$broadcast "ServerService.parameter_changed", message.message
