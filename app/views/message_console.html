@@ -8,50 +8,54 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>NRT Message Console</title>
 <meta name="description" content="">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
 <!-- build:css({.tmp,app}) styles/main.css -->
 <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
-<link rel="stylesheet" href="../styles/main.css">
 <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.min.css">
 <!-- endbuild -->
 </head>
 
-<body>
+<body ng-app="nrtMessageConsoleApp" style="padding-top: 60px">
 <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
 
-<div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="#">Project name</a>
-    <div class="nav-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
+<div class="navbar navbar-fixed-top">
+  <a class="navbar-brand" href="#">NRT Console</a>
+  <ul class="nav navbar-nav">
+    <li><a href=""><i class="icon-file"></i> File <i class="icon-caret-down"></i></a></li>
+    <li><a href=""><i class="icon-filter"></i> Filter <i class="icon-caret-down"></i></a></li>
+    <li><a href=""><i class="icon-sort-by-attributes"></i> Sort <i class="icon-caret-down"></i></a></li>
+    <li><a href=""><i class="icon-trash"></i> Clear</a></li>
+  </ul>
 </div>
 
-<div class="container">
+<div class="container" ng-controller="MessageConsoleCtrl">
 
-  <div class="starter-template">
-    <h1>Bootstrap starter template</h1>
-    <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+  <div class="row">
+    <div class="span12">
+    <table class="table table-condensed table-hover">
+      <tr ng-repeat="message in messages">
+        <td>{{message.module}}</td>
+        <td>{{message.message}}</td>
+      </tr>
+    </table>
   </div>
+  </div>
+
 
 </div><!-- /.container -->
 
 
-<script src="bower_components/jquery/jquery.js"></script>
-<script src="bower_components/angular/angular.js"></script>
+<script src="../bower_components/jquery/jquery.js"></script>
+<script src="../bower_components/angular/angular.js"></script>
+
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="../scripts/message_console_app.js"></script>
+<script src="../scripts/controllers/message_console.js"></script>
+<!-- endbuild -->
+
 </body>
 
