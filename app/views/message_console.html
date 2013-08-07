@@ -45,23 +45,54 @@
     <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-filter"></i> Filter <i class="icon-caret-down"></i></a>
     <ul class="dropdown-menu">
       <li>
-        <a href="" ng-click="filter_options.filter_by_module = !filter_options.filter_by_module" >
-          <i ng-class="{'icon-check': filter_options.filter_by_module, 'icon-check-empty': !filter_options.filter_by_module}"></i>
+        <a href="" ng-click="toggleFilterField('module')" >
+          <i ng-class="{'icon-check': hasFilterField('module'), 'icon-check-empty': !hasFilterField('module')}"></i>
           Filter by Module
         </a>
       </li>
       <li>
-        <a href="" ng-click="filter_options.filter_by_message = !filter_options.filter_by_message" >
-          <i ng-class="{'icon-check': filter_options.filter_by_message, 'icon-check-empty': !filter_options.filter_by_message}"></i>
+        <a href="" ng-click="toggleFilterField('message')" >
+          <i ng-class="{'icon-check': hasFilterField('message'), 'icon-check-empty': !hasFilterField('message')}"></i>
           Filter by Message
         </a>
       </li>
+
+      <li class="divider"></li>
+
+      <li>
+        <a href="" ng-click="toggleFilterLevel(DEBUG)">
+          <i ng-class="{'icon-check': hasFilterLevel(DEBUG), 'icon-check-empty': !hasFilterLevel(DEBUG)}"></i>
+          Show Debug Messages
+        </a>
+      </li>
+
+      <li>
+        <a href="" ng-click="toggleFilterLevel(INFO)">
+          <i ng-class="{'icon-check': hasFilterLevel(INFO), 'icon-check-empty': !hasFilterLevel(INFO)}"></i>
+          Show Info Messages
+        </a>
+      </li>
+
+      <li>
+        <a href="" ng-click="toggleFilterLevel(WARNING)">
+          <i ng-class="{'icon-check': hasFilterLevel(WARNING), 'icon-check-empty': !hasFilterLevel(WARNING)}"></i>
+          Show Warning Messages
+        </a>
+      </li>
+
+      <li>
+        <a href="" ng-click="toggleFilterLevel(FATAL)">
+          <i ng-class="{'icon-check': hasFilterLevel(FATAL), 'icon-check-empty': !hasFilterLevel(FATAL)}"></i>
+          Show Fatal Messages
+        </a>
+      </li>
+
     </ul>
     </li>
 
     <li>
     <form class="navbar-form">
-      <input type="text" class="form-control" ng-model="filter_options.filter_string"/>
+      <input type="text" class="form-control" ng-model="filter_string"/>
     </form>
     </li>
 
@@ -74,7 +105,7 @@
   <div class="row">
     <div class="span12">
     <table class="table table-condensed table-hover">
-      <tr ng-repeat="message in messages | filter:messageFilter">
+      <tr ng-repeat="message in messages | filter:messageFilter" ng-class="{success: message.level==DEBUG, warning: message.level==WARNING, danger: message.level==FATAL}">
         <td>{{message.module}}</td>
         <td>{{message.date.toLocaleTimeString({hour12: false})}}</td>
         <td>{{message.message}}</td>
@@ -90,6 +121,7 @@
 <script src="../bower_components/angular/angular.js"></script>
 
 <!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="../bower_components/underscore/underscore.js"></script>
 <script src="../scripts/message_console_app.js"></script>
 <script src="../scripts/controllers/message_console.js"></script>
 <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
