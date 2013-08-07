@@ -18,6 +18,9 @@ angular.module("nrtMessageConsoleApp").controller "MessageConsoleCtrl", ($scope)
 
         return false
 
+    $scope.clearMessages = ->
+        $scope.messages = []
+
     $scope.messages = [
         {
             module: "Module1"
