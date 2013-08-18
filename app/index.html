@@ -69,7 +69,8 @@
                             <a ng-click="viewServer(server)">{{server.name}}</a>
                         </li>
                       <li class="divider"></li>
-                      <li><a href="#">Quick Connect</a></li>
+                      <li><a data-toggle="modal" href="#quickconnect-modal">Quick Connect</a></li>
+                      <li><a data-toggle="modal" href="#editservers-modal">Edit Servers</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -132,6 +133,73 @@
                 humanitatis per seacula quarta decima et quinta decima. Eodem
                 modo typi, qui nunc nobis videntur parum clari, fiant sollemnes
                 in futurum.
+              </div>
+
+              <div class="modal-footer">
+                <a class="btn btn-danger" data-dismiss="modal">Close</a>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Quick Connect modal -->
+        <div class="modal" id="quickconnect-modal" ng-controller="ServersCtrl">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Quick Connect</h4>
+              </div>
+
+              <div class="modal-body">
+                <form class="form-inline" role="form">
+                  <div class="form-group">
+                    <label class="sr-only" for="quickconnect-host">Host</label>
+                    <input type="text" class="form-control" id="quickconnect-host" placeholder="Hostname e.g. 127.0.0.1" ng-model="quickconnect.host">
+                  </div>
+                  <div class="form-group">
+                    <label class="sr-only" for="quickconnect-port">Port</label>
+                    <input type="text" class="form-control" id="quickconnect-port" placeholder="Port e.g. 8080" ng-model="quickconnect.port">
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <a class="btn btn-danger" data-dismiss="modal">Cancel</a>
+                <a ng-click="quickConnect(quickconnect.host, quickconnect.port)" data-dismiss="modal" class="btn btn-success">Connect</a>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Edit Server modal -->
+        <div class="modal" id="editservers-modal" ng-controller="ServersCtrl">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Edit Servers</h4>
+              </div>
+
+              <div class="modal-body">
+                <ul>
+                  <li ng-repeat="server in servers">{{server.name}} {{server.host}}:{{server.port}}</li>
+                </ul>
+
+
+                <form class="form-inline" role="form" >
+                  <div class="form-group">
+                    <input type="text" class="form-control col-xs-3" id="quickconnect-name" placeholder="Nickname (e.g. Mike's Computer" ng-model="quickconnect.name">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control col-xs-3" id="quickconnect-host" placeholder="Hostname e.g. 127.0.0.1" ng-model="quickconnect.host">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control col-xs-3" id="quickconnect-port" placeholder="Port e.g. 8080" ng-model="quickconnect.port">
+                  </div>
+                  <button ng-click="addServer(quickconnect.name, quickconnect.host, quickconnect.port)" type="submit" class="btn btn-default btn-success"><i class="icon-plus"></i></button>
+                </form>
+
               </div>
 
               <div class="modal-footer">

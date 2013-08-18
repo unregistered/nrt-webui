@@ -50,6 +50,18 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
         'module_visibility': self.SETTING_SHOW_INTERNAL_MODULES
         'leftpane_width': self.UI_PANE_DEFAULT_WIDTH
         'toppane_height': self.UI_PANE_DEFAULT_HEIGHT
+        'servers': [
+            {
+                name: 'localhost'
+                host: 'localhost'
+                port: '8080'
+            },
+            {
+                name: 'iLab'
+                host: 'ilab.usc.edu'
+                port: '8080'
+            }
+        ]
     }
 
     return self

@@ -2,6 +2,7 @@
 
 angular.module("nrtWebuiApp").controller "ServerCtrl", ($scope, $routeParams, ServerService, $location) ->
     $scope.$on('$routeChangeSuccess', (next, current) ->
+        return unless $routeParams.host_and_port
         ServerService.host = $routeParams.host_and_port.split(':')[0]
         ServerService.port = $routeParams.host_and_port.split(':')[1]
 
