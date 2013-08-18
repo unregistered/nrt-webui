@@ -6,7 +6,7 @@ angular.module("nrtWebuiApp").controller "PreferencesCtrl", ($scope, ConfigServi
     $scope.ConfigService = ConfigService
     $scope.$watch("ConfigService.settings", ->
         $scope.string_config = JSON.stringify ConfigService.settings
-    )
+    , true)
 
     $scope.saveChanges = ->
         try
