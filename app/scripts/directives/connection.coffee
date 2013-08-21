@@ -2,7 +2,7 @@
 Draws a raphael connection
 @broadcasts Connection.last_connection_rendered signifies that all connections have rendered
 ###
-angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorService, SelectionService, ConfigService, ModuleManagerService, HoverService) ->
+angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorService, SelectionService, ConfigService, ModuleManagerService, HoverService, UtilityService) ->
     require: '^raphael'
     restrict: "E"
     template: """
@@ -21,6 +21,9 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
 
         scope.getToBBox = ->
             ConnectorService.getPortBBox scope.connection.to_port
+
+        scope.getColor = ->
+            UtilityService.str2color scope.connection.from_port.msgtype
 
         scope.getCurvedPathString = ->
             bb1 = scope.getFromBBox()
@@ -91,8 +94,20 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
         scope.drawLine = ->
             l = controller.paper.path(scope.getPathString())
             l.attr(
-                stroke: ConfigService.UI_CONNECTION_INACTIVE_COLOR
-                'stroke-width': 1
+                stroke: scope.getColor()
+                'stroke-width': 2
+                fill: "none"
+            )
+            if iAttrs.phantom
+                l.attr('stroke-dasharray': '--')
+
+            return l
+
+        scope.drawOutline = ->
+            l = controller.paper.path(scope.getPathString())
+            l.attr(
+                stroke: ConfigService.UI_CONNECTION_ACTIVE_COLOR
+                'stroke-width': 3
                 fill: "none"
             )
             if iAttrs.phantom
@@ -111,6 +126,7 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
 
         scope.$watch("connection", ->
             scope.raphael_drawings = {}
+            scope.raphael_drawings.outline = scope.drawOutline()
             scope.raphael_drawings.line = scope.drawLine()
             scope.raphael_drawings.hitbox = scope.drawHitbox()
 
@@ -126,56 +142,58 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
                 $rootScope.$broadcast("Connection.last_connection_rendered")
         )
 
-        scope.updateColor = ->
-            color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
+        scope.updateAppearance = ->
+            if !ConnectorService.isPairing()
+                scope.raphael_drawings.line.attr
+                    opacity: 1
 
-            if SelectionService.get('module').length
-                # If modules are selected, color the active ones and gray the inactive ones
-                if scope.connection.from_module._selected || scope.connection.to_module._selected
-                    # We're active
-                    color = ConfigService.UI_CONNECTION_ACTIVE_COLOR
+                if scope.connection._selected
+                    scope.raphael_drawings.outline.attr
+                        'stroke-width': 5
                 else
-                    color = ConfigService.UI_CONNECTION_INACTIVE_COLOR
+                    scope.raphael_drawings.outline.attr
+                        'stroke-width': 4
+
+                if scope.connection._hovered
+                    scope.raphael_drawings.outline.attr
+                        opacity: 0.6
+                else
+                    scope.raphael_drawings.outline.attr
+                        opacity: 1
             else
-                # Be gray
-                color = ConfigService.UI_CONNECTION_INACTIVE_COLOR
-
-            scope.raphael_drawings.line.attr
-                stroke: color
-
-        scope.updateWidth = ->
-            w = 1
-            w = 3 if scope.connection._hovered || scope.connection._selected
-
-            w = 1 if ConnectorService.isPairing() && !iAttrs.phantom
-            scope.raphael_drawings.line.attr('stroke-width': w)
-
-        scope.updateOpacity = ->
-            o = 1
-            o = 0.2 if ConnectorService.isPairing()
-            scope.raphael_drawings.line.attr(opacity: o)
+                if scope.connection._hovered
+                    # We are the selected pair
+                    scope.raphael_drawings.outline.attr
+                        'stroke-width': 4
+                        opacity: 0.6
+                else
+                    scope.raphael_drawings.outline.attr
+                        'stroke-width': 4
+                        opacity: 0.2
+                    scope.raphael_drawings.line.attr
+                        opacity: 0.1
 
 
         # When we are selected
         scope.$watch("connection._selected", ->
-            scope.updateWidth()
+            scope.updateAppearance()
         )
 
         # When we are hovered
         scope.$watch("connection._hovered", ->
-            scope.updateWidth()
-            scope.updateColor()
+            scope.updateAppearance()
         )
 
         # Observe module coordinates
         scope.$watch("[connection.from_module.x, connection.from_module.y, connection.to_module.x, connection.to_module.y]", ->
             scope.raphael_drawings.line.attr(path: scope.getPathString())
+            scope.raphael_drawings.outline.attr(path: scope.getPathString())
             scope.raphael_drawings.hitbox.attr(path: scope.getPathString())
         , true)
 
         # Observe module selection
         scope.$on("SelectionService.selection_changed", ->
-            scope.updateColor()
+            scope.updateAppearance()
         )
 
         # Observe module hover
@@ -186,7 +204,7 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
 
         # Observe pairing state
         scope.$on("ConnectorService.pairing_state_changed", ->
-            scope.updateOpacity()
+            scope.updateAppearance()
         )
 
         # When we're being removed
@@ -194,3 +212,4 @@ angular.module("nrtWebuiApp").directive 'connection', ($rootScope, ConnectorServ
             _.each scope.raphael_drawings, (obj, key) ->
                 obj.remove()
         )
+

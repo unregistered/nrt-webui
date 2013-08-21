@@ -22,7 +22,7 @@ angular.module('nrtWebuiApp').factory('ConfigService', ->
     self.UI_CANVAS_HEIGHT = 100000
 
     self.UI_MODULE_IMAGE_WIDTH = 40
-    self.UI_MODULE_IMAGE_VERTICAL_OFFSET = 10
+    self.UI_MODULE_IMAGE_VERTICAL_OFFSET = 25
 
     self.UI_CONNECTION_INACTIVE_COLOR = "#ccc"
     self.UI_CONNECTION_ACTIVE_COLOR = "#000"
