@@ -76,7 +76,7 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                 rect.attr
                     fill: color
                     stroke: color
-                    "fill-opacity": 0
+                    "fill-opacity": 0.3
                     "stroke-width": 2
 
                 return rect
@@ -242,19 +242,19 @@ angular.module("nrtWebuiApp").directive 'module', (BlackboardManagerService, Uti
                             if _( SelectionService.get('module') ).contains scope.model
                                 fadeIn()
                             else
-                                scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+                                scope.raphael_drawings.box.animate "fill-opacity": 0.3, 500
 
                     fadeIn = ->
                         scope.raphael_drawings.box.animate "fill-opacity": .5, 500, "linear", ->
                             if _( SelectionService.get('module') ).contains scope.model
                                 fadeOut()
                             else
-                                scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+                                scope.raphael_drawings.box.animate "fill-opacity": 0.3, 500
 
                     fadeIn()
 
                 else
-                    scope.raphael_drawings.box.animate "fill-opacity": 0, 500
+                    scope.raphael_drawings.box.animate "fill-opacity": 0.3, 500
             )
 
             scope.$on("Workspace.select_drag_ended", (scopes, message) ->
