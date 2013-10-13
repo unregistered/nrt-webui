@@ -1,6 +1,7 @@
 NRT Designer
 ==============
 
+![screenshot](http://i.imgur.com/N3xRM3O.png)
 Interface to the Neuromorphic Robotics Toolkit. [nrtkit.org](http://nrtkit.org/)
 
 Running
